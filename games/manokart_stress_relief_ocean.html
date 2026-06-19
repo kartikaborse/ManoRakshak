@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ManoKart — Stress Relief Ocean</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #060e1f;
+      color: #c8e0ff;
+      min-height: 100vh
+    }
+
+    .gbar {
+      background: rgba(255, 255, 255, .03);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px)
+    }
+
+    .gbar a {
+      color: #7a90b8;
+      text-decoration: none;
+      font-size: 14px
+    }
+
+    .gbar a:hover {
+      color: #38bdf8
+    }
+
+    .gbar .t {
+      flex: 1;
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center;
+      color: #c8e0ff
+    }
+
+    .gbar .xb {
+      font-size: 12px;
+      color: #5eead4;
+      background: rgba(94, 234, 212, .1);
+      padding: 4px 12px;
+      border-radius: 20px
+    }
+
+    #scene {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      height: calc(100vh - 52px);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a1628 0%, #0d2448 40%, #0f3060 70%, #1a4a7a 100%)
+    }
+
+    #canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%
+    }
+
+    .oui {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 24px;
+      background: linear-gradient(0deg, rgba(5, 12, 28, .92) 0%, transparent 100%)
+    }
+
+    .ml {
+      font-size: 13px;
+      color: rgba(160, 200, 255, .6);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    .mt {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 16px
+    }
+
+    .ctrls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .cb {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(100, 160, 255, .3);
+      background: rgba(20, 50, 100, .4);
+      color: rgba(180, 215, 255, .8);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .25s;
+      font-family: inherit
+    }
+
+    .cb:hover {
+      background: rgba(40, 80, 160, .5);
+      border-color: rgba(120, 180, 255, .5)
+    }
+
+    .cb.act {
+      background: rgba(50, 100, 200, .6);
+      border-color: rgba(140, 200, 255, .7);
+      color: #e0f0ff
+    }
+
+    .srow {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px
+    }
+
+    .sch {
+      background: rgba(10, 25, 60, .6);
+      border: 1px solid rgba(80, 140, 220, .25);
+      border-radius: 14px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: rgba(160, 210, 255, .8)
+    }
+
+    .tl {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(140, 190, 255, .6)
+    }
+
+    .svb {
+      position: absolute;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10
+    }
+
+    .svb button {
+      padding: 12px 28px;
+      border-radius: 99px;
+      border: 1px solid rgba(94, 234, 212, .4);
+      background: rgba(20, 80, 60, .5);
+      color: #5eead4;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      backdrop-filter: blur(8px)
+    }
+
+    .svb button:hover {
+      background: rgba(30, 120, 80, .6)
+    }
+
+    /* Music control */
+    .music-btn {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 25, 60, .65);
+      border: 1px solid rgba(80, 140, 220, .3);
+      border-radius: 99px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: rgba(160, 210, 255, .85);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Outfit', sans-serif;
+      transition: all .2s;
+      z-index: 10;
+      white-space: nowrap
+    }
+
+    .music-btn:hover {
+      background: rgba(20, 50, 110, .7);
+      border-color: rgba(120, 180, 255, .5)
+    }
+
+    .music-btn .mico {
+      font-size: 14px
+    }
+
+    .vol-wrap {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 25, 60, .8);
+      border: 1px solid rgba(80, 140, 220, .25);
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s
+    }
+
+    .vol-wrap.show {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .vol-wrap input {
+      width: 90px;
+      accent-color: #38bdf8;
+      cursor: pointer
+    }
+
+    .vol-wrap label {
+      font-size: 11px;
+      color: rgba(160, 210, 255, .7)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gbar"><a href="manokart_games_hub.html">← Hub</a>
+    <div class="t">🌊 Stress Relief Ocean</div>
+    <div class="xb" id="lxp">0 XP</div>
+  </div>
+  <div id="scene">
+    <canvas id="canvas"></canvas>
+    <div class="tl">ManoKart Ocean</div>
+
+    <!-- Music control -->
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <span class="mico">🔇</span><span id="musicLabel">Tap for music</span>
+    </button>
+    <div class="vol-wrap" id="volWrap">
+      <label>Vol</label>
+      <input type="range" id="volSlider" min="0" max="100" value="60" oninput="setVol(this.value)">
+    </div>
+
+    <div class="srow">
+      <div class="sch" id="tc">0:00</div>
+      <div class="sch" id="mc">Calm</div>
+    </div>
+    <div class="oui">
+      <div class="ml">Stress relief</div>
+      <div class="mt" id="mt2">Ocean at night</div>
+      <div class="ctrls">
+        <button class="cb act" onclick="sm('calm',this)">Calm</button>
+        <button class="cb" onclick="sm('drift',this)">Drift</button>
+        <button class="cb" onclick="sm('storm',this)">Release</button>
+        <button class="cb" onclick="sm('aurora',this)">Aurora</button>
+      </div>
+    </div>
+    <div class="svb" id="svb" style="display:none"><button onclick="sav()">💾 Save Session (+<span id="sp">0</span>
+        pts)</button></div>
+  </div>
+
+  <script src="gameEngine.js"></script>
+  <script>
+    /* ─── Canvas / visuals (unchanged) ─── */
+    const cv = document.getElementById('canvas'), ctx = cv.getContext('2d'), sc = document.getElementById('scene');
+    let W, H; function rz() { W = cv.width = sc.clientWidth; H = cv.height = sc.clientHeight; } rz(); window.addEventListener('resize', rz);
+    const MD = {
+      calm: { speed: .4, amp: 12, layers: 4, skyTop: '#060e1f', skyBot: '#0d2a50', wA: '#0a1e3d', wB: '#0d2a50', wC: '#1a4a7a', foam: 'rgba(180,220,255,.15)', moon: true, aurora: false, mult: 1 },
+      drift: { speed: .7, amp: 20, layers: 5, skyTop: '#0a0a1a', skyBot: '#1a1040', wA: '#0a1030', wB: '#1a0a40', wC: '#2a1a60', foam: 'rgba(200,180,255,.12)', moon: true, aurora: false, mult: 1.5 },
+      storm: { speed: 1.5, amp: 38, layers: 6, skyTop: '#080810', skyBot: '#0a1020', wA: '#080c18', wB: '#0a1428', wC: '#142040', foam: 'rgba(140,180,220,.25)', moon: false, aurora: false, mult: 2 },
+      aurora: { speed: .5, amp: 14, layers: 4, skyTop: '#040c18', skyBot: '#0a2030', wA: '#081820', wB: '#0a2030', wC: '#0a3040', foam: 'rgba(80,220,180,.18)', moon: true, aurora: true, mult: 1.8 }
+    };
+    let cm2 = 'calm', t = 0, sec = 0;
+    function sm(m, el) {
+      cm2 = m; document.querySelectorAll('.cb').forEach(b => b.classList.remove('act')); if (el) el.classList.add('act');
+      const tt = { calm: 'Ocean at night', drift: 'Drifting in stillness', storm: 'Release the tension', aurora: 'Aurora reflection' };
+      const ch = { calm: 'Calm', drift: 'Dreaming', storm: 'Releasing', aurora: 'Wonder' };
+      document.getElementById('mt2').textContent = tt[m]; document.getElementById('mc').textContent = ch[m];
+      if (audioOn) switchThemeMusic(m);
+    }
+    function dsky(m) { const g = ctx.createLinearGradient(0, 0, 0, H * .65); g.addColorStop(0, m.skyTop); g.addColorStop(1, m.skyBot); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * .65); }
+    function dmoon(m) { if (!m.moon) return; const mx = W * .72, my = H * .18, mr = 22; const gl = ctx.createRadialGradient(mx, my, mr * .5, mx, my, mr * 3); gl.addColorStop(0, 'rgba(200,230,255,.18)'); gl.addColorStop(1, 'rgba(200,230,255,0)'); ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(mx, my, mr * 3, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#d8eaff'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill(); }
+    function daur(m) { if (!m.aurora) return; for (let i = 0; i < 3; i++) { const ay = H * (.08 + i * .07), w = Math.sin(t * .3 + i * 1.2) * 30; const g = ctx.createLinearGradient(0, ay, 0, ay + 80); g.addColorStop(0, ['rgba(0,220,160,.13)', 'rgba(60,180,220,.10)', 'rgba(120,80,220,.08)'][i]); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, ay + w); for (let x = 0; x <= W; x += 10)ctx.lineTo(x, ay + Math.sin(x * .008 + t * .4 + i) * 25 + w); ctx.lineTo(W, ay + 80); ctx.lineTo(0, ay + 80); ctx.closePath(); ctx.fill(); } }
+    const stars = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + .3, o: Math.random() * .7 + .2, s: Math.random() * 2 + .5, p: Math.random() * Math.PI * 2 }));
+    function dstars() { ctx.fillStyle = 'rgba(255,255,255,.85)'; for (const s of stars) { const tw = .5 + .5 * Math.sin(t * s.s + s.p); ctx.globalAlpha = s.o * tw; ctx.beginPath(); ctx.arc(s.x * W, s.y * H * .55, s.r, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1; }
+    function dwat(m) { const wy = H * .56; const g = ctx.createLinearGradient(0, wy, 0, H); g.addColorStop(0, m.wA); g.addColorStop(1, m.wB); ctx.fillStyle = g; ctx.fillRect(0, wy, W, H - wy); }
+    function dwav(m) {
+      const by = H * .56; for (let l = 0; l < m.layers; l++) {
+        const lp = l / m.layers, ly = by + lp * (H - by) * .6, la = m.amp * (1 - lp * .5) * (cm2 === 'storm' ? (1 + Math.sin(t * 2) * .4) : 1), fr = .012 - lp * .003, sp = m.speed * (1 + lp * .3), al = .15 + lp * .2;
+        ctx.beginPath(); ctx.moveTo(0, ly); for (let x = 0; x <= W; x += 3) { const y = ly + Math.sin(x * fr + t * sp) * la + Math.sin(x * fr * 1.7 + t * sp * .6 + l) * la * .4 + Math.sin(x * fr * .5 + t * sp * 1.3) * la * .25; ctx.lineTo(x, y); }
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); const r = parseInt(m.wC.slice(1, 3), 16), g = parseInt(m.wC.slice(3, 5), 16), b = parseInt(m.wC.slice(5, 7), 16); ctx.fillStyle = `rgba(${r},${g},${b},${al})`; ctx.fill();
+        if (l < 2) { ctx.beginPath(); for (let x = 0; x <= W; x += 3) { const y = ly + Math.sin(x * fr + t * sp) * la + Math.sin(x * fr * 1.7 + t * sp * .6 + l) * la * .4; if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.strokeStyle = m.foam; ctx.lineWidth = cm2 === 'storm' ? 2.5 : 1.5; ctx.stroke(); }
+      }
+    }
+    setInterval(() => {
+      sec++; const m = Math.floor(sec / 60), s = sec % 60; document.getElementById('tc').textContent = `${m}:${String(s).padStart(2, '0')}`;
+      if (sec >= 30) document.getElementById('svb').style.display = 'block';
+      var sc2 = Math.round(sec * MD[cm2].mult); document.getElementById('sp').textContent = sc2;
+    }, 1000);
+    function sav() {
+      var score = Math.round(sec * MD[cm2].mult);
+      var r = GameEngine.saveScore('stress_relief_ocean', score);
+      document.getElementById('lxp').textContent = r.totalXP + ' XP';
+      alert('Session saved! +' + r.xpEarned + ' XP earned.');
+      window.location.href = 'manokart_games_hub.html';
+    }
+    function draw() { ctx.clearRect(0, 0, W, H); const m = MD[cm2]; t += .016; dsky(m); daur(m); dstars(); dmoon(m); dwat(m); dwav(m); requestAnimationFrame(draw); }
+    try { document.getElementById('lxp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch (e) { }
+    draw();
+
+    /* ══════════════════════════════════════════════
+       AMBIENT MUSIC ENGINE  (Web Audio API — no files)
+       ══════════════════════════════════════════════ */
+    let audioCtx = null, masterGain = null, audioOn = false;
+    let activeNodes = [];   // nodes to stop on theme change
+    let volLevel = 0.6;
+
+    function ensureCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(volLevel, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    /* util: create an oscillator looped with slow LFO mod */
+    function makeOsc(freq, type, gainVal, lfoFreq, lfoDepth) {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      g.gain.value = gainVal;
+      // optional LFO on gain for tremolo / pulse
+      if (lfoFreq) {
+        const lfo = audioCtx.createOscillator();
+        const lg = audioCtx.createGain();
+        lfo.frequency.value = lfoFreq; lfo.type = 'sine';
+        lg.gain.value = lfoDepth || gainVal * .4;
+        lfo.connect(lg); lg.connect(g.gain);
+        lfo.start(); activeNodes.push(lfo, lg);
+      }
+      osc.connect(g); g.connect(masterGain);
+      osc.start();
+      activeNodes.push(osc, g);
+      return { osc, g };
+    }
+
+    /* util: band-pass filtered noise burst (waves / wind) */
+    function makeNoise(freqLo, freqHi, gainVal) {
+      const bufLen = audioCtx.sampleRate * 4;
+      const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bufLen; i++)d[i] = (Math.random() * 2 - 1);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      const bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass';
+      bp.frequency.value = (freqLo + freqHi) / 2;
+      bp.Q.value = 0.8;
+      const g = audioCtx.createGain(); g.gain.value = gainVal;
+      src.connect(bp); bp.connect(g); g.connect(masterGain);
+      src.start();
+      activeNodes.push(src, bp, g);
+      return { src, g };
+    }
+
+    /* util: slow attack / release fade for a gain node */
+    function fadeIn(gNode, to, dur) {
+      gNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      gNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      gNode.gain.linearRampToValueAtTime(to, audioCtx.currentTime + dur);
+    }
+
+    /* Stop all running nodes with a short fade-out */
+    function stopAll() {
+      const now = audioCtx.currentTime;
+      for (const n of activeNodes) {
+        try {
+          if (n instanceof GainNode) { n.gain.cancelScheduledValues(now); n.gain.setValueAtTime(n.gain.value, now); n.gain.linearRampToValueAtTime(0, now + 1.5); }
+        } catch (e) { }
+      }
+      const old = [...activeNodes];
+      setTimeout(() => { for (const n of old) { try { n.disconnect(); } catch (e) { } } }, 2000);
+      activeNodes = [];
+    }
+
+    /* ── THEME MUSIC DEFINITIONS ── */
+
+    function musicCalm() {
+      // Deep drone (D2) + gentle fifth (A2) + whisper noise (low ocean)
+      const drone = makeOsc(73.4, 'sine', 0.18, 0.08, 0.06);  // D2
+      fadeIn(drone.g, 0.18, 4);
+      const fifth = makeOsc(110, 'sine', 0.10, 0.05, 0.04);    // A2
+      fadeIn(fifth.g, 0.10, 5);
+      const oct = makeOsc(146.8, 'sine', 0.06, 0.12, 0.02);    // D3
+      fadeIn(oct.g, 0.06, 6);
+      // Soft pad overtone
+      const pad = makeOsc(220, 'triangle', 0.04, 0.06, 0.02);  // A3
+      fadeIn(pad.g, 0.04, 7);
+      // Low ocean noise
+      makeNoise(60, 300, 0.06);
+      // Very slow bell-like ping every ~8s via gain LFO trick
+      const ping = makeOsc(528, 'sine', 0, 1 / 16, 0);           // C5 love freq
+      const pGain = audioCtx.createGain(); pGain.gain.value = 0;
+      ping.osc.disconnect(); ping.osc.connect(pGain); pGain.connect(masterGain);
+      const pLfo = audioCtx.createOscillator(); pLfo.frequency.value = 1 / 9; pLfo.type = 'sine';
+      const pLg = audioCtx.createGain(); pLg.gain.value = 0.025;
+      pLfo.connect(pLg); pLg.connect(pGain.gain); pLfo.start();
+      pGain.gain.setValueAtTime(0, audioCtx.currentTime);
+      activeNodes.push(pGain, pLfo, pLg);
+    }
+
+    function musicDrift() {
+      // Slightly higher, dreamier: F2 + C3 + ethereal upper harmonics
+      const root = makeOsc(87.3, 'sine', 0.16, 0.06, 0.05);   // F2
+      fadeIn(root.g, 0.16, 4);
+      const fifth = makeOsc(130.8, 'sine', 0.10, 0.04, 0.04); // C3
+      fadeIn(fifth.g, 0.10, 5);
+      const hi = makeOsc(261.6, 'triangle', 0.05, 0.09, 0.03); // C4
+      fadeIn(hi.g, 0.05, 6);
+      // Purple noise-like texture (mid-range wash)
+      makeNoise(200, 800, 0.04);
+      makeNoise(60, 200, 0.05);
+      // Slow pulsing harmonic shimmer
+      const shim = makeOsc(392, 'sine', 0.02, 0.15, 0.015);   // G4
+      fadeIn(shim.g, 0.02, 8);
+    }
+
+    function musicStorm() {
+      // Rumbling low noise + urgent mid tones + crashing highs
+      makeNoise(30, 120, 0.14);   // deep rumble
+      makeNoise(300, 900, 0.07);  // mid crash
+      makeNoise(1200, 3000, 0.03);// spray hiss
+      // Low ominous drone
+      const d = makeOsc(55, 'sawtooth', 0.08, 0.25, 0.06);    // A1 sawtooth
+      fadeIn(d.g, 0.08, 2);
+      const d2 = makeOsc(82.4, 'sawtooth', 0.05, 0.18, 0.04); // E2
+      fadeIn(d2.g, 0.05, 2.5);
+      // Occasional thunder rumble via slow LFO on noise gain
+      const rumble = audioCtx.createBiquadFilter(); rumble.type = 'lowpass'; rumble.frequency.value = 80;
+      const rBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 4, audioCtx.sampleRate);
+      const rd = rBuf.getChannelData(0); for (let i = 0; i < rd.length; i++)rd[i] = (Math.random() * 2 - 1);
+      const rSrc = audioCtx.createBufferSource(); rSrc.buffer = rBuf; rSrc.loop = true;
+      const rGain = audioCtx.createGain(); rGain.gain.value = 0.12;
+      const rLfo = audioCtx.createOscillator(); rLfo.frequency.value = 1 / 7; rLfo.type = 'sine';
+      const rLg = audioCtx.createGain(); rLg.gain.value = 0.10;
+      rLfo.connect(rLg); rLg.connect(rGain.gain);
+      rSrc.connect(rumble); rumble.connect(rGain); rGain.connect(masterGain);
+      rSrc.start(); rLfo.start();
+      activeNodes.push(rSrc, rumble, rGain, rLfo, rLg);
+    }
+
+    function musicAurora() {
+      // Crystalline high harmonics + warm sub + slow-moving colour wash
+      const sub = makeOsc(65.4, 'sine', 0.14, 0.04, 0.04);    // C2
+      fadeIn(sub.g, 0.14, 5);
+      const mid = makeOsc(196, 'sine', 0.07, 0.07, 0.03);      // G3
+      fadeIn(mid.g, 0.07, 6);
+      const hi = makeOsc(392, 'sine', 0.04, 0.11, 0.02);       // G4
+      fadeIn(hi.g, 0.04, 7);
+      const crystal = makeOsc(784, 'triangle', 0.02, 0.13, 0.015); // G5
+      fadeIn(crystal.g, 0.02, 8);
+      // Shimmer noise (air-like)
+      makeNoise(1000, 4000, 0.025);
+      makeNoise(60, 200, 0.04);
+      // Slow pitch glide on one osc for that aurora "movement"
+      const glide = makeOsc(523, 'sine', 0.015, 0.06, 0.01);  // C5
+      glide.osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+      glide.osc.frequency.linearRampToValueAtTime(587, audioCtx.currentTime + 12);
+      glide.osc.frequency.linearRampToValueAtTime(523, audioCtx.currentTime + 24);
+      fadeIn(glide.g, 0.015, 9);
+    }
+
+    const THEME_MUSIC = { calm: musicCalm, drift: musicDrift, storm: musicStorm, aurora: musicAurora };
+
+    function switchThemeMusic(theme) {
+      stopAll();
+      setTimeout(() => THEME_MUSIC[theme](), 200);
+    }
+
+    /* Music button toggle */
+    function toggleMusic() {
+      ensureCtx();
+      const btn = document.getElementById('musicBtn');
+      const vol = document.getElementById('volWrap');
+      if (!audioOn) {
+        audioOn = true;
+        btn.querySelector('.mico').textContent = '🔊';
+        btn.querySelector('#musicLabel').textContent = 'Music on';
+        vol.classList.add('show');
+        switchThemeMusic(cm2);
+      } else {
+        audioOn = false;
+        btn.querySelector('.mico').textContent = '🔇';
+        btn.querySelector('#musicLabel').textContent = 'Music off';
+        vol.classList.remove('show');
+        stopAll();
+      }
+    }
+
+    function setVol(v) {
+      volLevel = v / 100;
+      if (masterGain) masterGain.gain.setTargetAtTime(volLevel, audioCtx.currentTime, 0.1);
+    }
+
+    /* Hide vol panel when clicking elsewhere */
+    document.addEventListener('click', function (e) {
+      const btn = document.getElementById('musicBtn');
+      const wrap = document.getElementById('volWrap');
+      if (!btn.contains(e.target) && !wrap.contains(e.target)) wrap.classList.remove('show');
+    });
+    document.getElementById('musicBtn').addEventListener('click', function (e) {
+      if (audioOn) document.getElementById('volWrap').classList.toggle('show');
+      e.stopPropagation();
+    });
+  </script>
+</body>
+
+</html>

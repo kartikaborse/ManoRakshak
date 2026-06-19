@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManoKart GameEngine — Test Dashboard</title>
+<style>
+  :root {
+    --bg:        #0f1410;
+    --surface:   #161d17;
+    --surface2:  #1d271f;
+    --surface3:  #243028;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.14);
+    --text:      #e8ede4;
+    --text2:     #8fa888;
+    --text3:     #576d52;
+    --green:     #4ade7b;
+    --green-dim: #1e4028;
+    --amber:     #f5c842;
+    --amber-dim: #3d2e08;
+    --teal:      #34d5b0;
+    --teal-dim:  #0d3028;
+    --purple:    #a78bfa;
+    --purple-dim:#251e3e;
+    --red:       #f87171;
+    --red-dim:   #3b1010;
+    --radius:    12px;
+    --font:      'Segoe UI', system-ui, sans-serif;
+    --mono:      'Cascadia Code', 'Fira Code', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  /* ── Layout ── */
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 20px; margin-bottom: 28px;
+  }
+  .header-left h1 { font-size: 22px; font-weight: 600; color: var(--green); letter-spacing: -.3px; }
+  .header-left p  { font-size: 13px; color: var(--text3); margin-top: 3px; }
+  .reset-btn {
+    background: var(--red-dim); border: 1px solid var(--red);
+    color: var(--red); padding: 7px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--font);
+    transition: opacity .15s;
+  }
+  .reset-btn:hover { opacity: .75; }
+
+  /* ── Section label ── */
+  .sec { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 12px; }
+
+  /* ── Player card ── */
+  .player-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 20px; margin-bottom: 24px;
+  }
+  .player-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  .level-badge {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--green-dim); border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; flex-shrink: 0;
+  }
+  .level-badge .lnum { font-size: 20px; font-weight: 700; color: var(--green); line-height: 1; }
+  .level-badge .ltxt { font-size: 8px; color: var(--text3); letter-spacing: .05em; }
+  .player-meta { flex: 1; }
+  .player-meta .name { font-size: 16px; font-weight: 600; color: var(--text); }
+  .player-meta .xp-line { font-size: 12px; color: var(--text2); margin-top: 3px; }
+  .xp-bar-wrap { margin-top: 6px; }
+  .xp-bar-track {
+    height: 6px; background: var(--surface3);
+    border-radius: 3px; overflow: hidden;
+  }
+  .xp-bar-fill {
+    height: 100%; background: var(--green);
+    border-radius: 3px; transition: width .5s ease;
+  }
+  .xp-bar-label { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+  .stat-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; text-align: center;
+  }
+  .pill .pv { font-size: 18px; font-weight: 600; color: var(--text); }
+  .pill .pl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* ── Simulator ── */
+  .sim-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 20px; margin-bottom: 24px;
+  }
+  .sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 5px; font-weight: 500; }
+  select, input[type=number] {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text); padding: 9px 12px; border-radius: 8px;
+    font-family: var(--font); font-size: 13px; outline: none;
+    appearance: none; -webkit-appearance: none;
+  }
+  select:focus, input[type=number]:focus { border-color: var(--green); }
+  .play-btn {
+    width: 100%; padding: 12px; background: var(--green); color: #0a1a10;
+    border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: var(--font); transition: opacity .15s;
+  }
+  .play-btn:hover { opacity: .85; }
+
+  /* ── Result toast ── */
+  .result-box {
+    display: none; background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.8;
+  }
+  .result-box.show { display: block; }
+  .result-box .rl  { color: var(--text3); font-size: 11px; }
+  .result-box .rv  { color: var(--text); font-weight: 500; }
+  .result-box .badge-toast {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--amber-dim); border: 1px solid var(--amber);
+    border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--amber);
+    margin: 4px 4px 0 0;
+  }
+  .result-box .levelup {
+    background: var(--teal-dim); border: 1px solid var(--teal);
+    color: var(--teal); border-radius: 8px; padding: 8px 12px;
+    font-weight: 600; margin-bottom: 8px; font-size: 14px;
+  }
+
+  /* ── Games grid ── */
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .game-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px; transition: border-color .15s;
+  }
+  .game-card:hover { border-color: var(--border2); }
+  .game-card .gi  { font-size: 26px; margin-bottom: 8px; }
+  .game-card .gn  { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .game-card .gs  { font-size: 11px; color: var(--text3); line-height: 1.7; }
+  .game-card .gs span { color: var(--text2); font-weight: 500; }
+  .best-tag {
+    display: inline-block; font-size: 9px; font-weight: 600;
+    padding: 1px 7px; border-radius: 20px; margin-top: 6px;
+    background: var(--green-dim); color: var(--green);
+  }
+
+  /* ── Badges ── */
+  .badges-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .badge-chip {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px;
+    transition: border-color .15s;
+  }
+  .badge-chip.earned { border-color: var(--amber); background: var(--amber-dim); }
+  .badge-chip .bi { font-size: 16px; }
+  .badge-chip .bn { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .badge-chip.earned .bn { color: var(--amber); }
+  .badge-chip .bd { font-size: 10px; color: var(--text3); }
+
+  /* ── History ── */
+  .history-wrap { margin-bottom: 24px; }
+  .history-select { margin-bottom: 12px; max-width: 260px; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .history-table th {
+    text-align: left; color: var(--text3); font-weight: 500;
+    font-size: 10px; letter-spacing: .06em; text-transform: uppercase;
+    padding: 0 12px 8px; border-bottom: 1px solid var(--border);
+  }
+  .history-table td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table .score-col { color: var(--text); font-weight: 600; }
+  .history-table .xp-col   { color: var(--green); }
+  .empty-msg { font-size: 13px; color: var(--text3); padding: 16px 0; }
+
+  /* ── Raw JSON ── */
+  .json-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 24px;
+  }
+  .json-wrap pre {
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto;
+    line-height: 1.7;
+  }
+  .json-toggle {
+    background: none; border: 1px solid var(--border2); color: var(--text2);
+    padding: 6px 14px; border-radius: 20px; cursor: pointer;
+    font-family: var(--font); font-size: 11px; margin-bottom: 12px;
+    transition: border-color .15s;
+  }
+  .json-toggle:hover { border-color: var(--border2); color: var(--text); }
+
+  /* ── Integration snippet ── */
+  .snippet-card {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 24px;
+  }
+  .snippet-card h3 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+  .snippet-card pre {
+    font-family: var(--mono); font-size: 12px; color: var(--teal);
+    background: var(--surface2); border-radius: 8px; padding: 14px;
+    line-height: 1.7; overflow-x: auto; white-space: pre;
+  }
+  .snippet-card .comment { color: var(--text3); }
+  .snippet-card .kw  { color: var(--purple); }
+  .snippet-card .str { color: var(--amber); }
+  .snippet-card p { font-size: 12px; color: var(--text2); line-height: 1.6; margin-top: 10px; }
+
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>🌿 ManoKart GameEngine</h1>
+      <p>Test dashboard — play simulated games and watch XP, badges & history update live</p>
+    </div>
+    <button class="reset-btn" onclick="doReset()">⚠ Reset All Progress</button>
+  </div>
+
+  <!-- Player Card -->
+  <div class="sec">Player Status</div>
+  <div class="player-card" id="player-card">
+    <div class="player-top">
+      <div class="level-badge">
+        <div class="lnum" id="pc-level">1</div>
+        <div class="ltxt">LEVEL</div>
+      </div>
+      <div class="player-meta">
+        <div class="name">ManoKart Player</div>
+        <div class="xp-line" id="pc-xp-line">0 XP total</div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-track"><div class="xp-bar-fill" id="pc-xp-bar" style="width:0%"></div></div>
+          <div class="xp-bar-label" id="pc-xp-label">0 / 500 XP to next level</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-pills">
+      <div class="pill"><div class="pv" id="pc-games">0</div><div class="pl">games played</div></div>
+      <div class="pill"><div class="pv" id="pc-streak">0</div><div class="pl">day streak</div></div>
+      <div class="pill"><div class="pv" id="pc-badges">0/12</div><div class="pl">badges</div></div>
+      <div class="pill"><div class="pv" id="pc-best">0</div><div class="pl">all-time best</div></div>
+    </div>
+  </div>
+
+  <!-- Simulator -->
+  <div class="sec">Game Simulator</div>
+  <div class="sim-card">
+    <div class="sim-grid">
+      <div>
+        <label>Select Game</label>
+        <select id="sim-game">
+          <option value="body_breath_quest">🧘 Body &amp; Breath Quest</option>
+          <option value="calm_grid_sudoku">🔢 Calm Grid Sudoku</option>
+          <option value="color_your_world">🎨 Color Your World</option>
+          <option value="cozy_island_garden">🌴 Cozy Island Garden</option>
+          <option value="mood_blocks_tetris">🟦 Mood Blocks Tetris</option>
+          <option value="spirit_journey">✨ Spirit Journey</option>
+          <option value="stress_relief_ocean">🌊 Stress Relief Ocean</option>
+        </select>
+      </div>
+      <div>
+        <label>Score</label>
+        <input type="number" id="sim-score" value="150" min="0" max="9999">
+      </div>
+    </div>
+    <button class="play-btn" onclick="doSimulate()">▶ Simulate Game Finish &amp; Save Score</button>
+    <div class="result-box" id="result-box"></div>
+  </div>
+
+  <!-- Game Cards -->
+  <div class="sec">All 7 Games — Live Stats</div>
+  <div class="games-grid" id="games-grid"></div>
+
+  <div class="divider"></div>
+
+  <!-- Badges -->
+  <div class="sec">Badges (12 total)</div>
+  <div class="badges-grid" id="badges-grid"></div>
+
+  <div class="divider"></div>
+
+  <!-- Score History -->
+  <div class="sec">Score History</div>
+  <div class="history-wrap">
+    <div class="history-select">
+      <label>View history for</label>
+      <select id="hist-game" onchange="renderHistory()">
+        <option value="body_breath_quest">🧘 Body &amp; Breath Quest</option>
+        <option value="calm_grid_sudoku">🔢 Calm Grid Sudoku</option>
+        <option value="color_your_world">🎨 Color Your World</option>
+        <option value="cozy_island_garden">🌴 Cozy Island Garden</option>
+        <option value="mood_blocks_tetris">🟦 Mood Blocks Tetris</option>
+        <option value="spirit_journey">✨ Spirit Journey</option>
+        <option value="stress_relief_ocean">🌊 Stress Relief Ocean</option>
+      </select>
+    </div>
+    <div id="history-out"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Integration snippet -->
+  <div class="sec">How to Wire a Game (copy-paste)</div>
+  <div class="snippet-card">
+    <h3>Add these 3 lines to any game's "Game Over" section:</h3>
+    <pre><span class="comment">&lt;!-- 1. Load the engine (once, in &lt;head&gt; or before &lt;/body&gt;) --&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"../games/gameEngine.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- 2. When the game ends, call saveScore --&gt;</span>
+<span class="kw">&lt;script&gt;</span>
+  <span class="comment">// Replace 'body_breath_quest' with your game's id</span>
+  <span class="comment">// Replace finalScore with your game's actual score variable</span>
+  var result = GameEngine.saveScore(<span class="str">'body_breath_quest'</span>, finalScore);
+
+  <span class="comment">// Show level-up screen if they leveled up</span>
+  if (result.leveledUp) {
+    showLevelUpMessage(<span class="str">'Level '</span> + result.newLevel + <span class="str">'! 🎉'</span>);
+  }
+
+  <span class="comment">// Show badge toasts for any new badges earned</span>
+  result.newBadges.forEach(function(badge) {
+    showBadgeToast(badge.icon + <span class="str">' '</span> + badge.name);
+  });
+
+  <span class="comment">// Show XP earned on the game-over screen</span>
+  document.getElementById(<span class="str">'xp-earned'</span>).textContent = <span class="str">'+' </span>+ result.xpEarned + <span class="str">' XP'</span>;
+<span class="kw">&lt;/script&gt;</span></pre>
+    <p>That's it. The engine handles everything else — history, streaks, badge checks, level calculation. Copy <code>gameEngine.js</code> to your <code>games/</code> folder and you're done.</p>
+  </div>
+
+  <!-- Raw JSON -->
+  <div class="sec">Raw localStorage Data</div>
+  <div class="json-wrap">
+    <button class="json-toggle" onclick="toggleJson()">Show / Hide raw JSON</button>
+    <pre id="json-out" style="display:none"></pre>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     GAMEENGINE — embedded inline so this file is self-contained
+     In your real project: <script src="gameEngine.js"></script>
+════════════════════════════════════════════════════════════ -->
+<script>
+(function (global) {
+  'use strict';
+
+  var STORAGE_KEY   = 'manokart_engine_v1';
+  var XP_PER_LEVEL  = 500;
+  var MAX_HISTORY   = 50;
+  var STREAK_WINDOW = 36 * 60 * 60 * 1000;
+
+  var GAMES = {
+    body_breath_quest:   { name: 'Body & Breath Quest',   icon: '🧘' },
+    calm_grid_sudoku:    { name: 'Calm Grid Sudoku',      icon: '🔢' },
+    color_your_world:    { name: 'Color Your World',      icon: '🎨' },
+    cozy_island_garden:  { name: 'Cozy Island Garden',    icon: '🌴' },
+    mood_blocks_tetris:  { name: 'Mood Blocks Tetris',    icon: '🟦' },
+    spirit_journey:      { name: 'Spirit Journey',        icon: '✨' },
+    stress_relief_ocean: { name: 'Stress Relief Ocean',   icon: '🌊' }
+  };
+
+  var BADGES = [
+    { id: 'first_play',     name: 'First Step',      desc: 'Played your first game',               icon: '🌱', condition: function(p){ return p.totalGamesPlayed >= 1; } },
+    { id: 'level_5',        name: 'Rising Mind',      desc: 'Reached Level 5',                      icon: '⭐', condition: function(p){ return p.level >= 5; } },
+    { id: 'level_10',       name: 'Mindful Master',   desc: 'Reached Level 10',                     icon: '🌟', condition: function(p){ return p.level >= 10; } },
+    { id: 'streak_3',       name: '3-Day Streak',     desc: 'Played 3 days in a row',               icon: '🔥', condition: function(p){ return p.currentStreak >= 3; } },
+    { id: 'streak_7',       name: 'Week Warrior',     desc: 'Played 7 days in a row',               icon: '💎', condition: function(p){ return p.currentStreak >= 7; } },
+    { id: 'all_games',      name: 'Explorer',         desc: 'Played all 7 games at least once',     icon: '🗺️', condition: function(p){ return Object.keys(GAMES).every(function(id){ return p.games[id] && p.games[id].timesPlayed > 0; }); } },
+    { id: 'xp_1000',        name: 'XP Hunter',        desc: 'Earned 1000 total XP',                 icon: '⚡', condition: function(p){ return p.totalXP >= 1000; } },
+    { id: 'xp_5000',        name: 'XP Legend',        desc: 'Earned 5000 total XP',                 icon: '🏆', condition: function(p){ return p.totalXP >= 5000; } },
+    { id: 'breath_10',      name: 'Breath Keeper',    desc: 'Played Body & Breath Quest 10 times',  icon: '🌬️', condition: function(p){ return p.games['body_breath_quest'] && p.games['body_breath_quest'].timesPlayed >= 10; } },
+    { id: 'sudoku_5',       name: 'Grid Mind',        desc: 'Completed Calm Grid Sudoku 5 times',   icon: '🧩', condition: function(p){ return p.games['calm_grid_sudoku'] && p.games['calm_grid_sudoku'].timesPlayed >= 5; } },
+    { id: 'high_score_500', name: 'High Flyer',       desc: 'Scored 500+ in any single game',       icon: '🚀', condition: function(p){ return Object.keys(p.games).some(function(id){ return p.games[id].bestScore >= 500; }); } },
+    { id: 'high_score_1000',name: 'Elite Player',     desc: 'Scored 1000+ in any single game',      icon: '👑', condition: function(p){ return Object.keys(p.games).some(function(id){ return p.games[id].bestScore >= 1000; }); } }
+  ];
+
+  var _storage = {
+    get: function() {
+      try { var r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; }
+      catch(e) { return null; }
+    },
+    set: function(data) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
+      catch(e) { return false; }
+    }
+  };
+
+  function _defaultPlayer() {
+    var games = {};
+    Object.keys(GAMES).forEach(function(id) {
+      games[id] = { bestScore: 0, totalScore: 0, timesPlayed: 0, history: [] };
+    });
+    return { totalXP: 0, level: 1, currentStreak: 0, longestStreak: 0,
+             lastPlayedDate: null, totalGamesPlayed: 0, earnedBadges: [], games: games, createdAt: Date.now() };
+  }
+
+  function _loadPlayer() {
+    var data = _storage.get();
+    if (!data) { return _defaultPlayer(); }
+    Object.keys(GAMES).forEach(function(id) {
+      if (!data.games[id]) { data.games[id] = { bestScore:0, totalScore:0, timesPlayed:0, history:[] }; }
+    });
+    return data;
+  }
+
+  function _savePlayer(p) { return _storage.set(p); }
+  function _calcLevel(xp) { return Math.floor(xp / XP_PER_LEVEL) + 1; }
+
+  function _calcXP(score, gameId) {
+    var base  = Math.min(score, 200);
+    var bonus = score > 200 ? Math.floor((score - 200) * 0.5) : 0;
+    var xp    = base + bonus;
+    var relax = ['body_breath_quest','stress_relief_ocean','cozy_island_garden','spirit_journey'];
+    if (relax.indexOf(gameId) !== -1) { xp = Math.floor(xp * 1.2); }
+    return Math.max(1, xp);
+  }
+
+  function _updateStreak(player) {
+    var now = Date.now(), last = player.lastPlayedDate;
+    if (!last) {
+      player.currentStreak = 1;
+    } else {
+      var diff    = now - last;
+      var sameDay = new Date(now).toDateString() === new Date(last).toDateString();
+      if (diff < STREAK_WINDOW) { if (!sameDay) { player.currentStreak++; } }
+      else { player.currentStreak = 1; }
+    }
+    if (player.currentStreak > player.longestStreak) { player.longestStreak = player.currentStreak; }
+    player.lastPlayedDate = now;
+    return player;
+  }
+
+  function _checkBadges(player) {
+    var earned = [];
+    BADGES.forEach(function(b) {
+      if (player.earnedBadges.indexOf(b.id) === -1 && b.condition(player)) {
+        player.earnedBadges.push(b.id);
+        earned.push(b);
+      }
+    });
+    return earned;
+  }
+
+  var GameEngine = {
+    GAMES: GAMES, BADGES: BADGES,
+    saveScore: function(gameId, score) {
+      if (!GAMES[gameId]) { console.warn('[GameEngine] Unknown game:', gameId); return null; }
+      score = Math.max(0, Math.round(score));
+      var player    = _loadPlayer();
+      var prevLevel = player.level;
+      var xpEarned  = _calcXP(score, gameId);
+      var g         = player.games[gameId];
+      var ts        = Date.now();
+      g.timesPlayed++;
+      g.totalScore += score;
+      if (score > g.bestScore) { g.bestScore = score; }
+      g.history.unshift({ score: score, xpEarned: xpEarned, timestamp: ts });
+      if (g.history.length > MAX_HISTORY) { g.history = g.history.slice(0, MAX_HISTORY); }
+      player.totalXP          += xpEarned;
+      player.totalGamesPlayed += 1;
+      player.level             = _calcLevel(player.totalXP);
+      player = _updateStreak(player);
+      var newBadges = _checkBadges(player);
+      _savePlayer(player);
+      return {
+        gameId: gameId, score: score, xpEarned: xpEarned,
+        totalXP: player.totalXP, level: player.level,
+        leveledUp: player.level > prevLevel,
+        prevLevel: prevLevel, newLevel: player.level,
+        currentStreak: player.currentStreak, newBadges: newBadges,
+        isNewBest: score >= g.bestScore
+      };
+    },
+    getPlayer:        function() { return _loadPlayer(); },
+    getGameStats:     function(id) { return _loadPlayer().games[id] || null; },
+    getEarnedBadges:  function() {
+      var p = _loadPlayer();
+      return p.earnedBadges.map(function(id){ return GameEngine.getBadgeDetails(id); }).filter(Boolean);
+    },
+    getBadgeDetails:  function(id) {
+      for (var i=0;i<BADGES.length;i++){ if(BADGES[i].id===id){ return BADGES[i]; } } return null;
+    },
+    getLevelInfo: function() {
+      var p=_loadPlayer(), xpIn=p.totalXP%XP_PER_LEVEL;
+      return { level:p.level, totalXP:p.totalXP, xpInLevel:xpIn,
+               xpToNext:XP_PER_LEVEL-xpIn, progressPct:Math.round(xpIn/XP_PER_LEVEL*100), xpPerLevel:XP_PER_LEVEL };
+    },
+    getGlobalSummary: function() {
+      var p   = _loadPlayer();
+      var xpIn = p.totalXP % XP_PER_LEVEL;
+      var allBest = 0;
+      Object.keys(p.games).forEach(function(id){ if(p.games[id].bestScore > allBest){ allBest = p.games[id].bestScore; } });
+      return {
+        level: p.level, totalXP: p.totalXP,
+        xpProgressPct: Math.round(xpIn / XP_PER_LEVEL * 100),
+        xpToNextLevel: XP_PER_LEVEL - xpIn,
+        currentStreak: p.currentStreak, longestStreak: p.longestStreak,
+        totalGamesPlayed: p.totalGamesPlayed,
+        badgesEarned: p.earnedBadges.length, totalBadges: BADGES.length,
+        allTimeBest: allBest,
+        games: Object.keys(GAMES).map(function(id){
+          var g = p.games[id];
+          return { id:id, name:GAMES[id].name, icon:GAMES[id].icon,
+                   bestScore:g.bestScore, timesPlayed:g.timesPlayed,
+                   lastPlayed: g.history.length ? g.history[0].timestamp : null };
+        })
+      };
+    },
+    resetPlayer: function() { _savePlayer(_defaultPlayer()); },
+    exportData:  function() { return JSON.stringify(_loadPlayer(), null, 2); }
+  };
+
+  global.GameEngine = GameEngine;
+}(window));
+</script>
+
+<!-- ── Dashboard UI script ── -->
+<script>
+  function fmt(ts) {
+    if (!ts) { return '—'; }
+    var d = new Date(ts);
+    return d.toLocaleDateString('en-IN', { day:'numeric', month:'short' }) + ' ' +
+           d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function renderAll() {
+    renderPlayer();
+    renderGames();
+    renderBadges();
+    renderHistory();
+    renderJson();
+  }
+
+  function renderPlayer() {
+    var s = GameEngine.getGlobalSummary();
+    document.getElementById('pc-level').textContent    = s.level;
+    document.getElementById('pc-xp-line').textContent  = s.totalXP + ' XP total';
+    document.getElementById('pc-xp-bar').style.width   = s.xpProgressPct + '%';
+    document.getElementById('pc-xp-label').textContent = s.xpToNextLevel + ' XP to next level';
+    document.getElementById('pc-games').textContent    = s.totalGamesPlayed;
+    document.getElementById('pc-streak').textContent   = s.currentStreak;
+    document.getElementById('pc-badges').textContent   = s.badgesEarned + '/' + s.totalBadges;
+    document.getElementById('pc-best').textContent     = s.allTimeBest;
+  }
+
+  function renderGames() {
+    var s   = GameEngine.getGlobalSummary();
+    var el  = document.getElementById('games-grid');
+    el.innerHTML = '';
+    s.games.forEach(function(g) {
+      var played = g.timesPlayed > 0;
+      el.innerHTML +=
+        '<div class="game-card">' +
+        '<div class="gi">' + g.icon + '</div>' +
+        '<div class="gn">' + g.name + '</div>' +
+        '<div class="gs">' +
+          'Best score: <span>' + g.bestScore + '</span><br>' +
+          'Times played: <span>' + g.timesPlayed + '</span><br>' +
+          'Last played: <span>' + fmt(g.lastPlayed) + '</span>' +
+        '</div>' +
+        (played ? '<div class="best-tag">✓ Played</div>' : '') +
+        '</div>';
+    });
+  }
+
+  function renderBadges() {
+    var player  = GameEngine.getPlayer();
+    var earned  = player.earnedBadges;
+    var el      = document.getElementById('badges-grid');
+    el.innerHTML = '';
+    GameEngine.BADGES.forEach(function(b) {
+      var isEarned = earned.indexOf(b.id) !== -1;
+      el.innerHTML +=
+        '<div class="badge-chip' + (isEarned ? ' earned' : '') + '" title="' + b.desc + '">' +
+        '<span class="bi">' + (isEarned ? b.icon : '🔒') + '</span>' +
+        '<div><div class="bn">' + b.name + '</div>' +
+        '<div class="bd">' + b.desc + '</div></div>' +
+        '</div>';
+    });
+  }
+
+  function renderHistory() {
+    var gameId  = document.getElementById('hist-game').value;
+    var stats   = GameEngine.getGameStats(gameId);
+    var el      = document.getElementById('history-out');
+    if (!stats || stats.history.length === 0) {
+      el.innerHTML = '<div class="empty-msg">No games played yet for this game. Use the simulator above!</div>';
+      return;
+    }
+    var rows = stats.history.map(function(h, i) {
+      return '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td class="score-col">' + h.score + '</td>' +
+        '<td class="xp-col">+' + h.xpEarned + ' XP</td>' +
+        '<td>' + fmt(h.timestamp) + '</td>' +
+        '</tr>';
+    }).join('');
+    el.innerHTML =
+      '<table class="history-table">' +
+      '<thead><tr><th>#</th><th>Score</th><th>XP Earned</th><th>Date &amp; Time</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>';
+  }
+
+  function renderJson() {
+    var el = document.getElementById('json-out');
+    el.textContent = GameEngine.exportData();
+  }
+
+  function doSimulate() {
+    var gameId = document.getElementById('sim-game').value;
+    var score  = parseInt(document.getElementById('sim-score').value, 10) || 0;
+    var result = GameEngine.saveScore(gameId, score);
+    var rb     = document.getElementById('result-box');
+    var html   = '';
+
+    if (result.leveledUp) {
+      html += '<div class="levelup">🎉 LEVEL UP! ' + result.prevLevel + ' → ' + result.newLevel + '</div>';
+    }
+    html +=
+      '<div><span class="rl">Game: </span><span class="rv">' + GameEngine.GAMES[result.gameId].icon + ' ' + GameEngine.GAMES[result.gameId].name + '</span></div>' +
+      '<div><span class="rl">Score saved: </span><span class="rv">' + result.score + (result.isNewBest ? ' 🏅 New Best!' : '') + '</span></div>' +
+      '<div><span class="rl">XP earned: </span><span class="rv" style="color:var(--green)">+' + result.xpEarned + ' XP</span></div>' +
+      '<div><span class="rl">Total XP: </span><span class="rv">' + result.totalXP + '</span></div>' +
+      '<div><span class="rl">Level: </span><span class="rv">' + result.level + '</span></div>' +
+      '<div><span class="rl">Streak: </span><span class="rv">' + result.currentStreak + ' day(s)</span></div>';
+
+    if (result.newBadges.length > 0) {
+      html += '<div style="margin-top:8px"><span class="rl">New badges: </span><br>';
+      result.newBadges.forEach(function(b) {
+        html += '<span class="badge-toast">' + b.icon + ' ' + b.name + '</span>';
+      });
+      html += '</div>';
+    }
+
+    rb.innerHTML = html;
+    rb.classList.add('show');
+    renderAll();
+  }
+
+  function doReset() {
+    if (!confirm('Reset ALL progress? This cannot be undone.')) { return; }
+    GameEngine.resetPlayer();
+    document.getElementById('result-box').classList.remove('show');
+    renderAll();
+  }
+
+  function toggleJson() {
+    var el = document.getElementById('json-out');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    renderJson();
+  }
+
+  /* Initial render */
+  renderAll();
+</script>
+</body>
+</html>

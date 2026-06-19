@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ManoKart — Therapist Directory</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
+      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
+      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
+      --card-border:rgba(93,202,165,.18);
+    }
+    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(93,202,165,.13) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,251,242,.8) 0%,transparent 60%);pointer-events:none}
+    
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;animation:drift 12s ease-in-out infinite alternate}
+    .orb1{width:320px;height:320px;background:#9FE1CB;top:-80px;left:-80px;animation-delay:0s}
+    .orb2{width:240px;height:240px;background:#f4c0d1;top:30%;right:-60px;animation-delay:-4s}
+    .orb3{width:200px;height:200px;background:#fac775;bottom:10%;left:20%;animation-delay:-8s}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+    
+    .page{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 28px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
+    
+    .nav-pill{display:flex;gap:8px}
+    .nav-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);text-decoration:none;display:inline-block}
+    .nav-btn:hover, .nav-btn.active{background:var(--sage);color:white;border-color:var(--sage)}
+    
+    .header-section{margin-top:44px;text-align:center}
+    .header-section h1{font-family:'DM Serif Display',serif;font-size:2.8rem;line-height:1.2;color:var(--ink);letter-spacing:-1px}
+    .header-section h1 em{color:var(--sage);font-style:italic}
+    .header-section p{font-size:1.05rem;color:var(--muted);margin-top:10px;font-weight:300}
+    
+    /* Search and Filter Panel */
+    .filter-panel{background:rgba(255,255,255,.7);border:1px solid var(--card-border);border-radius:24px;padding:24px;margin-top:32px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(93,202,165,.04)}
+    .search-row{display:flex;gap:14px;margin-bottom:18px}
+    .search-control{flex:1;padding:14px 20px;border-radius:16px;border:1.5px solid rgba(209,208,199,.6);font-family:inherit;font-size:.95rem;outline:none;background:white;transition:all .2s}
+    .search-control:focus{border-color:var(--sage-light);box-shadow:0 0 0 3px var(--sage-ghost)}
+    
+    .spec-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .spec-label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-right:4px}
+    .spec-pill{padding:6px 14px;border-radius:99px;border:1px solid var(--card-border);background:white;color:var(--muted);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s}
+    .spec-pill:hover, .spec-pill.active{background:var(--sage-ghost);border-color:var(--sage-light);color:var(--sage)}
+    
+    /* Directory Grid */
+    .directory-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px}
+    @media(max-width:768px){
+      .directory-grid{grid-template-columns:1fr}
+    }
+    
+    .therapist-card{background:rgba(255,255,255,.8);border:1px solid var(--card-border);border-radius:24px;padding:24px;backdrop-filter:blur(8px);display:flex;flex-direction:column;gap:18px;transition:all .25s;box-shadow:0 8px 24px rgba(0,0,0,.02)}
+    .therapist-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(15,110,86,.08);border-color:var(--sage-pale)}
+    
+    .card-top{display:flex;gap:16px;align-items:flex-start}
+    .avatar{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#9FE1CB,#5DCAA5);display:flex;align-items:center;justify-content:center;font-size:2.2rem;box-shadow:0 6px 16px rgba(93,202,165,.2);flex-shrink:0}
+    
+    .t-info{flex:1}
+    .t-name{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--ink);line-height:1.2}
+    .t-title{font-size:.85rem;color:var(--sage-mid);font-weight:600;margin-top:3px}
+    .t-meta{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:.78rem;color:var(--hint)}
+    .rating-star{color:#fb923c;font-weight:600;display:flex;align-items:center;gap:2px}
+    
+    .t-specialization{display:flex;flex-wrap:wrap;gap:6px}
+    .tag{padding:3px 10px;border-radius:99px;background:var(--sage-ghost);color:var(--sage);font-size:.75rem;font-weight:500;border:1px solid rgba(93,202,165,.15)}
+    
+    .t-bio{font-size:.88rem;color:var(--muted);line-height:1.55;font-weight:300}
+    
+    .t-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--warm-white);border-radius:16px;padding:12px;border:1px solid rgba(209,208,199,.3);font-size:.82rem}
+    .detail-item{display:flex;flex-direction:column;gap:2px}
+    .detail-lbl{color:var(--hint);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+    .detail-val{font-weight:600;color:var(--ink)}
+    
+    .btn-book{padding:11px 24px;border-radius:99px;border:none;background:var(--sage);color:white;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(15,110,86,.15);text-align:center;display:block;width:100%}
+    .btn-book:hover{background:var(--sage-mid);box-shadow:0 6px 20px rgba(15,110,86,.22)}
+    
+    /* Booking Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(15,25,22,.45);backdrop-filter:blur(8px);z-index:999;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    
+    .modal-card{width:100%;max-width:480px;background:rgba(255,255,255,.95);border:1px solid var(--card-border);border-radius:28px;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.15);position:relative;overflow:hidden;animation:scaleUp .25s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes scaleUp{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+    .modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--sage)}
+    
+    .modal-header{margin-bottom:24px}
+    .modal-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--ink)}
+    .modal-subtitle{font-size:.85rem;color:var(--hint);margin-top:2px}
+    .modal-close{position:absolute;top:20px;right:20px;background:none;border:none;font-size:24px;color:var(--hint);cursor:pointer;line-height:1;padding:4px}
+    
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+    .form-group label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+    .form-control{padding:11px 16px;border-radius:12px;border:1.5px solid rgba(209,208,199,.6);background:white;font-family:inherit;font-size:.92rem;color:var(--ink);outline:none;transition:all .2s}
+    .form-control:focus{border-color:var(--sage-light);box-shadow:0 0 0 3px var(--sage-ghost)}
+    
+    .btn-submit{padding:12px 28px;border-radius:99px;border:none;background:var(--sage);color:white;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(15,110,86,.15);width:100%}
+    .btn-submit:hover{background:var(--sage-mid);transform:translateY(-1px)}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+    
+    /* Toast */
+    .toast{position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%) translateY(120%);background:#0F6E56;color:white;padding:.8rem 2rem;border-radius:100px;font-size:.88rem;z-index:1000;box-shadow:0 8px 30px rgba(15,110,86,.25);transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;white-space:nowrap;opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+    
+    .empty-state{grid-column:1/-1;text-align:center;padding:48px 20px;background:rgba(255,255,255,.4);border-radius:24px;border:1px dashed var(--card-border);color:var(--muted)}
+    
+    footer{text-align:center;padding:50px 0 20px;font-size:.8rem;color:var(--hint);margin-top:44px}
+    footer span{color:var(--sage-light)}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+  <div class="topbar">
+    <a href="/" class="logo">🌿 ManoKart</a>
+    <nav class="nav-pill">
+      <a href="/diary"   class="nav-btn">Diary</a>
+      <a href="/chatbot" class="nav-btn">Chat</a>
+      <a href="/music"   class="nav-btn">Music</a>
+      <a href="/voice"   class="nav-btn">Voice</a>
+      <a href="games/manokart_games_hub.html"   class="nav-btn">Games</a>
+      <a href="/clinical" class="nav-btn">Check-in</a>
+      <a href="/therapists" class="nav-btn active">Therapists</a>
+      <a href="/profile" class="nav-btn">Profile</a>
+      <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
+    </nav>
+  </div>
+
+  <header class="header-section">
+    <h1>Connect with <em>Professional</em> Support</h1>
+    <p>Find licensed therapists, counselors, and psychiatrists dedicated to your mental well-being.</p>
+  </header>
+
+  <!-- Filter & Search Section -->
+  <section class="filter-panel">
+    <div class="search-row">
+      <input type="text" id="search-input" class="search-control" placeholder="Search by name, location, keyword, or bio..." oninput="handleFilterChange()"/>
+    </div>
+    <div class="spec-pills">
+      <span class="spec-label">Specialties:</span>
+      <button class="spec-pill active" onclick="filterSpecialty(this, '')">All</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'cbt')">CBT</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'anxiety')">Anxiety</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'depression')">Depression</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'trauma')">Trauma Recovery</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'adhd')">ADHD</button>
+      <button class="spec-pill" onclick="filterSpecialty(this, 'relationship')">Relationship</button>
+    </div>
+  </section>
+
+  <!-- Therapist Listing Grid -->
+  <section class="directory-grid" id="directory-grid">
+    <!-- Populated by JS -->
+    <div style="text-align:center; padding: 40px; grid-column: 1/-1; color: var(--hint)">Loading professional directory...</div>
+  </section>
+
+  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+</div>
+
+<!-- Appointment Modal -->
+<div class="modal-backdrop" id="booking-modal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-header">
+      <h3 class="modal-title">Request Session</h3>
+      <p class="modal-subtitle" id="modal-therapist-name">with Dr. Aarav Mehta</p>
+    </div>
+    <form id="booking-form" onsubmit="submitBooking(event)">
+      <input type="hidden" id="form-therapist-id"/>
+      
+      <div class="form-group">
+        <label for="booking-date">Date</label>
+        <input type="date" id="booking-date" class="form-control" required/>
+      </div>
+      
+      <div class="form-group">
+        <label for="booking-time">Time Slot</label>
+        <select id="booking-time" class="form-control" required>
+          <option value="">Select a slot...</option>
+          <option value="09:00 AM">09:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="02:00 PM">02:00 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+          <option value="04:00 PM">04:00 PM</option>
+          <option value="05:00 PM">05:00 PM</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="booking-notes">Reason for visit / Message (Optional)</label>
+        <textarea id="booking-notes" class="form-control" rows="3" placeholder="Briefly describe what you'd like to discuss..."></textarea>
+      </div>
+      
+      <button type="submit" class="btn-submit" id="btn-submit-booking">Send Booking Request</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast">Booking successful!</div>
+
+<script>
+  let therapists = [];
+  let selectedSpecialty = '';
+  
+  // Set minimum date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('booking-date').min = tomorrow.toISOString().split('T')[0];
+
+  // Toast notifier
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Fetch therapists
+  function loadTherapists(search = '', specialty = '') {
+    const grid = document.getElementById('directory-grid');
+    grid.innerHTML = '<div style="text-align:center; padding: 40px; grid-column: 1/-1; color: var(--hint)">Loading directory...</div>';
+
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (specialty) params.append('specialization', specialty);
+
+    fetch(`/api/therapists?${params.toString()}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          therapists = data.therapists;
+          renderTherapists();
+        } else {
+          grid.innerHTML = '<div class="empty-state">Failed to load directory. Please refresh.</div>';
+        }
+      })
+      .catch(() => {
+        grid.innerHTML = '<div class="empty-state">Network error loading directory.</div>';
+      });
+  }
+
+  // Render cards
+  function renderTherapists() {
+    const grid = document.getElementById('directory-grid');
+    grid.innerHTML = '';
+
+    if (therapists.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <p style="font-size: 1.1rem; font-weight: 500">No therapists match your search criteria.</p>
+          <p style="font-size: .85rem; color: var(--hint); margin-top:4px">Try adjusting your filters or search keywords.</p>
+        </div>
+      `;
+      return;
+    }
+
+    therapists.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'therapist-card';
+      
+      const specTags = t.specialization.split(',').map(s => `<span class="tag">${s.trim()}</span>`).join('');
+      
+      // Determine profile emoji based on name or style
+      let emoji = '🧘';
+      if (t.name.includes('Sen') || t.name.includes('Kapoor')) emoji = '🌸';
+      else if (t.name.includes('Nair')) emoji = '🌻';
+      else if (t.name.includes('Mehta')) emoji = '🌿';
+      else if (t.name.includes('Deshmukh')) emoji = '🕯️';
+
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="avatar">${emoji}</div>
+          <div class="t-info">
+            <h3 class="t-name">${t.name}</h3>
+            <div class="t-title">${t.title}</div>
+            <div class="t-meta">
+              <span class="rating-star">★ ${t.rating.toFixed(1)}</span>
+              <span>•</span>
+              <span>${t.experience} yrs exp</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="t-specialization">
+          ${specTags}
+        </div>
+        
+        <p class="t-bio">${t.bio}</p>
+        
+        <div class="t-details">
+          <div class="detail-item">
+            <span class="detail-lbl">Consultation Fee</span>
+            <span class="detail-val">₹${t.fees}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-lbl">Availability</span>
+            <span class="detail-val">${t.availability}</span>
+          </div>
+          <div class="detail-item" style="grid-column: 1 / -1; margin-top:4px">
+            <span class="detail-lbl">Clinic / Location</span>
+            <span class="detail-val">${t.location}</span>
+          </div>
+        </div>
+        
+        <button class="btn-book" onclick="openBookingModal(${t.id}, '${t.name}')">Book Appointment Request</button>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // Handle Search changes
+  let searchTimeout;
+  function handleFilterChange() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const query = document.getElementById('search-input').value.trim();
+      loadTherapists(query, selectedSpecialty);
+    }, 300);
+  }
+
+  // Handle specialty filters
+  function filterSpecialty(btn, spec) {
+    document.querySelectorAll('.spec-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    selectedSpecialty = spec;
+    
+    const query = document.getElementById('search-input').value.trim();
+    loadTherapists(query, selectedSpecialty);
+  }
+
+  // Modal actions
+  function openBookingModal(id, name) {
+    document.getElementById('form-therapist-id').value = id;
+    document.getElementById('modal-therapist-name').textContent = `with ${name}`;
+    document.getElementById('booking-modal').style.display = 'flex';
+  }
+
+  function closeModal(e) {
+    if (e && e.target !== document.getElementById('booking-modal') && e.target.className !== 'modal-close') return;
+    document.getElementById('booking-modal').style.display = 'none';
+    document.getElementById('booking-form').reset();
+  }
+
+  // Submit appointment request
+  function submitBooking(e) {
+    e.preventDefault();
+    const id = document.getElementById('form-therapist-id').value;
+    const date = document.getElementById('booking-date').value;
+    const time = document.getElementById('booking-time').value;
+    const notes = document.getElementById('booking-notes').value.trim();
+
+    const btn = document.getElementById('btn-submit-booking');
+    btn.textContent = 'Submitting Request...';
+    btn.disabled = true;
+
+    fetch('/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        therapist_id: id,
+        date: date,
+        time: time,
+        notes: notes
+      })
+    })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      if (ok && data.ok) {
+        showToast('Appointment request sent successfully! 🌿');
+        closeModal();
+      } else {
+        showToast(data.error || 'Failed to send request');
+      }
+    })
+    .catch(() => {
+      showToast('Network error, please check connection.');
+    })
+    .finally(() => {
+      btn.textContent = 'Send Booking Request';
+      btn.disabled = false;
+    });
+  }
+
+  // Initial load
+  window.onload = () => {
+    loadTherapists();
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ManoKart — Mood Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
+      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
+      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
+      --card-border:rgba(93,202,165,.18);
+    }
+    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(147,130,220,.13) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,251,242,.8) 0%,transparent 60%);pointer-events:none}
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.3;z-index:0;animation:drift 12s ease-in-out infinite alternate}
+    .orb1{width:300px;height:300px;background:#c4b5fd;top:-60px;left:-60px}
+    .orb2{width:220px;height:220px;background:#f4c0d1;top:40%;right:-50px;animation-delay:-4s}
+    .orb3{width:180px;height:180px;background:#fac775;bottom:10%;left:25%;animation-delay:-8s}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+    .page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 28px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0;flex-wrap:wrap;gap:10px}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
+    .back{color:var(--sage-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+    .back:hover{color:var(--sage)}
+    h1.page-title{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--ink);letter-spacing:-1px;margin:32px 0 6px}
+    h1.page-title em{color:#7C3AED;font-style:italic}
+    .page-sub{font-size:1rem;color:var(--muted);font-weight:300;margin-bottom:32px}
+    /* Mood selector */
+    .mood-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+    .mood-btn{padding:10px 20px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .22s;backdrop-filter:blur(8px);display:flex;align-items:center;gap:8px}
+    .mood-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    .mood-btn.active{background:linear-gradient(135deg,#7C3AED,#a78bfa);color:white;border-color:#7C3AED;box-shadow:0 4px 20px rgba(124,58,237,.25)}
+    .mood-btn .emoji{font-size:1.2rem}
+    /* Language selector */
+    .lang-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;border-bottom:1.5px solid rgba(93,202,165,.12);padding-bottom:16px}
+    .lang-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.6);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .22s;backdrop-filter:blur(8px);display:flex;align-items:center;gap:6px}
+    .lang-btn:hover{transform:translateY(-1.5px);box-shadow:0 4px 12px rgba(0,0,0,.04)}
+    .lang-btn.active{background:linear-gradient(135deg,#0F6E56,#1D9E75);color:white;border-color:#0F6E56;box-shadow:0 4px 15px rgba(15,110,86,.2)}
+    /* Playlist section */
+    .section-label{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--ink);margin:28px 0 16px;letter-spacing:-.3px}
+    .playlist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+    .playlist-card{background:rgba(255,255,255,.8);border:1px solid var(--card-border);border-radius:20px;padding:20px;backdrop-filter:blur(8px);transition:all .22s;cursor:pointer;position:relative;overflow:hidden}
+    .playlist-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(124,58,237,.1);border-color:rgba(124,58,237,.3)}
+    .playlist-card h3{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:4px}
+    .playlist-card p{font-size:.82rem;color:var(--hint);line-height:1.5;margin-bottom:12px}
+    .playlist-card .platform-tag{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.03em}
+    .platform-tag.spotify{background:rgba(30,215,96,.12);color:#1DB954}
+    .platform-tag.youtube{background:rgba(255,0,0,.08);color:#FF0000}
+    .embed-wrap{border-radius:12px;overflow:hidden;margin-top:12px;background:#f0f0f0;min-height:80px}
+    .embed-wrap iframe{width:100%;border:none;border-radius:12px}
+    .yt-links{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+    .yt-link{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:1px solid var(--card-border);background:rgba(255,255,255,.7);text-decoration:none;color:var(--ink);transition:all .2s;font-size:.9rem}
+    .yt-link:hover{background:rgba(255,0,0,.04);border-color:rgba(255,0,0,.2);transform:translateX(4px)}
+    .yt-link .yt-icon{font-size:1.4rem;flex-shrink:0}
+    .yt-link .yt-title{font-weight:500}
+    .yt-link .yt-desc{font-size:.78rem;color:var(--hint)}
+    .auto-detect{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:99px;padding:8px 18px;font-size:.82rem;color:#7C3AED;font-weight:500;margin-bottom:20px;animation:fadeUp .5s ease}
+    .auto-detect .pulse{width:8px;height:8px;background:#7C3AED;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .5s ease}
+    footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
+    footer span{color:var(--sage-light)}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+  <div class="topbar">
+    <a href="/" class="logo">🌿 ManoKart</a>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <a href="/clinical" class="back" style="color:var(--sage); font-weight:500;">📋 Check-in</a>
+      <a href="/profile" class="back" style="color:var(--sage); font-weight:500;">👤 Profile</a>
+      <a href="/" class="back">← Back to hub</a>
+    </div>
+  </div>
+
+  <h1 class="page-title fade-up">🎵 Mood <em>Music</em></h1>
+  <p class="page-sub fade-up">Let music match your mood — curated playlists to help you feel, heal, and unwind.</p>
+
+  <div id="auto-detect-banner"></div>
+
+  <div class="mood-grid fade-up" id="mood-grid"></div>
+
+  <!-- Language Filter -->
+  <div class="lang-grid fade-up" id="lang-grid">
+    <button class="lang-btn active" id="lang-all" onclick="selectLanguage('all')">🌐 All Languages</button>
+    <button class="lang-btn" id="lang-english" onclick="selectLanguage('english')">🇬🇧 English & Global</button>
+    <button class="lang-btn" id="lang-hindi" onclick="selectLanguage('hindi')">🇮🇳 Hindi & Bollywood</button>
+  </div>
+
+  <div id="playlist-content"></div>
+
+  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+</div>
+
+<script>
+const MOODS = [
+  { key:'anxious',  emoji:'😰', label:'Anxious',  color:'#7C3AED' },
+  { key:'sad',      emoji:'🌧️', label:'Sad',      color:'#378ADD' },
+  { key:'stressed', emoji:'😤', label:'Stressed', color:'#E74C3C' },
+  { key:'angry',    emoji:'🔥', label:'Angry',    color:'#D35400' },
+  { key:'calm',     emoji:'🌿', label:'Calm',     color:'#1D9E75' },
+  { key:'happy',    emoji:'☀️', label:'Happy',    color:'#EF9F27' },
+  { key:'neutral',  emoji:'🙂', label:'Neutral',  color:'#888780' },
+  { key:'lonely',   emoji:'🌙', label:'Lonely',   color:'#6C5CE7' },
+];
+
+const PLAYLISTS = {
+  anxious: {
+    title: "Calming & Grounding",
+    spotify: [
+      { name:"Peaceful Piano", desc:"Gentle piano to quiet anxious thoughts", uri:"37i9dQZF1DX4sWSpwq3LiO", height:152, lang:"english" },
+      { name:"Calm Vibes", desc:"Ambient soundscapes for deep relaxation", uri:"37i9dQZF1DX3Oj1hKhQRg0", height:152, lang:"english" },
+      { name:"Bollywood Acoustic", desc:"Stripped-down, soulful Bollywood tunes for peace of mind", uri:"37i9dQZF1DWSwxyU5zGZYe", height:152, lang:"hindi" },
+      { name:"Hindi Lofi Chill", desc:"Soft Bollywood lofi beats to soothe an anxious mind", uri:"2dVjtAQEhkPPoR768Y85as", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"3-Hour Anxiety Relief Music", desc:"Calming frequencies for peace of mind", url:"https://music.youtube.com/search?q=anxiety+relief+calming+music", lang:"english" },
+      { title:"Nature Sounds for Anxiety", desc:"Forest rain, ocean waves & birdsong", url:"https://music.youtube.com/search?q=nature+sounds+anxiety+relief", lang:"english" },
+      { title:"Hindi Peaceful Flute Music", desc:"Indian classical flute for anxiety relief and grounding", url:"https://music.youtube.com/search?q=hindi+peaceful+flute+music", lang:"hindi" },
+      { title:"Bollywood Slowed Reverb Chill Mix", desc:"Calming slowed and reverb Hindi songs for deep breathing", url:"https://music.youtube.com/search?q=bollywood+slowed+reverb+chill+mix", lang:"hindi" },
+    ]
+  },
+  sad: {
+    title: "Gentle Comfort",
+    spotify: [
+      { name:"Sad Songs", desc:"Sometimes you need to feel it to heal it", uri:"37i9dQZF1DX7qK8ma5wgG1", height:152, lang:"english" },
+      { name:"Life Sucks", desc:"When you need music that understands", uri:"37i9dQZF1DX3YSRoSdA634", height:152, lang:"english" },
+      { name:"Hindi Sad Songs", desc:"Emotional and cathartic Hindi tracks to let feelings flow", uri:"4m2fG85s2O4u46YVp8lK0m", height:152, lang:"hindi" },
+      { name:"Filmi Ghazals", desc:"Soulful Urdu ghazals and classic film songs", uri:"37i9dQZF1DX621LhR06P9m", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Healing Sad Music", desc:"Instrumental pieces for emotional release", url:"https://music.youtube.com/search?q=healing+sad+instrumental+music", lang:"english" },
+      { title:"Comfort Songs Playlist", desc:"Songs that feel like a warm hug", url:"https://music.youtube.com/search?q=comfort+songs+when+sad", lang:"english" },
+      { title:"Heartbroken Arijit Singh Songs", desc:"Soul-stirring sad songs to help you release pain", url:"https://music.youtube.com/search?q=heartbroken+arijit+singh+songs", lang:"hindi" },
+      { title:"Soulful Sad Ghazals", desc:"Nostalgic and emotional ghazals of Jagjit Singh", url:"https://music.youtube.com/search?q=soulful+sad+ghazals+jagjit+singh", lang:"hindi" },
+    ]
+  },
+  stressed: {
+    title: "Stress Relief",
+    spotify: [
+      { name:"Stress Relief", desc:"Unwind and release tension", uri:"37i9dQZF1DX1tuUkMEdloZ", height:152, lang:"english" },
+      { name:"Deep Focus", desc:"Music for concentration and calm", uri:"37i9dQZF1DWZeKCadgRdKQ", height:152, lang:"english" },
+      { name:"Hindi Chill Vibes", desc:"Chill and acoustic Bollywood songs to release tension", uri:"7AWh76kNnD02RzHFJ4JDyI", height:152, lang:"hindi" },
+      { name:"Bollywood Acoustic", desc:"Gentle acoustic tones to soothe your senses", uri:"37i9dQZF1DWSwxyU5zGZYe", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Stress Relief Meditation", desc:"Guided soundscapes for unwinding", url:"https://music.youtube.com/search?q=stress+relief+meditation+music", lang:"english" },
+      { title:"Lo-fi Study Beats", desc:"Gentle beats for a calmer mind", url:"https://music.youtube.com/search?q=lofi+study+beats+stress+relief", lang:"english" },
+      { title:"Indian Classical Sitar & Flute", desc:"Meditative classical strings and wind for stress relief", url:"https://music.youtube.com/search?q=indian+classical+sitar+flute+meditation", lang:"hindi" },
+      { title:"Lo-fi Bollywood Chill Beats", desc:"Slowed lofi versions of serene Bollywood favorites", url:"https://music.youtube.com/search?q=lofi+bollywood+chill+beats", lang:"hindi" },
+    ]
+  },
+  angry: {
+    title: "Release & Channel",
+    spotify: [
+      { name:"Release Rage", desc:"Let it out through powerful music", uri:"37i9dQZF1DX1s9knjP51Oa", height:152, lang:"english" },
+      { name:"Walk It Off", desc:"Moving beats to burn off frustration", uri:"37i9dQZF1DX7KNKjOK0o75", height:152, lang:"english" },
+      { name:"Hot Hits Hindi", desc:"High energy, fast-paced Bollywood tracks to sweat it out", uri:"37i9dQZF1DWXLeA8Omikj7", height:152, lang:"hindi" },
+      { name:"Hot Hits Punjabi", desc:"High-voltage Punjabi bangers to channel your energy", uri:"37i9dQZF1DX0AQ7rqJ9Nu7", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Anger Release Music", desc:"Intense tracks for cathartic release", url:"https://music.youtube.com/search?q=anger+release+cathartic+music", lang:"english" },
+      { title:"Workout Energy Mix", desc:"Channel anger into productive energy", url:"https://music.youtube.com/search?q=intense+workout+energy+music", lang:"english" },
+      { title:"High Energy Punjabi Gym Hits", desc:"Pumping Punjabi tracks for working off stress and anger", url:"https://music.youtube.com/search?q=high+energy+punjabi+gym+hits", lang:"hindi" },
+      { title:"Powerful Bollywood Rock & Rap", desc:"Intense, hard-hitting Hindi rock and rap tracks", url:"https://music.youtube.com/search?q=powerful+bollywood+rock+rap+songs", lang:"hindi" },
+    ]
+  },
+  calm: {
+    title: "Sustain Your Peace",
+    spotify: [
+      { name:"Peaceful Meditation", desc:"Maintain and deepen your calm", uri:"37i9dQZF1DX9uKNf5jGX6m", height:152, lang:"english" },
+      { name:"Ambient Relaxation", desc:"Floating soundscapes", uri:"37i9dQZF1DX3Oj1hKhQRg0", height:152, lang:"english" },
+      { name:"Indie India", desc:"Beautiful independent and non-film tunes for peaceful listening", uri:"37i9dQZF1DWY2284zR0PzP", height:152, lang:"hindi" },
+      { name:"Lofi Vibes India", desc:"Soft ambient beats and lofi Hindi songs", uri:"508FujAJBn0V3NypawFM8p", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Zen Garden Sounds", desc:"Japanese garden ambience for serenity", url:"https://music.youtube.com/search?q=zen+garden+meditation+sounds", lang:"english" },
+      { title:"Spa Music", desc:"Gentle flowing melodies", url:"https://music.youtube.com/search?q=spa+relaxation+meditation+music", lang:"english" },
+      { title:"Morning Ragas Sitar Instrumental", desc:"Tranquil, meditative morning classical ragas", url:"https://music.youtube.com/search?q=morning+ragas+sitar+instrumental", lang:"hindi" },
+      { title:"Peaceful Acoustic Hindi Covers", desc:"Soft unplugged guitar covers of calming Hindi tunes", url:"https://music.youtube.com/search?q=peaceful+acoustic+hindi+covers", lang:"hindi" },
+    ]
+  },
+  happy: {
+    title: "Keep the Joy Going",
+    spotify: [
+      { name:"Happy Hits!", desc:"Songs that make you smile wider", uri:"37i9dQZF1DXdPec7aLTmlC", height:152, lang:"english" },
+      { name:"Good Vibes", desc:"Feel-good energy and sunshine", uri:"37i9dQZF1DX9XIFQuFvzM4", height:152, lang:"english" },
+      { name:"Bollywood Butter", desc:"Sweet, feel-good Bollywood melodies to brighten your day", uri:"37i9dQZF1DX0XUfTFmNBRM", height:152, lang:"hindi" },
+      { name:"Indie India", desc:"Happy, refreshing indie tunes from local Indian artists", uri:"37i9dQZF1DWY2284zR0PzP", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Feel Good Playlist", desc:"Upbeat songs to amplify your joy", url:"https://music.youtube.com/search?q=feel+good+happy+songs+playlist", lang:"english" },
+      { title:"Dance Party Mix", desc:"Move your body, celebrate life!", url:"https://music.youtube.com/search?q=dance+party+happy+upbeat+mix", lang:"english" },
+      { title:"Upbeat Bollywood Dance Playlist", desc:"High-energy tracks to keep the happiness flowing", url:"https://music.youtube.com/search?q=upbeat+bollywood+dance+playlist", lang:"hindi" },
+      { title:"Happy Hindi Indie Pop Songs", desc:"Joyful and bright indie tunes by modern Indian creators", url:"https://music.youtube.com/search?q=happy+hindi+indie+pop+songs", lang:"hindi" },
+    ]
+  },
+  neutral: {
+    title: "Discover Your Mood",
+    spotify: [
+      { name:"Chill Hits", desc:"Easy listening for a mellow moment", uri:"37i9dQZF1DX4WYpdgoIcn6", height:152, lang:"english" },
+      { name:"Coffee Table Jazz", desc:"Smooth jazz for an easy afternoon", uri:"37i9dQZF1DX4wta20PHgwo", height:152, lang:"english" },
+      { name:"Indie India", desc:"Mellow Indian indie tunes for a relaxed mood", uri:"37i9dQZF1DWY2284zR0PzP", height:152, lang:"hindi" },
+      { name:"Hindi Chill Vibes", desc:"Easy listening and acoustic Bollywood favorites", uri:"7AWh76kNnD02RzHFJ4JDyI", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Chill Background Music", desc:"Easy-going tunes for any moment", url:"https://music.youtube.com/search?q=chill+background+music+relaxing", lang:"english" },
+      { title:"Acoustic Covers", desc:"Soft acoustic versions of popular songs", url:"https://music.youtube.com/search?q=acoustic+covers+relaxing+chill", lang:"english" },
+      { title:"Chill Coffee Shop Hindi Unplugged", desc:"Relaxed acoustic covers in Hindi for general background chill", url:"https://music.youtube.com/search?q=chill+coffee+shop+hindi+unplugged", lang:"hindi" },
+      { title:"Smooth Hindi Jazz & Blues", desc:"Unique jazz-infused renditions of gentle Hindi classics", url:"https://music.youtube.com/search?q=smooth+hindi+jazz+blues", lang:"hindi" },
+    ]
+  },
+  lonely: {
+    title: "You're Not Alone",
+    spotify: [
+      { name:"Songs for When You Feel Alone", desc:"Music that understands loneliness", uri:"37i9dQZF1DX2pSTOxoPbx9", height:152, lang:"english" },
+      { name:"Late Night Vibes", desc:"Warm tones for quiet nights", uri:"37i9dQZF1DXbcPC6Vvqudd", height:152, lang:"english" },
+      { name:"Filmi Ghazals", desc:"Soul-stirring poetry and melodies that hold you close", uri:"37i9dQZF1DX621LhR06P9m", height:152, lang:"hindi" },
+      { name:"Hindi Lofi Chill", desc:"Soft, comforting late-night lofi companion", uri:"2dVjtAQEhkPPoR768Y85as", height:152, lang:"hindi" },
+    ],
+    youtube: [
+      { title:"Comforting Night Music", desc:"Warm instrumental for lonely evenings", url:"https://music.youtube.com/search?q=comforting+night+music+lonely", lang:"english" },
+      { title:"You're Not Alone Playlist", desc:"Songs reminding you someone cares", url:"https://music.youtube.com/search?q=you+are+not+alone+comfort+songs", lang:"english" },
+      { title:"Soulful Bollywood Late Night Playlist", desc:"Warm and consoling songs for quiet late hours", url:"https://music.youtube.com/search?q=soulful+bollywood+late+night+playlist", lang:"hindi" },
+      { title:"Sad Ghazals & Broken Heart Songs", desc:"Poetic reflections of loneliness and heartbreak", url:"https://music.youtube.com/search?q=sad+ghazals+broken+heart+songs", lang:"hindi" },
+    ]
+  }
+};
+
+let currentMood = null;
+let currentLang = 'all';
+
+// Build mood buttons
+const grid = document.getElementById('mood-grid');
+MOODS.forEach(m => {
+  const btn = document.createElement('button');
+  btn.className = 'mood-btn';
+  btn.id = 'mood-' + m.key;
+  btn.innerHTML = `<span class="emoji">${m.emoji}</span> ${m.label}`;
+  btn.onclick = () => selectMood(m.key);
+  grid.appendChild(btn);
+});
+
+function selectMood(key) {
+  currentMood = key;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('mood-' + key);
+  if (btn) btn.classList.add('active');
+  renderPlaylists(key);
+}
+
+function selectLanguage(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById('lang-' + lang);
+  if (activeBtn) activeBtn.classList.add('active');
+  if (currentMood) renderPlaylists(currentMood);
+}
+
+function renderPlaylists(mood) {
+  const data = PLAYLISTS[mood];
+  if (!data) return;
+  const container = document.getElementById('playlist-content');
+
+  // Filter based on selected language
+  const filteredSpotify = data.spotify.filter(pl => currentLang === 'all' || pl.lang === currentLang);
+  const filteredYoutube = data.youtube.filter(yt => currentLang === 'all' || yt.lang === currentLang);
+
+  let html = '';
+
+  if (filteredSpotify.length > 0) {
+    html += `<h2 class="section-label fade-up">🎧 ${data.title}</h2>`;
+    html += '<div class="playlist-grid fade-up">';
+    filteredSpotify.forEach(pl => {
+      html += `
+        <div class="playlist-card">
+          <span class="platform-tag spotify">🟢 Spotify</span>
+          <h3>${pl.name}</h3>
+          <p>${pl.desc}</p>
+          <div class="embed-wrap">
+            <iframe src="https://open.spotify.com/embed/playlist/${pl.uri}?theme=0" height="${pl.height}" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  }
+
+  if (filteredYoutube.length > 0) {
+    html += '<h2 class="section-label fade-up">▶️ YouTube Music</h2>';
+    html += '<div class="yt-links fade-up">';
+    filteredYoutube.forEach(yt => {
+      html += `
+        <a class="yt-link" href="${yt.url}" target="_blank" rel="noopener">
+          <span class="yt-icon">▶️</span>
+          <div>
+            <div class="yt-title">${yt.title}</div>
+            <div class="yt-desc">${yt.desc}</div>
+          </div>
+        </a>`;
+    });
+    html += '</div>';
+  }
+
+  if (filteredSpotify.length === 0 && filteredYoutube.length === 0) {
+    html += `
+      <div class="fade-up" style="color:var(--muted); font-size:0.95rem; margin-top:20px; text-align:center; padding:40px; border-radius:20px; border:1px dashed var(--card-border); background:rgba(255,255,255,0.4);">
+        No playlists available in the selected language for this mood. Try switching the language filter! 🎵
+      </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+// Auto-detect mood from diary/analytics
+fetch('/api/analytics')
+  .then(r => r.json())
+  .then(d => {
+    const moodMap = {1:'anxious', 2:'sad', 3:'calm', 4:'happy', 5:'happy'};
+    if (d.avg_mood) {
+      const detected = moodMap[Math.round(d.avg_mood)] || 'neutral';
+      const banner = document.getElementById('auto-detect-banner');
+      const moodObj = MOODS.find(m => m.key === detected);
+      banner.innerHTML = `<div class="auto-detect"><span class="pulse"></span> Detected mood from your diary: ${moodObj ? moodObj.emoji : ''} <strong>${detected}</strong></div>`;
+      selectMood(detected);
+    } else {
+      selectMood('calm');
+    }
+  })
+  .catch(() => selectMood('calm'));
+</script>
+</body>
+</html>

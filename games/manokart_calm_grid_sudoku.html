@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManoKart — Calm Grid Sudoku</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:#0a0f0d;color:#e8ede4;min-height:100vh}
+.gbar{background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.gbar a{color:#9aaa90;text-decoration:none;font-size:14px;transition:color .2s}
+.gbar a:hover{color:#4ade80}
+.gbar .t{flex:1;font-weight:600;font-size:15px;color:#e8ede4;text-align:center}
+.gbar .xb{font-size:12px;color:#4ade80;background:rgba(74,222,128,.12);padding:4px 12px;border-radius:20px}
+#cg{padding:20px;max-width:680px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.gn{font-size:16px;font-weight:500}
+.thr{display:flex;gap:6px}
+.thd{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.thd.a{border-color:#e8ede4;transform:scale(1.15)}
+.mid{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.gw{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px;flex-shrink:0}
+table{border-collapse:collapse}
+td{width:42px;height:42px;text-align:center;vertical-align:middle;cursor:pointer;font-size:16px;font-weight:500;transition:background .15s;position:relative;border:.5px solid rgba(255,255,255,.08)}
+td.tr{border-right:2px solid rgba(255,255,255,.2)}
+td.tb{border-bottom:2px solid rgba(255,255,255,.2)}
+td.gv{cursor:default;color:#e8ede4}
+td.ed{color:#4ade80}
+td.sel{outline:2px solid #4ade80;outline-offset:-2px;z-index:2}
+td.err{color:#f87171}
+.rc{flex:1;min-width:170px;display:flex;flex-direction:column;gap:10px}
+.pnl{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px}
+.pt{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#5a6b54;margin-bottom:10px}
+.np{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.nb{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:15px;font-weight:500;cursor:pointer;color:#e8ede4;transition:all .15s;font-family:inherit}
+.nb:hover{background:rgba(74,222,128,.12)}
+.eb{grid-column:1/-1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;font-size:12px;cursor:pointer;color:#9aaa90;font-family:inherit}
+.ab{width:100%;padding:9px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:transparent;font-size:13px;cursor:pointer;color:#e8ede4;font-family:inherit;margin-bottom:6px;transition:all .15s}
+.ab:hover{background:rgba(255,255,255,.06)}
+.sr{display:flex;gap:8px}
+.sc{flex:1;background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center}
+.sv{font-size:18px;font-weight:500}
+.sl{font-size:10px;color:#5a6b54;margin-top:2px}
+.aff{font-size:12px;color:#4ade80;line-height:1.6;font-style:italic;min-height:36px;opacity:.8}
+.wo{display:none;position:fixed;inset:0;background:rgba(10,15,13,.94);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(8px)}
+.wo.show{display:flex}
+.wt{font-size:2rem;font-weight:700;color:#4ade80}
+.ws{font-size:1rem;color:#9aaa90}
+.wsc{font-size:3rem;font-weight:700;color:#fbbf24}
+.wxp{font-size:1.1rem;color:#5eead4}
+.wbd{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.wbg{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;color:#fbbf24}
+.wbs{display:flex;gap:10px;margin-top:12px}
+.wb{padding:12px 28px;border-radius:99px;border:none;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.wb.p{background:#4ade80;color:#0a0f0d}.wb.p:hover{background:#22c55e}
+.wb.s{background:rgba(255,255,255,.08);color:#e8ede4;border:1px solid rgba(255,255,255,.15)}.wb.s:hover{background:rgba(255,255,255,.14)}
+</style>
+</head>
+<body>
+<div class="gbar">
+  <a href="manokart_games_hub.html">← Hub</a>
+  <div class="t">🔢 Calm Grid Sudoku</div>
+  <div class="xb" id="lxp">0 XP</div>
+</div>
+<div id="cg">
+  <div class="top">
+    <div class="gn">Calm Grid</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="thr" id="thr"></div>
+      <select id="dif" style="font-size:12px;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#e8ede4;font-family:inherit">
+        <option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
+      </select>
+    </div>
+  </div>
+  <div class="mid">
+    <div class="gw"><table id="st"></table></div>
+    <div class="rc">
+      <div class="pnl"><div class="pt">Numbers</div><div class="np" id="np2"></div></div>
+      <div class="pnl"><div class="pt">Tools</div>
+        <button class="ab" onclick="getHint()">💡 Gentle hint</button>
+        <button class="ab" onclick="newGame()">🔄 New puzzle</button>
+        <div class="sr"><div class="sc"><div class="sv" id="mk">0</div><div class="sl">mistakes</div></div><div class="sc"><div class="sv" id="hl">3</div><div class="sl">hints left</div></div></div>
+      </div>
+      <div class="pnl"><div class="pt">Mindful moment</div><div class="aff" id="aff">Take your time. There is no rush here.</div></div>
+    </div>
+  </div>
+</div>
+<div class="wo" id="wo">
+  <div class="wt">🧩 Puzzle Complete!</div>
+  <div class="ws">Your mind is clear and strong.</div>
+  <div class="wsc" id="wsc">0</div>
+  <div class="wxp" id="wxp">+0 XP</div>
+  <div class="wbd" id="wbd"></div>
+  <div class="wbs">
+    <button class="wb p" onclick="newGame();document.getElementById('wo').classList.remove('show')">Play Again</button>
+    <a href="manokart_games_hub.html" class="wb s">Back to Hub</a>
+  </div>
+</div>
+<script src="gameEngine.js"></script>
+<script>
+const TH=[{n:'Emerald',bg:'rgba(74,222,128,.06)',s:'rgba(74,222,128,.12)',d:'#4ade80'},{n:'Lavender',bg:'rgba(167,139,250,.06)',s:'rgba(167,139,250,.1)',d:'#a78bfa'},{n:'Coral',bg:'rgba(251,146,60,.06)',s:'rgba(251,146,60,.08)',d:'#fb923c'},{n:'Sky',bg:'rgba(56,189,248,.06)',s:'rgba(56,189,248,.1)',d:'#38bdf8'}];
+const AF=['Take your time. There is no rush here.','Each correct number is a small victory.','Focus is a form of self-care.','Puzzles train the mind gently.','You are doing wonderfully.','One step at a time.','A calm mind sees clearly.'];
+let ct=0,sR=-1,sC=-1,mk=0,hl=3,st=Date.now();
+let pz,sol,gv,er;
+const B=[[5,3,0,0,7,0,0,0,0],[6,0,0,1,9,5,0,0,0],[0,9,8,0,0,0,0,6,0],[8,0,0,0,6,0,0,0,3],[4,0,0,8,0,3,0,0,1],[7,0,0,0,2,0,0,0,6],[0,6,0,0,0,0,2,8,0],[0,0,0,4,1,9,0,0,5],[0,0,0,0,8,0,0,7,9]];
+const S=[[5,3,4,6,7,8,9,1,2],[6,7,2,1,9,5,3,4,8],[1,9,8,3,4,2,5,6,7],[8,5,9,7,6,1,4,2,3],[4,2,6,8,5,3,7,9,1],[7,1,3,9,2,4,8,5,6],[9,6,1,5,3,7,2,8,4],[2,8,7,4,1,9,6,3,5],[3,4,5,2,8,6,1,7,9]];
+
+function newGame(){
+  const d=document.getElementById('dif').value,rm={easy:30,medium:42,hard:52}[d];
+  pz=B.map(r=>[...r]);sol=S;gv=B.map(r=>r.map(v=>v!==0));er=Array(9).fill(null).map(()=>Array(9).fill(false));
+  mk=0;hl=3;sR=-1;sC=-1;st=Date.now();
+  let c=0,t=0;while(c<rm&&t<500){const r=Math.floor(Math.random()*9),cc=Math.floor(Math.random()*9);if(pz[r][cc]!==0){pz[r][cc]=0;gv[r][cc]=false;c++;}t++;}
+  document.getElementById('mk').textContent=0;document.getElementById('hl').textContent=3;rg();sa();
+}
+function rg(){
+  const t=document.getElementById('st'),th=TH[ct];t.style.background=th.bg;t.innerHTML='';
+  for(let r=0;r<9;r++){const tr=document.createElement('tr');for(let c=0;c<9;c++){const td=document.createElement('td');
+    if((c+1)%3===0&&c<8)td.classList.add('tr');if((r+1)%3===0&&r<8)td.classList.add('tb');
+    if(gv[r][c])td.classList.add('gv');else td.classList.add('ed');if(er[r][c])td.classList.add('err');
+    if(r===sR&&c===sC)td.classList.add('sel');else if(sR>=0&&(r===sR||c===sC||(Math.floor(r/3)===Math.floor(sR/3)&&Math.floor(c/3)===Math.floor(sC/3))))td.style.background=th.s;
+    if(pz[r][c])td.textContent=pz[r][c];td.onclick=(()=>{const rr=r,cc=c;return()=>{sR=rr;sC=cc;rg();}})();tr.appendChild(td);}t.appendChild(tr);}
+}
+function en(n){if(sR<0||gv[sR][sC])return;pz[sR][sC]=n;er[sR][sC]=n!==sol[sR][sC];if(er[sR][sC]){mk++;document.getElementById('mk').textContent=mk;}else er[sR][sC]=false;sa();rg();if(cw())ow();}
+function cw(){return pz.every((r,ri)=>r.every((v,ci)=>v===sol[ri][ci]));}
+function ow(){
+  var el=Math.round((Date.now()-st)/1000),d=document.getElementById('dif').value;
+  var db={easy:100,medium:200,hard:350}[d],sc=Math.max(10,db-mk*15-(3-hl)*25+Math.max(0,200-el));
+  var r=GameEngine.saveScore('calm_grid_sudoku',sc);
+  document.getElementById('wsc').textContent=sc+' pts';document.getElementById('wxp').textContent='+'+r.xpEarned+' XP';document.getElementById('lxp').textContent=r.totalXP+' XP';
+  var bd=document.getElementById('wbd');bd.innerHTML='';
+  if(r.leveledUp){var l=document.createElement('div');l.className='wbg';l.textContent='🎉 Level '+r.newLevel+'!';bd.appendChild(l);}
+  r.newBadges.forEach(function(b){var x=document.createElement('div');x.className='wbg';x.textContent=b.icon+' '+b.name;bd.appendChild(x);});
+  document.getElementById('wo').classList.add('show');
+}
+function getHint(){if(hl<=0||sR<0||gv[sR][sC])return;pz[sR][sC]=sol[sR][sC];er[sR][sC]=false;hl--;document.getElementById('hl').textContent=hl;rg();if(cw())ow();}
+function sa(){document.getElementById('aff').textContent=AF[Math.floor(Math.random()*AF.length)];}
+const np=document.getElementById('np2');for(let n=1;n<=9;n++){const b=document.createElement('button');b.className='nb';b.textContent=n;b.onclick=()=>en(n);np.appendChild(b);}
+const eb2=document.createElement('button');eb2.className='eb';eb2.textContent='⌫ Erase';eb2.onclick=()=>{if(sR>=0&&!gv[sR][sC]){pz[sR][sC]=0;er[sR][sC]=false;rg();}};np.appendChild(eb2);
+const tr=document.getElementById('thr');TH.forEach((th,i)=>{const d=document.createElement('div');d.className='thd'+(i===0?' a':'');d.style.background=th.d;d.title=th.n;d.onclick=()=>{ct=i;document.querySelectorAll('.thd').forEach((x,j)=>x.classList.toggle('a',j===i));rg();};tr.appendChild(d);});
+try{document.getElementById('lxp').textContent=GameEngine.getLevelInfo().totalXP+' XP';}catch(e){}
+newGame();
+</script>
+</body>
+</html>

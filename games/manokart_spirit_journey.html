@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ManoKart — Spirit Journey</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Lora:ital,wght@0,500;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #06090f;
+      --water-dark: #060d1a;
+      --water-mid: #091424;
+      --sky-top: #060910;
+      --sky-mid: #0a1228;
+      --text: #c8dcff;
+      --muted: #5a7aa8;
+      --gold: #f0c060;
+      --teal: #5eead4;
+      --border: rgba(120, 170, 240, .12);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    /* ── NAV ── */
+    .gbar {
+      background: rgba(6, 9, 15, .85);
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      padding: 11px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      backdrop-filter: blur(16px)
+    }
+
+    .gbar a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color .2s
+    }
+
+    .gbar a:hover {
+      color: var(--teal)
+    }
+
+    .gbar .t {
+      flex: 1;
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center;
+      color: #b8d4ff
+    }
+
+    .gbar .xb {
+      font-size: 11px;
+      color: var(--teal);
+      background: rgba(94, 234, 212, .08);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600
+    }
+
+    /* ── RIVER SCENE ── */
+    .scene-wrap {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      overflow: hidden
+    }
+
+    canvas#riverCanvas {
+      display: block;
+      width: 100%;
+      height: 260px
+    }
+
+    .scene-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 60%, var(--bg) 100%)
+    }
+
+    /* Peace counter floats on scene */
+    .scene-hud {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      display: flex;
+      gap: 8px
+    }
+
+    .hud-pill {
+      background: rgba(6, 9, 15, .7);
+      border: 1px solid rgba(120, 170, 240, .2);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(8px)
+    }
+
+    .hud-pill.gold {
+      color: var(--gold);
+      border-color: rgba(240, 192, 96, .25)
+    }
+
+    .hud-pill.teal {
+      color: var(--teal);
+      border-color: rgba(94, 234, 212, .2)
+    }
+
+    /* ── MAIN LAYOUT ── */
+    #sj {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 14px 48px
+    }
+
+    /* ── SPIRIT LIST ── */
+    .spirits-label {
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 18px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .spirits-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .spirits-label .count {
+      color: var(--text)
+    }
+
+    .spirit-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none
+    }
+
+    .spirit-row::-webkit-scrollbar {
+      display: none
+    }
+
+    .spirit-chip {
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, .04);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 140px
+    }
+
+    .spirit-chip:hover {
+      border-color: rgba(160, 200, 255, .3);
+      background: rgba(255, 255, 255, .06);
+      transform: translateY(-2px)
+    }
+
+    .spirit-chip.active {
+      border-color: rgba(180, 220, 255, .5);
+      background: rgba(40, 80, 160, .25)
+    }
+
+    .spirit-chip.released {
+      opacity: .35;
+      cursor: default;
+      pointer-events: none
+    }
+
+    .sc-icon {
+      font-size: 22px;
+      line-height: 1
+    }
+
+    .sc-info {
+      flex: 1
+    }
+
+    .sc-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #d8eaff
+    }
+
+    .sc-feel {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    .sc-bar-wrap {
+      height: 3px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden
+    }
+
+    .sc-bar {
+      height: 3px;
+      border-radius: 2px;
+      transition: width .5s
+    }
+
+    .sc-done {
+      font-size: 10px;
+      color: var(--teal);
+      margin-top: 4px
+    }
+
+    /* ── DIALOGUE CARD ── */
+    .dialogue-card {
+      background: rgba(10, 18, 36, .7);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 14px;
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden
+    }
+
+    .dialogue-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(160, 200, 255, .2), transparent)
+    }
+
+    .spirit-identity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .si-icon {
+      font-size: 36px;
+      line-height: 1;
+      filter: drop-shadow(0 0 12px rgba(160, 200, 255, .3))
+    }
+
+    .si-text {}
+
+    .si-name {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-style: italic;
+      color: #d8eaff
+    }
+
+    .si-feel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: .04em
+    }
+
+    .si-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px
+    }
+
+    .si-steps {
+      display: flex;
+      gap: 4px
+    }
+
+    .si-step {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .1);
+      transition: background .4s
+    }
+
+    .si-step.done {
+      background: var(--teal)
+    }
+
+    .si-step.active {
+      background: rgba(255, 255, 255, .35)
+    }
+
+    /* Speech bubble */
+    .speech {
+      background: rgba(20, 40, 80, .6);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      position: relative;
+      border: 1px solid rgba(120, 170, 240, .15)
+    }
+
+    .speech::before {
+      content: '"';
+      position: absolute;
+      top: -4px;
+      left: 12px;
+      font-family: 'Lora', serif;
+      font-size: 28px;
+      color: rgba(160, 200, 255, .2);
+      line-height: 1
+    }
+
+    .speech-text {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.7;
+      color: #d0e4ff;
+      padding-top: 4px
+    }
+
+    /* Choices */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .choice-btn {
+      background: rgba(255, 255, 255, .04);
+      border: 1.5px solid rgba(120, 170, 240, .18);
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-size: 13px;
+      color: #b8d4ff;
+      cursor: pointer;
+      text-align: left;
+      transition: all .18s;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.4
+    }
+
+    .choice-btn:hover {
+      background: rgba(60, 100, 200, .22);
+      border-color: rgba(160, 200, 255, .4);
+      transform: translateX(3px)
+    }
+
+    /* Peace message */
+    .peace-msg {
+      text-align: center;
+      padding: 12px;
+      font-size: 13px;
+      color: rgba(255, 210, 100, .75);
+      font-style: italic
+    }
+
+    /* Release button */
+    .release-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 13px;
+      border-radius: 99px;
+      border: 1px solid rgba(240, 192, 96, .35);
+      background: rgba(180, 120, 20, .18);
+      color: var(--gold);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all .22s;
+      letter-spacing: .03em
+    }
+
+    .release-btn:hover:not(:disabled) {
+      background: rgba(220, 150, 30, .3);
+      border-color: rgba(240, 192, 96, .6);
+      box-shadow: 0 0 24px rgba(240, 192, 96, .15)
+    }
+
+    .release-btn:disabled {
+      opacity: .28;
+      cursor: not-allowed
+    }
+
+    /* No spirit selected */
+    .empty-dialogue {
+      text-align: center;
+      padding: 32px 20px;
+      color: rgba(160, 190, 240, .35)
+    }
+
+    .empty-dialogue .e-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      opacity: .4
+    }
+
+    .empty-dialogue p {
+      font-size: 13px;
+      font-style: italic;
+      line-height: 1.6
+    }
+
+    /* ── LANTERN ROW ── */
+    .lanterns-section {
+      margin-top: 18px;
+      background: rgba(10, 18, 36, .5);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .lanterns-label {
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0
+    }
+
+    .lanterns-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .lantern {
+      font-size: 20px;
+      transition: all .3s;
+      line-height: 1
+    }
+
+    .lantern.lit {
+      filter: drop-shadow(0 0 8px #ffd54f);
+      animation: float-gentle 3s ease-in-out infinite
+    }
+
+    .lantern.dark {
+      opacity: .18;
+      filter: grayscale(1)
+    }
+
+    @keyframes float-gentle {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-4px)
+      }
+    }
+
+    /* ── TOAST ── */
+    .tst {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: rgba(10, 18, 36, .97);
+      border: 1px solid rgba(240, 192, 96, .35);
+      color: #f0d090;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: .83rem;
+      z-index: 999;
+      transition: transform .45s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+      backdrop-filter: blur(12px)
+    }
+
+    .tst.show {
+      transform: translateX(-50%) translateY(0)
+    }
+
+    /* ── LAUNCH ANIMATION ── */
+    @keyframes lanternLaunch {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(-180px) scale(.4);
+        opacity: 0
+      }
+    }
+
+    .launching-lantern {
+      position: fixed;
+      pointer-events: none;
+      font-size: 28px;
+      animation: lanternLaunch 1.6s cubic-bezier(.2, .8, .4, 1) forwards;
+      z-index: 500
+    }
+
+    @media(max-width:600px) {
+      .spirit-chip {
+        min-width: 120px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gbar">
+    <a href="manokart_games_hub.html">← Hub</a>
+    <div class="t">✨ Spirit Journey</div>
+    <div class="xb" id="lxp">0 XP</div>
+  </div>
+
+  <!-- RIVER SCENE -->
+  <div class="scene-wrap">
+    <canvas id="riverCanvas"></canvas>
+    <div class="scene-overlay"></div>
+    <div class="scene-hud">
+      <div class="hud-pill gold">⭐ <span id="ptot">0</span> peace</div>
+      <div class="hud-pill teal">🕊️ <span id="rtot">0</span> released</div>
+    </div>
+  </div>
+
+  <div id="sj">
+    <!-- SPIRITS ABOARD -->
+    <div class="spirits-label">Spirits aboard · <span class="count" id="spiritCount">3 remaining</span></div>
+    <div class="spirit-row" id="spiritRow"></div>
+
+    <!-- DIALOGUE -->
+    <div class="dialogue-card" id="dialogueCard">
+      <div class="empty-dialogue">
+        <div class="e-icon">⛵</div>
+        <p>Your boat drifts on still water.<br>Choose a spirit to begin their journey.</p>
+      </div>
+    </div>
+
+    <!-- LANTERNS -->
+    <div class="lanterns-section">
+      <div class="lanterns-label">Lanterns lit</div>
+      <div class="lanterns-list" id="lanternList"></div>
+    </div>
+  </div>
+
+  <div class="tst" id="tst"></div>
+
+  <script src="gameEngine.js"></script>
+  <script>
+    /* ════════════════════════════════════════════
+       GAME STATE — declared first so all code below
+       can safely reference these variables
+       ════════════════════════════════════════════ */
+    let sel = null, ptot = 0, rtot = 0, lit = 0;
+    const TOTAL_LANTERNS = 3;
+
+    /* ════════════════════════════════════════════
+       RIVER SCENE — animated canvas
+       ════════════════════════════════════════════ */
+    const riverCanvas = document.getElementById('riverCanvas');
+    const rctx = riverCanvas.getContext('2d');
+    let rW, rH, rT = 0;
+
+    // Floating lanterns on water
+    const waterLanterns = [];
+
+    function resizeRiver() {
+      rW = riverCanvas.width = riverCanvas.offsetWidth;
+      rH = riverCanvas.height = 260;
+    }
+
+    function addWaterLantern() {
+      waterLanterns.push({
+        x: Math.random() * rW,
+        y: rH * .62 + Math.random() * 30,
+        speed: .18 + Math.random() * .22,
+        scale: .7 + Math.random() * .5,
+        wobble: Math.random() * Math.PI * 2
+      });
+    }
+
+    function drawRiver() {
+      rctx.clearRect(0, 0, rW, rH);
+
+      // Sky
+      const sky = rctx.createLinearGradient(0, 0, 0, rH * .58);
+      sky.addColorStop(0, '#03050c');
+      sky.addColorStop(1, '#08122a');
+      rctx.fillStyle = sky;
+      rctx.fillRect(0, 0, rW, rH * .58);
+
+      // Stars
+      for (let i = 0; i < 80; i++) {
+        const sx = (Math.sin(i * 137.5) * 0.5 + 0.5) * rW;
+        const sy = (Math.sin(i * 91.3) * 0.5 + 0.5) * rH * .52;
+        const twinkle = .3 + .4 * Math.sin(rT * .8 + i);
+        rctx.fillStyle = `rgba(255,255,255,${twinkle})`;
+        rctx.beginPath();
+        rctx.arc(sx, sy, i % 7 === 0 ? 1.2 : .5, 0, Math.PI * 2);
+        rctx.fill();
+      }
+
+      // Moon
+      const moonX = rW * .78, moonY = rH * .18;
+      const mg = rctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, 48);
+      mg.addColorStop(0, 'rgba(220,235,255,.18)');
+      mg.addColorStop(1, 'rgba(220,235,255,0)');
+      rctx.fillStyle = mg;
+      rctx.beginPath(); rctx.arc(moonX, moonY, 48, 0, Math.PI * 2); rctx.fill();
+      rctx.fillStyle = '#d8eaff';
+      rctx.beginPath(); rctx.arc(moonX, moonY, 16, 0, Math.PI * 2); rctx.fill();
+
+      // Moon reflection on water
+      const mRef = rctx.createLinearGradient(moonX - 10, rH * .58, moonX + 10, rH);
+      mRef.addColorStop(0, 'rgba(180,210,255,.12)');
+      mRef.addColorStop(1, 'rgba(180,210,255,0)');
+      rctx.fillStyle = mRef;
+      rctx.fillRect(moonX - 14, rH * .58, 28, rH * .42);
+
+      // River water
+      const waterY = rH * .58;
+      const wg = rctx.createLinearGradient(0, waterY, 0, rH);
+      wg.addColorStop(0, '#06121e');
+      wg.addColorStop(1, '#030a14');
+      rctx.fillStyle = wg;
+      rctx.fillRect(0, waterY, rW, rH - waterY);
+
+      // Gentle river waves
+      for (let w = 0; w < 4; w++) {
+        rctx.beginPath();
+        const wy = waterY + 12 + w * 22;
+        rctx.moveTo(0, wy);
+        for (let x = 0; x <= rW; x += 8) {
+          rctx.lineTo(x, wy + Math.sin(x * .025 + rT * .4 + w * 1.1) * 3.5);
+        }
+        rctx.strokeStyle = `rgba(80,140,220,${.04 + w * .01})`;
+        rctx.lineWidth = 1.2;
+        rctx.stroke();
+      }
+
+      // Floating lanterns on water
+      rctx.font = '16px serif';
+      waterLanterns.forEach(l => {
+        l.x -= l.speed;
+        if (l.x < -30) l.x = rW + 20;
+        const wobbleY = l.y + Math.sin(rT * .5 + l.wobble) * 2;
+        rctx.save();
+        rctx.globalAlpha = .7;
+        rctx.font = `${14 * l.scale}px serif`;
+        rctx.fillText('🏮', l.x, wobbleY);
+        // Glow under lantern
+        const gl2 = rctx.createRadialGradient(l.x + 8, wobbleY + 4, 0, l.x + 8, wobbleY + 4, 18);
+        gl2.addColorStop(0, 'rgba(255,180,60,.12)');
+        gl2.addColorStop(1, 'rgba(255,180,60,0)');
+        rctx.fillStyle = gl2;
+        rctx.beginPath(); rctx.arc(l.x + 8, wobbleY + 4, 18, 0, Math.PI * 2); rctx.fill();
+        rctx.restore();
+      });
+
+      // Boat
+      const bx = rW * .2;
+      const by = waterY - 2;
+      const rock = Math.sin(rT * .3) * 2;
+
+      rctx.save();
+      rctx.translate(bx, by + rock);
+
+      // Boat hull
+      rctx.beginPath();
+      rctx.moveTo(-38, 0); rctx.quadraticCurveTo(0, 18, 38, 0);
+      rctx.lineTo(30, -4); rctx.quadraticCurveTo(0, 6, -30, -4);
+      rctx.closePath();
+      rctx.fillStyle = '#1a0e06';
+      rctx.fill();
+      rctx.strokeStyle = 'rgba(120,80,40,.6)';
+      rctx.lineWidth = 1;
+      rctx.stroke();
+
+      // Mast
+      rctx.strokeStyle = '#2a1a0a';
+      rctx.lineWidth = 2;
+      rctx.beginPath(); rctx.moveTo(0, -4); rctx.lineTo(0, -50); rctx.stroke();
+
+      // Sail
+      rctx.beginPath();
+      rctx.moveTo(0, -48); rctx.quadraticCurveTo(28, -30, 0, -8);
+      rctx.fillStyle = 'rgba(180,200,240,.12)';
+      rctx.fill();
+      rctx.strokeStyle = 'rgba(180,200,240,.2)';
+      rctx.lineWidth = .8;
+      rctx.stroke();
+
+      // Lantern on bow
+      rctx.font = '12px serif';
+      rctx.fillText('🏮', 24, -6);
+
+      rctx.restore();
+
+      // Fog wisps at water edge
+      for (let f = 0; f < 3; f++) {
+        const fg = rctx.createLinearGradient(0, waterY - 8, 0, waterY + 20);
+        fg.addColorStop(0, 'rgba(140,180,240,.04)');
+        fg.addColorStop(1, 'transparent');
+        rctx.fillStyle = fg;
+        rctx.fillRect(f * rW / 3, waterY - 8, rW / 3, 28);
+      }
+
+      rT += 0.016;
+      requestAnimationFrame(drawRiver);
+    }
+
+    window.addEventListener('resize', resizeRiver);
+    resizeRiver();
+
+    // Seed initial water lanterns based on already-released count
+    // rtot is now declared above, so this loop works correctly
+    for (let i = 0; i < rtot; i++) addWaterLantern();
+    drawRiver();
+
+    /* ════════════════════════════════════════════
+       GAME DATA — SP array
+       ════════════════════════════════════════════ */
+    const SP = [
+      {
+        name: 'Sorrow', icon: '🌧️', feeling: 'Carrying grief', color: 'rgba(80,100,180,.15)', bc: '#7986cb', peace: 0, mp: 3, released: false,
+        st: [
+          {
+            msg: "I carry something heavy. I don't know how to put it down.",
+            ch: [{ text: 'Tell me about it.', n: 1 }, { text: "You don't have to carry it alone.", n: 1 }]
+          },
+          {
+            msg: "I loved someone deeply. Now they're gone. Every quiet moment, I feel the gap where they were.",
+            ch: [{ text: "Your love still exists — it didn't go anywhere.", n: 2 }, { text: 'Grief is proof that something was real.', n: 2 }]
+          },
+          {
+            msg: "Maybe I can carry them as warmth now, not as weight.",
+            ch: [{ text: "You're ready for the river.", n: 'done' }]
+          }
+        ]
+      },
+      {
+        name: 'Worry', icon: '🌀', feeling: 'Drowning in anxiety', color: 'rgba(100,70,180,.15)', bc: '#9575cd', peace: 0, mp: 3, released: false,
+        st: [
+          {
+            msg: "I keep thinking about everything that could go wrong. I can't stop the spiral.",
+            ch: [{ text: 'What feels most urgent right now?', n: 1 }, { text: 'Take one slow breath with me.', n: 1 }]
+          },
+          {
+            msg: "The future terrifies me. I can't control any of it.",
+            ch: [{ text: "You've made it through every hard day so far.", n: 2 }, { text: 'Uncertainty holds good surprises too.', n: 2 }]
+          },
+          {
+            msg: "I keep forgetting that uncertainty holds good things as well.",
+            ch: [{ text: 'Let the river carry you forward.', n: 'done' }]
+          }
+        ]
+      },
+      {
+        name: 'Anger', icon: '🔥', feeling: 'Burning inside', color: 'rgba(180,80,50,.15)', bc: '#ef5350', peace: 0, mp: 3, released: false,
+        st: [
+          {
+            msg: "Nobody listens. Nobody sees how hard I try. I feel invisible.",
+            ch: [{ text: "I see you. I'm listening right now.", n: 1 }, { text: 'How long have you felt this way?', n: 1 }]
+          },
+          {
+            msg: "Years. I thought feeling angry made me weak, so I kept it in.",
+            ch: [{ text: 'Anger is a signal, not a flaw.', n: 2 }, { text: "Keeping it inside — that's the hard part.", n: 2 }]
+          },
+          {
+            msg: "Maybe I can let some of this fire out gently, without burning everything.",
+            ch: [{ text: "Release it gently into the water.", n: 'done' }]
+          }
+        ]
+      }
+    ];
+
+    /* ── Toast ── */
+    function toast(msg) {
+      const t = document.getElementById('tst');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    /* ── Lantern launch animation ── */
+    function launchLanternFX() {
+      const el = document.createElement('div');
+      el.className = 'launching-lantern';
+      el.textContent = '🏮';
+      el.style.left = (Math.random() * rW * .4 + rW * .1) + 'px';
+      el.style.top = (260 * .55) + 'px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1700);
+    }
+
+    /* ── Render spirit chips ── */
+    function renderSpirits() {
+      const row = document.getElementById('spiritRow');
+      row.innerHTML = '';
+      const remaining = SP.filter(s => !s.released).length;
+      document.getElementById('spiritCount').textContent =
+        remaining > 0 ? `${remaining} remaining` : 'All at peace ✨';
+
+      SP.forEach((s, i) => {
+        const chip = document.createElement('div');
+        chip.className = 'spirit-chip' + (sel === i ? ' active' : '') + (s.released ? ' released' : '');
+        const pct = Math.round(s.peace / s.mp * 100);
+        chip.innerHTML = `
+      <div class="sc-icon">${s.icon}</div>
+      <div class="sc-info">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-feel">${s.feeling}</div>
+        <div class="sc-bar-wrap"><div class="sc-bar" style="width:${pct}%;background:${s.bc}"></div></div>
+        ${s.released ? '<div class="sc-done">✨ At peace</div>' : ''}
+      </div>`;
+        if (!s.released) chip.onclick = () => { sel = i; renderSpirits(); renderDialogue(); };
+        row.appendChild(chip);
+      });
+    }
+
+    /* ── Render dialogue ── */
+    function renderDialogue() {
+      const card = document.getElementById('dialogueCard');
+      if (sel === null || SP[sel].released) {
+        card.innerHTML = `<div class="empty-dialogue"><div class="e-icon">⛵</div><p>Your boat drifts on still water.<br>Choose a spirit to begin their journey.</p></div>`;
+        return;
+      }
+      const s = SP[sel];
+      const stageIdx = Math.min(s.peace, s.st.length - 1);
+      const stage = s.st[stageIdx];
+
+      // Step indicators
+      const steps = Array.from({ length: s.mp }, (_, i) =>
+        `<div class="si-step ${i < s.peace ? 'done' : i === s.peace ? 'active' : ''}"></div>`
+      ).join('');
+
+      // Choices or peace message
+      let choiceHTML = '';
+      if (s.peace >= s.mp) {
+        choiceHTML = `<div class="peace-msg">✨ ${s.name} has found peace. Release them to the stars.</div>`;
+      } else {
+        choiceHTML = stage.ch.map(c =>
+          `<button class="choice-btn" onclick="choose('${c.n}')">${c.text}</button>`
+        ).join('');
+      }
+
+      card.innerHTML = `
+    <div class="spirit-identity">
+      <div class="si-icon">${s.icon}</div>
+      <div class="si-text">
+        <div class="si-name">${s.name}</div>
+        <div class="si-feel">${s.feeling}</div>
+        <div class="si-progress">
+          <div class="si-steps">${steps}</div>
+          <span style="font-size:10px;color:var(--muted)">${s.peace}/${s.mp} steps</span>
+        </div>
+      </div>
+    </div>
+    <div class="speech"><div class="speech-text">${stage.msg}</div></div>
+    <div class="choices">${choiceHTML}</div>
+    <button class="release-btn" id="relBtn" ${s.peace >= s.mp ? '' : 'disabled'} onclick="releaseSp()">
+      ✨ Release ${s.name} to the stars
+    </button>`;
+    }
+
+    /* ── Choose dialogue option ── */
+    function choose(n) {
+      const s = SP[sel];
+      s.peace = Math.min(s.mp, s.peace + 1);
+      ptot += 3;
+      document.getElementById('ptot').textContent = ptot;
+      if (s.peace >= s.mp) toast(`${s.name} has found peace ✨`);
+      renderSpirits();
+      renderDialogue();
+    }
+
+    /* ── Release spirit ── */
+    function releaseSp() {
+      if (sel === null) return;
+      const s = SP[sel];
+      s.released = true;
+      rtot++; lit++;
+      ptot += 10;
+
+      // Score & XP
+      const score = ptot + rtot * 50;
+      try {
+        const r = GameEngine.saveScore('spirit_journey', score);
+        document.getElementById('lxp').textContent = r.totalXP + ' XP';
+        toast(`${s.icon} ${s.name} drifts upward. +${r.xpEarned} XP`);
+      } catch (e) {
+        toast(`${s.icon} ${s.name} drifts upward to the stars.`);
+      }
+
+      document.getElementById('ptot').textContent = ptot;
+      document.getElementById('rtot').textContent = rtot;
+
+      // Launch animation
+      launchLanternFX();
+      addWaterLantern();
+
+      sel = null;
+      renderSpirits();
+      renderDialogue();
+      renderLanterns();
+    }
+
+    /* ── Render lanterns ── */
+    function renderLanterns() {
+      const list = document.getElementById('lanternList');
+      list.innerHTML = '';
+      for (let i = 0; i < TOTAL_LANTERNS; i++) {
+        const l = document.createElement('span');
+        l.className = 'lantern ' + (i < lit ? 'lit' : 'dark');
+        l.textContent = '🏮';
+        if (i < lit) l.style.animationDelay = (i * .3) + 's';
+        list.appendChild(l);
+      }
+    }
+
+    /* ── Init ── */
+    try { document.getElementById('lxp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch (e) { }
+    renderSpirits();
+    renderDialogue();
+    renderLanterns();
+  </script>
+</body>
+
+</html>

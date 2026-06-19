@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "text": "i would like to explore which game should i play",
+    "predicted_tag": "suicidal",
+    "confidence": 0.3422,
+    "timestamp": "2026-06-18T14:58:06",
+    "labeled": true,
+    "correct_tag": "coping_strategies"
+  },
+  {
+    "id": 2,
+    "text": "i wanted to play game why are you suggesting me this no.",
+    "predicted_tag": "loneliness",
+    "confidence": 0.4116,
+    "timestamp": "2026-06-18T14:58:35",
+    "labeled": true,
+    "correct_tag": "coping_strategies"
+  }
+]

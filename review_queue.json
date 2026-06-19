@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "text": "hii",
+    "predicted_tag": "greeting",
+    "confidence": 0.2891,
+    "timestamp": "2026-05-16T00:09:54",
+    "labeled": true,
+    "correct_tag": "greeting"
+  },
+  {
+    "id": 2,
+    "text": "my friend betrayed me i feel",
+    "predicted_tag": "relationship_issues",
+    "confidence": 0.6148,
+    "timestamp": "2026-05-16T00:10:19",
+    "labeled": true,
+    "correct_tag": "relationship_issues"
+  }
+]

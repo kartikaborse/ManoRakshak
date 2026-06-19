@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ManoKart — Therapist Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
+      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
+      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
+      --card-border:rgba(93,202,165,.18);
+    }
+    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(93,202,165,.13) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,251,242,.8) 0%,transparent 60%);pointer-events:none}
+    
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;animation:drift 12s ease-in-out infinite alternate}
+    .orb1{width:320px;height:320px;background:#9FE1CB;top:-80px;left:-80px;animation-delay:0s}
+    .orb2{width:240px;height:240px;background:#f4c0d1;top:30%;right:-60px;animation-delay:-4s}
+    .orb3{width:200px;height:200px;background:#fac775;bottom:10%;left:20%;animation-delay:-8s}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+    
+    .page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 28px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
+    
+    .nav-pill{display:flex;gap:8px}
+    .nav-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);text-decoration:none;display:inline-block}
+    .nav-btn:hover, .nav-btn.active{background:var(--sage);color:white;border-color:var(--sage)}
+    
+    .welcome-card{background:rgba(255,255,255,.8);border:1px solid var(--card-border);border-radius:28px;padding:32px;margin-top:36px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(93,202,165,.04);display:flex;justify-content:space-between;align-items:center}
+    .welcome-text h1{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--ink);letter-spacing:-0.5px}
+    .welcome-text h1 em{color:var(--sage);font-style:italic}
+    .welcome-text p{font-size:1rem;color:var(--muted);margin-top:6px;font-weight:300}
+    .profile-badge{display:flex;align-items:center;gap:8px;background:rgba(15,110,86,.12);border:1px solid rgba(93,202,165,.3);border-radius:99px;padding:8px 18px;font-size:.85rem;font-weight:600;color:var(--sage)}
+    
+    .dashboard-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;margin-top:32px}
+    @media(max-width:900px){
+      .dashboard-grid{grid-template-columns:1fr}
+    }
+    
+    .card{background:rgba(255,255,255,.75);border:1px solid var(--card-border);border-radius:28px;padding:32px;backdrop-filter:blur(12px);box-shadow:0 8px 40px rgba(93,202,165,.05);transition:all .25s;display:flex;flex-direction:column;gap:20px;height:fit-content}
+    
+    .section-title-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(93,202,165,.15);padding-bottom:14px;margin-bottom:6px}
+    .section-title{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--sage)}
+    
+    /* Tabs/Filters */
+    .filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .tab-btn{padding:5px 12px;border-radius:99px;border:1px solid var(--card-border);background:white;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .18s}
+    .tab-btn:hover, .tab-btn.active{background:var(--sage-ghost);border-color:var(--sage-light);color:var(--sage)}
+    
+    /* Appointments List */
+    .appointments-container{display:flex;flex-direction:column;gap:14px;max-height:650px;overflow-y:auto;padding-right:4px}
+    .appointments-container::-webkit-scrollbar{width:6px}
+    .appointments-container::-webkit-scrollbar-track{background:transparent}
+    .appointments-container::-webkit-scrollbar-thumb{background:rgba(93,202,165,.25);border-radius:3px}
+    .appointments-container::-webkit-scrollbar-thumb:hover{background:rgba(15,110,86,.25)}
+    
+    .booking-card{background:rgba(255,255,255,.6);border:1px solid rgba(93,202,165,.12);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;font-size:.85rem;transition:all .2s;box-shadow:0 2px 12px rgba(0,0,0,.01)}
+    .booking-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,110,86,.04);border-color:var(--sage-pale)}
+    
+    .booking-header{display:flex;justify-content:space-between;align-items:flex-start}
+    .patient-info{display:flex;flex-direction:column;gap:2px}
+    .patient-name{font-weight:600;font-size:1.05rem;color:var(--ink)}
+    .patient-email{color:var(--hint);font-size:.78rem}
+    
+    .status-badge{padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+    .status-pending{color:#b45309;background:#fef3c7;border:1px solid rgba(239,159,39,.18)}
+    .status-confirmed{color:#15803d;background:#dcfce7;border:1px solid rgba(21,128,61,.18)}
+    .status-cancelled{color:#b91c1c;background:#fee2e2;border:1px solid rgba(185,28,28,.18)}
+    
+    .booking-details{display:flex;gap:16px;color:var(--muted);font-size:.8rem;background:rgba(255,255,255,.4);padding:8px 12px;border-radius:10px}
+    .booking-notes{font-style:italic;color:var(--muted);padding:8px 12px;background:rgba(0,0,0,.02);border-radius:10px;font-size:.8rem;line-height:1.4}
+    
+    .action-buttons{display:flex;gap:8px;margin-top:4px}
+    .btn-action{flex:1;padding:8px;border-radius:12px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;text-align:center;text-decoration:none;border:1.5px solid}
+    .btn-confirm{border-color:#16a34a;color:#16a34a;background:none}
+    .btn-confirm:hover{background:#16a34a;color:white}
+    .btn-cancel{border-color:#dc2626;color:#dc2626;background:none}
+    .btn-cancel:hover{background:#dc2626;color:white}
+    
+    /* Forms & Controls */
+    .form-card{display:flex;flex-direction:column;gap:24px}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+    .form-control{padding:11px 16px;border-radius:14px;border:1.5px solid rgba(209,208,199,.6);background:white;font-family:inherit;font-size:.92rem;color:var(--ink);outline:none;transition:all .2s}
+    .form-control:focus{border-color:var(--sage-light);box-shadow:0 0 0 3px var(--sage-ghost)}
+    .form-control::placeholder{color:var(--hint)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:480px){
+      .form-row{grid-template-columns:1fr}
+    }
+    
+    /* Avatar picker grid */
+    .avatar-picker-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:4px}
+    .avatar-option{border:1.5px solid var(--card-border);border-radius:12px;background:white;font-size:1.5rem;padding:6px 0;text-align:center;cursor:pointer;transition:all .18s}
+    .avatar-option:hover{transform:scale(1.1);background:var(--sage-ghost);border-color:var(--sage-light)}
+    .avatar-option.active{border-color:var(--sage);background:var(--sage-ghost);box-shadow:0 2px 10px rgba(15,110,86,.08)}
+    
+    /* Password Strength Tracker */
+    .strength-wrap{margin-top:6px}
+    .strength-track{height:4px;border-radius:2px;background:rgba(0,0,0,.06);overflow:hidden;margin-bottom:4px}
+    .strength-fill{height:100%;width:0;transition:all .35s}
+    .strength-lbl{font-size:.72rem;font-weight:500}
+    
+    .btn-submit{padding:12px 28px;border-radius:99px;border:none;background:var(--sage);color:white;font-family:inherit;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(15,110,86,.15);align-self:flex-start}
+    .btn-submit:hover{background:var(--sage-mid);transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,110,86,.22)}
+    .btn-submit:active{transform:translateY(0)}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    
+    /* Toast */
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120%);background:#0F6E56;color:white;padding:.8rem 1.8rem;border-radius:100px;font-size:.88rem;z-index:999;box-shadow:0 8px 30px rgba(15,110,86,.25);transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;white-space:nowrap;opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+    
+    footer{text-align:center;padding:50px 0 20px;font-size:.8rem;color:var(--hint);margin-top:40px}
+    footer span{color:var(--sage-light)}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+  <div class="topbar">
+    <a href="/" class="logo">🌿 ManoKart</a>
+    <nav class="nav-pill">
+      <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
+    </nav>
+  </div>
+
+  <div class="welcome-card">
+    <div class="welcome-text">
+      <h1>Welcome back, <em id="welcome-name">Doctor</em></h1>
+      <p>Manage your consulting details and incoming patient bookings below.</p>
+    </div>
+    <div class="profile-badge">🤝 Professional Therapist</div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Left Column: Bookings -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title">Received Bookings</h2>
+        <div class="filter-tabs">
+          <button class="tab-btn active" onclick="filterAppointments(this, 'all')">All</button>
+          <button class="tab-btn" onclick="filterAppointments(this, 'pending')">Pending</button>
+          <button class="tab-btn" onclick="filterAppointments(this, 'confirmed')">Confirmed</button>
+          <button class="tab-btn" onclick="filterAppointments(this, 'cancelled')">Cancelled</button>
+        </div>
+      </div>
+      
+      <div class="appointments-container" id="bookings-list">
+        <div style="text-align:center; padding: 40px; color: var(--hint)">Loading bookings...</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Profile details & settings -->
+    <div style="display:flex; flex-direction:column; gap:32px">
+      <!-- Edit profile -->
+      <div class="card form-card">
+        <div class="section-title-row" style="margin-bottom:0">
+          <h2 class="section-title">Professional Details</h2>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-name">Full Name</label>
+            <input type="text" id="p-name" class="form-control" placeholder="Your full name" required/>
+          </div>
+          <div class="form-group">
+            <label for="p-username">Username</label>
+            <input type="text" id="p-username" class="form-control" placeholder="Your username" required/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Profile Avatar Emoji</label>
+          <div class="avatar-picker-grid" id="avatar-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-title">Professional Title</label>
+            <input type="text" id="p-title" class="form-control" placeholder="e.g. Clinical Psychologist"/>
+          </div>
+          <div class="form-group">
+            <label for="p-specialization">Specialties (comma-separated)</label>
+            <input type="text" id="p-specialization" class="form-control" placeholder="e.g. Anxiety, Depression, CBT"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-experience">Experience (Years)</label>
+            <input type="number" id="p-experience" class="form-control" placeholder="e.g. 10" min="0"/>
+          </div>
+          <div class="form-group">
+            <label for="p-fees">Consultation Fee (₹)</label>
+            <input type="number" id="p-fees" class="form-control" placeholder="e.g. 1200" min="0"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-phone">Contact Phone</label>
+            <input type="text" id="p-phone" class="form-control" placeholder="e.g. +91 98765 43210"/>
+          </div>
+          <div class="form-group">
+            <label for="p-availability">Availability Schedule</label>
+            <input type="text" id="p-availability" class="form-control" placeholder="e.g. Mon-Fri, 9:00 AM - 5:00 PM"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p-location">Clinic Address / Location</label>
+          <input type="text" id="p-location" class="form-control" placeholder="e.g. MindCare Clinic, Mumbai"/>
+        </div>
+
+        <div class="form-group">
+          <label for="p-bio">Professional Biography</label>
+          <textarea id="p-bio" class="form-control" rows="4" placeholder="Describe your background and clinical approach..."></textarea>
+        </div>
+
+        <button class="btn-submit" id="btn-save-profile" onclick="saveProfile()">Save Changes</button>
+      </div>
+
+      <!-- Change password -->
+      <div class="card form-card">
+        <div class="section-title-row" style="margin-bottom:0">
+          <h2 class="section-title">Change Password</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="p-current-pass">Current Password</label>
+          <input type="password" id="p-current-pass" class="form-control" placeholder="Enter current password"/>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="p-new-pass">New Password</label>
+            <input type="password" id="p-new-pass" class="form-control" placeholder="Min 6 characters" oninput="checkStrength(this.value)"/>
+            <div class="strength-wrap">
+              <div class="strength-track"><div class="strength-fill" id="s-fill"></div></div>
+              <div class="strength-lbl" id="s-label"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="p-confirm-pass">Confirm Password</label>
+            <input type="password" id="p-confirm-pass" class="form-control" placeholder="Confirm new password"/>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="btn-save-pass" onclick="savePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+</div>
+
+<div class="toast" id="toast">Profile updated successfully!</div>
+
+<script>
+  let currentUser = {};
+  let selectedEmoji = '🌿';
+  let appointments = [];
+  let currentFilter = 'all';
+  const EMOJIS = ['🌿', '🌸', '🧘', '🌊', '🌻', '☀️', '🍃', '🦋', '🌈', '🕯️', '🥑', '🐾'];
+
+  // ── Show Toast ──
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Init Avatar Grid ──
+  const grid = document.getElementById('avatar-grid');
+  EMOJIS.forEach(emoji => {
+    const opt = document.createElement('div');
+    opt.className = 'avatar-option';
+    opt.textContent = emoji;
+    opt.onclick = () => selectAvatar(emoji);
+    grid.appendChild(opt);
+  });
+
+  function selectAvatar(emoji) {
+    selectedEmoji = emoji;
+    document.querySelectorAll('.avatar-option').forEach(el => {
+      el.classList.toggle('active', el.textContent === emoji);
+    });
+  }
+
+  // ── Load Therapist Profile and Bookings ──
+  function loadDashboard() {
+    fetch('/api/auth/me')
+      .then(r => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then(d => {
+        if (d.logged_in && d.user) {
+          currentUser = d.user;
+          if (currentUser.role !== 'therapist') {
+            window.location.href = '/';
+            return;
+          }
+          document.getElementById('welcome-name').textContent = currentUser.name;
+          
+          document.getElementById('p-name').value = currentUser.name || '';
+          document.getElementById('p-username').value = currentUser.username || '';
+          selectAvatar(currentUser.avatar || '🌿');
+
+          document.getElementById('p-title').value = currentUser.title || '';
+          document.getElementById('p-specialization').value = currentUser.specialization || '';
+          document.getElementById('p-experience').value = currentUser.experience || '';
+          document.getElementById('p-fees').value = currentUser.fees || '';
+          document.getElementById('p-phone').value = currentUser.phone || '';
+          document.getElementById('p-availability').value = currentUser.availability || '';
+          document.getElementById('p-location').value = currentUser.location || '';
+          document.getElementById('p-bio').value = currentUser.bio || '';
+        } else {
+          window.location.href = '/auth';
+        }
+      })
+      .catch(() => {
+        window.location.href = '/auth';
+      });
+
+    loadAppointments();
+  }
+
+  // ── Fetch Received Appointments ──
+  function loadAppointments() {
+    const listContainer = document.getElementById('bookings-list');
+    
+    fetch('/api/appointments/received')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.appointments) {
+          appointments = data.appointments;
+          renderAppointments();
+        } else {
+          listContainer.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--hint)">Failed to load bookings.</div>';
+        }
+      })
+      .catch(() => {
+        listContainer.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--hint)">Network error loading bookings.</div>';
+      });
+  }
+
+  // ── Render Filtered Appointments ──
+  function renderAppointments() {
+    const container = document.getElementById('bookings-list');
+    container.innerHTML = '';
+
+    const filtered = appointments.filter(app => {
+      if (currentFilter === 'all') return true;
+      return app.status.toLowerCase() === currentFilter.toLowerCase();
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--hint)">No ${currentFilter !== 'all' ? currentFilter : ''} booking requests found.</div>`;
+      return;
+    }
+
+    filtered.forEach(app => {
+      const dateObj = new Date(app.appointment_date);
+      const dateFriendly = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      const badgeClass = `status-${app.status.toLowerCase()}`;
+      
+      const item = document.createElement('div');
+      item.className = 'booking-card';
+      
+      let notesHtml = '';
+      if (app.notes) {
+        notesHtml = `<div class="booking-notes">"${app.notes}"</div>`;
+      }
+      
+      let actionsHtml = '';
+      if (app.status.toLowerCase() === 'pending') {
+        actionsHtml = `
+          <div class="action-buttons">
+            <button class="btn-action btn-confirm" onclick="updateStatus(${app.id}, 'Confirmed')">Confirm Appointment</button>
+            <button class="btn-action btn-cancel" onclick="updateStatus(${app.id}, 'Cancelled')">Cancel / Reject</button>
+          </div>
+        `;
+      }
+      
+      item.innerHTML = `
+        <div class="booking-header">
+          <div class="patient-info">
+            <span class="patient-name">${app.patient_name || 'Anonymous Patient'}</span>
+            <span class="patient-email">${app.patient_email || 'No email provided'}</span>
+          </div>
+          <span class="status-badge ${badgeClass}">${app.status}</span>
+        </div>
+        <div class="booking-details">
+          <span>📅 ${dateFriendly}</span>
+          <span>🕒 ${app.appointment_time}</span>
+        </div>
+        ${notesHtml}
+        ${actionsHtml}
+      `;
+      
+      container.appendChild(item);
+    });
+  }
+
+  // ── Filter Buttons Click Handler ──
+  function filterAppointments(btn, status) {
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = status;
+    renderAppointments();
+  }
+
+  // ── Update Appointment Status (Confirm / Cancel) ──
+  function updateStatus(appId, newStatus) {
+    fetch(`/api/appointments/${appId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+      if (ok && data.ok) {
+        showToast(`Appointment ${newStatus.toLowerCase()} successfully! 🌿`);
+        loadAppointments();
+      } else {
+        showToast(data.error || 'Failed to update status.');
+      }
+    })
+    .catch(() => showToast('Network error, please try again.'));
+  }
+
+  // ── Save Profile Details ──
+  function saveProfile() {
+    const name = document.getElementById('p-name').value.trim();
+    const username = document.getElementById('p-username').value.trim();
+    
+    if (!name || !username) {
+      showToast('Name and Username are required!');
+      return;
+    }
+
+    const payload = {
+      full_name: name,
+      username: username,
+      avatar_emoji: selectedEmoji,
+      title: document.getElementById('p-title').value.trim(),
+      specialization: document.getElementById('p-specialization').value.trim(),
+      experience: parseInt(document.getElementById('p-experience').value) || 0,
+      fees: parseInt(document.getElementById('p-fees').value) || 0,
+      phone: document.getElementById('p-phone').value.trim(),
+      availability: document.getElementById('p-availability').value.trim(),
+      location: document.getElementById('p-location').value.trim(),
+      bio: document.getElementById('p-bio').value.trim()
+    };
+
+    const btn = document.getElementById('btn-save-profile');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    fetch('/api/profile/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+    .then(({ ok, data }) => {
+      if (ok && data.ok) {
+        showToast('Dashboard details updated successfully! 🌿');
+        loadDashboard();
+      } else {
+        showToast(data.error || 'Failed to update details');
+      }
+    })
+    .catch(() => showToast('Network error, please try again.'))
+    .finally(() => {
+      btn.textContent = 'Save Changes';
+      btn.disabled = false;
+    });
+  }
+
+  // ── Password Strength Checker ──
+  function checkStrength(val) {
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { width: '0%', color: 'transparent', label: '' },
+      { width: '25%', color: '#ef4444', label: 'Weak' },
+      { width: '50%', color: '#f59e0b', label: 'Fair' },
+      { width: '75%', color: '#10b981', label: 'Good' },
+      { width: '100%', color: '#5eead4', label: 'Strong' }
+    ];
+
+    const actual = val.length === 0 ? levels[0] : levels[Math.max(1, Math.min(score, 4))];
+    const fill = document.getElementById('s-fill');
+    const lbl = document.getElementById('s-label');
+    fill.style.width = actual.width;
+    fill.style.backgroundColor = actual.color;
+    lbl.textContent = actual.label;
+    lbl.style.color = actual.color;
+  }
+
+  // ── Save Password ──
+  function savePassword() {
+    const curPass = document.getElementById('p-current-pass').value;
+    const newPass = document.getElementById('p-new-pass').value;
+    const confPass = document.getElementById('p-confirm-pass').value;
+
+    if (!curPass || !newPass || !confPass) {
+      showToast('Please fill in all password fields!');
+      return;
+    }
+
+    if (newPass.length < 6) {
+      showToast('New password must be at least 6 characters!');
+      return;
+    }
+
+    if (newPass !== confPass) {
+      showToast('Confirm password does not match!');
+      return;
+    }
+
+    const btn = document.getElementById('btn-save-pass');
+    btn.textContent = 'Updating...';
+    btn.disabled = true;
+
+    fetch('/api/profile/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_password: curPass,
+        new_password: newPass
+      })
+    })
+    .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+    .then(({ ok, data }) => {
+      if (ok && data.ok) {
+        showToast('Password updated successfully! 🔐');
+        document.getElementById('p-current-pass').value = '';
+        document.getElementById('p-new-pass').value = '';
+        document.getElementById('p-confirm-pass').value = '';
+        checkStrength('');
+      } else {
+        showToast(data.error || 'Failed to update password');
+      }
+    })
+    .catch(() => showToast('Network error, please try again.'))
+    .finally(() => {
+      btn.textContent = 'Update Password';
+      btn.disabled = false;
+    });
+  }
+
+  // Load dashboard on start
+  window.onload = loadDashboard;
+</script>
+</body>
+</html>

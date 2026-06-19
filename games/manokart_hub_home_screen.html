@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManoKart — Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Fredoka+One&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    /* ─── RESET & BASE ─── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --green-dark: #1e4d2b;
+      --green-mid: #2d7a45;
+      --green-light: #4caf71;
+      --green-pale: #e6f5eb;
+      --gold: #f5a623;
+      --gold-light: #fff3dc;
+      --cream: #faf8f3;
+      --white: #ffffff;
+      --text-primary: #1a2e1f;
+      --text-secondary: #4a6755;
+      --text-muted: #8aab94;
+      --border: #d6e8db;
+      --shadow: 0 4px 24px rgba(30, 77, 43, 0.10);
+      --shadow-card: 0 2px 12px rgba(30, 77, 43, 0.08);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --font-head: 'Fredoka One', cursive;
+      --font-body: 'Nunito', sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--text-primary);
+      overflow-x: hidden
+    }
+
+    /* ─── SCREENS ─── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      animation: fadeIn 0.3s ease
+    }
+
+    .screen.active {
+      display: flex
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      background: var(--green-dark);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.2s
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.22)
+    }
+
+    .topbar-title {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: #fff;
+      flex: 1
+    }
+
+    .topbar-xp {
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: #c8f0d0;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    /* ─── LOBBY SCREEN ─── */
+    #screen-lobby {
+      background: var(--cream)
+    }
+
+    .lobby-hero {
+      background: var(--green-dark);
+      padding: 22px 20px 28px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .lobby-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: var(--cream);
+      border-radius: 30px 30px 0 0
+    }
+
+    .hero-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px
+    }
+
+    .companion-bubble {
+      font-size: 54px;
+      line-height: 1;
+      animation: float 3s ease-in-out infinite
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-6px)
+      }
+    }
+
+    .hero-text h1 {
+      font-family: var(--font-head);
+      font-size: 26px;
+      color: #fff;
+      line-height: 1.2
+    }
+
+    .hero-text p {
+      font-size: 13px;
+      color: rgba(200, 240, 210, 0.85);
+      margin-top: 4px;
+      line-height: 1.5
+    }
+
+    .stats-strip {
+      display: flex;
+      gap: 10px
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 20px;
+      padding: 8px 16px;
+      text-align: center;
+      flex: 1
+    }
+
+    .stat-pill .val {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: #fff
+    }
+
+    .stat-pill .lab {
+      font-size: 10px;
+      color: rgba(200, 240, 210, 0.75);
+      margin-top: 1px
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 10px
+    }
+
+    .section-head h2 {
+      font-family: var(--font-head);
+      font-size: 19px;
+      color: var(--text-primary)
+    }
+
+    .section-head span {
+      font-size: 12px;
+      color: var(--text-muted)
+    }
+
+    /* ─── GAME CARDS ─── */
+    .games-list {
+      padding: 0 16px 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .game-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.22s;
+      box-shadow: var(--shadow-card)
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--green-light)
+    }
+
+    .game-card:active {
+      transform: scale(0.98)
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px
+    }
+
+    .card-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0
+    }
+
+    .card-info {
+      flex: 1
+    }
+
+    .card-name {
+      font-family: var(--font-head);
+      font-size: 17px;
+      color: var(--text-primary)
+    }
+
+    .card-inspo {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.4
+    }
+
+    .card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px
+    }
+
+    .xp-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #27500A;
+      background: #EAF3DE;
+      padding: 3px 10px;
+      border-radius: 20px
+    }
+
+    .play-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px
+    }
+
+    .card-bottom {
+      border-top: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .prog-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--green-pale);
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+      transition: width 0.5s
+    }
+
+    .prog-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap
+    }
+
+    .score-tag {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-left: auto;
+      font-weight: 600
+    }
+
+    /* ─── BOTTOM NAV ─── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      padding: 8px 0 12px;
+      z-index: 200
+    }
+
+    .bnav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 4px;
+      font-family: var(--font-body);
+      transition: all 0.15s
+    }
+
+    .bnav-item .bi {
+      font-size: 22px;
+      color: var(--text-muted)
+    }
+
+    .bnav-item .bl {
+      font-size: 10px;
+      color: var(--text-muted)
+    }
+
+    .bnav-item.active .bi {
+      color: var(--green-dark)
+    }
+
+    .bnav-item.active .bl {
+      color: var(--green-dark);
+      font-weight: 700
+    }
+
+    /* ─── GAME PLAY SCREEN ─── */
+    #screen-game {
+      background: var(--cream)
+    }
+
+    .game-topbar {
+      background: var(--green-dark);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .game-topbar-title {
+      font-family: var(--font-head);
+      font-size: 18px;
+      color: #fff;
+      flex: 1
+    }
+
+    .live-score {
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700
+    }
+
+    #game-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 0 20px
+    }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green-dark);
+      color: #c8f0d0;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 30px;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+      font-family: var(--font-body)
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    /* ═══════════════════════════════
+   GAME 1 — OCEAN ESCAPE
+═══════════════════════════════ */
+    #ocean-game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px
+    }
+
+    #ocean-canvas {
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 420px;
+      height: 260px;
+      display: block
+    }
+
+    .ocean-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      justify-content: center
+    }
+
+    .oc-btn {
+      padding: 10px 20px;
+      border-radius: 24px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      transition: all 0.18s
+    }
+
+    .oc-btn:hover {
+      background: var(--green-pale);
+      border-color: var(--green-light)
+    }
+
+    .oc-btn.active {
+      background: var(--green-dark);
+      color: #fff;
+      border-color: var(--green-dark)
+    }
+
+    .ocean-info {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .oi-card {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center
+    }
+
+    .oi-val {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--green-dark)
+    }
+
+    .oi-lab {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px
+    }
+
+    /* ═══════════════════════════════
+   GAME 2 — COZY ISLAND
+═══════════════════════════════ */
+    #island-game {
+      padding: 16px
+    }
+
+    .island-hdr {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap
+    }
+
+    .island-stat {
+      flex: 1;
+      min-width: 80px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center
+    }
+
+    .island-stat .v {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--green-dark)
+    }
+
+    .island-stat .l {
+      font-size: 10px;
+      color: var(--text-muted)
+    }
+
+    .mood-section h3 {
+      font-family: var(--font-head);
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 8px
+    }
+
+    .mood-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px
+    }
+
+    .mb {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.18s
+    }
+
+    .mb:hover {
+      transform: scale(1.05)
+    }
+
+    .garden-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px
+    }
+
+    .plot {
+      background: var(--white);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative
+    }
+
+    .plot.planted {
+      border-style: solid;
+      border-color: var(--green-light)
+    }
+
+    .plot.bloomed {
+      border-color: var(--gold)
+    }
+
+    .plot-icon {
+      font-size: 28px
+    }
+
+    .plot-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px
+    }
+
+    .water-pill {
+      font-size: 10px;
+      background: #e0f0ff;
+      border: none;
+      border-radius: 10px;
+      padding: 2px 8px;
+      cursor: pointer;
+      margin-top: 3px;
+      color: #0277bd;
+      font-family: var(--font-body);
+      font-weight: 700
+    }
+
+    /* ═══════════════════════════════
+   GAME 3 — SPIRIT JOURNEY
+═══════════════════════════════ */
+    #spirit-game {
+      padding: 16px
+    }
+
+    .spirit-arena {
+      background: linear-gradient(180deg, #0d1b2a, #1a3a5c);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+      min-height: 170px
+    }
+
+    .spirit-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none
+    }
+
+    .spirit-hdr {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .spirit-badge {
+      font-size: 11px;
+      color: rgba(200, 230, 255, 0.8);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-weight: 700
+    }
+
+    .spirit-msg {
+      font-size: 13px;
+      color: #d0e8ff;
+      line-height: 1.6;
+      font-style: italic;
+      text-align: center;
+      padding: 10px 0
+    }
+
+    .spirit-passengers {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .passenger-row {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.18s
+    }
+
+    .passenger-row:hover {
+      border-color: var(--green-light)
+    }
+
+    .passenger-row.selected {
+      border-color: #7986cb;
+      background: #f5f4ff
+    }
+
+    .pr-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px
+    }
+
+    .pr-icon {
+      font-size: 22px
+    }
+
+    .pr-name {
+      font-family: var(--font-head);
+      font-size: 15px
+    }
+
+    .pr-feel {
+      font-size: 11px;
+      color: var(--text-muted)
+    }
+
+    .pr-bar-bg {
+      height: 5px;
+      background: var(--green-pale);
+      border-radius: 3px
+    }
+
+    .pr-bar {
+      height: 5px;
+      border-radius: 3px;
+      transition: width 0.4s
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .choice-btn {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      transition: all 0.18s
+    }
+
+    .choice-btn:hover {
+      background: var(--green-pale);
+      border-color: var(--green-light)
+    }
+
+    .release-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: linear-gradient(90deg, #f5a623, #f7c056);
+      color: #4a2800;
+      font-family: var(--font-head);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s
+    }
+
+    .release-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.01)
+    }
+
+    .release-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed
+    }
+
+    /* ═══════════════════════════════
+   GAME 4 — MOOD BLOCKS (TETRIS)
+═══════════════════════════════ */
+    #blocks-game {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      flex-wrap: wrap;
+      justify-content: center
+    }
+
+    #tetris-board {
+      border-radius: var(--radius-sm);
+      display: block;
+      border: 2px solid var(--green-dark)
+    }
+
+    .tetris-side {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 120px
+    }
+
+    .ts-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center
+    }
+
+    .ts-val {
+      font-family: var(--font-head);
+      font-size: 22px;
+      color: var(--green-dark)
+    }
+
+    .ts-lab {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 1px
+    }
+
+    #next-board {
+      display: block;
+      margin: 0 auto
+    }
+
+    .tetris-ctrl {
+      display: flex;
+      gap: 8px;
+      flex-direction: column
+    }
+
+    .tc-btn {
+      padding: 9px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      transition: background 0.15s;
+      text-align: center
+    }
+
+    .tc-btn:hover {
+      background: var(--green-pale)
+    }
+
+    .tc-btn.primary {
+      background: var(--green-dark);
+      color: #fff;
+      border-color: var(--green-dark)
+    }
+
+    .emo-key {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .ek-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-secondary)
+    }
+
+    .ek-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0
+    }
+
+    /* ═══════════════════════════════
+   GAME 5 — CALM GRID (SUDOKU)
+═══════════════════════════════ */
+    #sudoku-game {
+      padding: 16px
+    }
+
+    .sg-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .sg-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .diff-sel {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      cursor: pointer
+    }
+
+    .theme-dots {
+      display: flex;
+      gap: 6px
+    }
+
+    .tdot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      flex-shrink: 0
+    }
+
+    .tdot.active {
+      border-color: var(--text-primary)
+    }
+
+    .sg-grid-wrap {
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 14px
+    }
+
+    table#sg-table {
+      border-collapse: collapse
+    }
+
+    #sg-table td {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 0.5px solid rgba(0, 0, 0, 0.1);
+      transition: background 0.15s;
+      font-family: var(--font-body)
+    }
+
+    #sg-table td.thick-r {
+      border-right: 2px solid rgba(0, 0, 0, 0.3)
+    }
+
+    #sg-table td.thick-b {
+      border-bottom: 2px solid rgba(0, 0, 0, 0.3)
+    }
+
+    #sg-table td.given {
+      color: var(--text-primary);
+      cursor: default
+    }
+
+    #sg-table td.editable {
+      color: var(--green-mid)
+    }
+
+    #sg-table td.sel {
+      outline: 3px solid var(--green-mid);
+      outline-offset: -2px;
+      z-index: 2
+    }
+
+    #sg-table td.err {
+      color: #e53935
+    }
+
+    .sg-numpad {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 12px
+    }
+
+    .sg-num {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .sg-num:hover {
+      background: var(--green-pale)
+    }
+
+    .sg-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .sg-act {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .sg-act:hover {
+      background: var(--green-pale)
+    }
+
+    .sg-win {
+      display: none;
+      background: #EAF3DE;
+      border: 1.5px solid #97C459;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+      font-weight: 700;
+      color: #27500A;
+      margin-top: 10px;
+      font-size: 14px
+    }
+
+    /* ═══════════════════════════════
+   GAME 6 — COLOR YOUR WORLD
+═══════════════════════════════ */
+    #gris-game {
+      padding: 16px
+    }
+
+    #gris-canvas {
+      border-radius: var(--radius);
+      width: 100%;
+      height: 200px;
+      display: block;
+      margin-bottom: 14px
+    }
+
+    .gris-palette {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 14px
+    }
+
+    .gp-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.18s
+    }
+
+    .gp-swatch.sel {
+      border-color: var(--text-primary);
+      transform: scale(1.18)
+    }
+
+    .gp-swatch.locked {
+      filter: grayscale(1);
+      opacity: 0.35;
+      cursor: not-allowed
+    }
+
+    .gris-moments {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .gm-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s
+    }
+
+    .gm-card:hover {
+      border-color: var(--green-light)
+    }
+
+    .gm-card.done {
+      opacity: 0.5;
+      cursor: default
+    }
+
+    .gm-icon {
+      font-size: 22px;
+      margin-bottom: 5px
+    }
+
+    .gm-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary)
+    }
+
+    .gm-reward {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px
+    }
+
+    .gris-stats {
+      display: flex;
+      gap: 10px
+    }
+
+    .gris-stat {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center
+    }
+
+    .gris-stat .v {
+      font-family: var(--font-head);
+      font-size: 20px;
+      color: var(--green-dark)
+    }
+
+    .gris-stat .l {
+      font-size: 10px;
+      color: var(--text-muted)
+    }
+
+    /* ═══════════════════════════════
+   GAME 7 — BREATH QUEST (RPG)
+═══════════════════════════════ */
+    #rpg-game {
+      padding: 16px
+    }
+
+    .rpg-arena {
+      background: linear-gradient(180deg, #e8f5e0, #c8e6b0);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      min-height: 150px;
+      position: relative
+    }
+
+    .rpg-char-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px
+    }
+
+    .rpg-char {
+      font-size: 52px;
+      line-height: 1;
+      transition: transform 0.3s
+    }
+
+    .rpg-char.atk {
+      animation: rpkAtk 0.4s
+    }
+
+    .rpg-char.hurt {
+      animation: rpkHurt 0.3s
+    }
+
+    @keyframes rpkAtk {
+      0% {
+        transform: translateX(0)
+      }
+
+      40% {
+        transform: translateX(28px)
+      }
+
+      100% {
+        transform: translateX(0)
+      }
+    }
+
+    @keyframes rpkHurt {
+      0% {
+        transform: translateX(0)
+      }
+
+      30% {
+        transform: translateX(-10px)
+      }
+
+      60% {
+        transform: translateX(8px)
+      }
+
+      100% {
+        transform: translateX(0)
+      }
+    }
+
+    .rpg-char-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-dark)
+    }
+
+    .rpg-hp-bar {
+      width: 90px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      overflow: hidden
+    }
+
+    .rpg-hp-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s
+    }
+
+    .rpg-hp-lab {
+      font-size: 10px;
+      color: var(--green-dark)
+    }
+
+    .rpg-center {
+      flex: 1;
+      text-align: center;
+      padding: 0 10px
+    }
+
+    .rpg-battle-msg {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green-dark);
+      line-height: 1.5
+    }
+
+    .rpg-xp-flash {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 800;
+      min-height: 18px;
+      margin-top: 4px
+    }
+
+    .rpg-path {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+      padding-bottom: 4px
+    }
+
+    .rpg-node {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      cursor: default
+    }
+
+    .rpg-node.done {
+      background: #c8e6b0;
+      border-color: var(--green-mid)
+    }
+
+    .rpg-node.cur {
+      background: var(--gold-light);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2)
+    }
+
+    .rpg-node.locked {
+      opacity: 0.4
+    }
+
+    .rpg-node span {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--green-dark)
+    }
+
+    .rpg-moves {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .rpg-move {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: var(--font-body)
+    }
+
+    .rpg-move:hover {
+      border-color: var(--green-light);
+      background: var(--green-pale);
+      transform: translateY(-2px)
+    }
+
+    .rpg-move-icon {
+      font-size: 24px;
+      margin-bottom: 5px
+    }
+
+    .rpg-move-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary)
+    }
+
+    .rpg-move-power {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px
+    }
+
+    .rpg-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .rpg-stat {
+      flex: 1;
+      min-width: 80px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center
+    }
+
+    .rpg-stat .v {
+      font-family: var(--font-head);
+      font-size: 18px;
+      color: var(--green-dark)
+    }
+
+    .rpg-stat .l {
+      font-size: 10px;
+      color: var(--text-muted)
+    }
+
+    .rpg-breath-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 50, 30, 0.92);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .rpg-breath-overlay.show {
+      display: flex
+    }
+
+    .breath-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(100, 220, 130, 0.25);
+      border: 3px solid #81C784;
+      transition: transform 1.5s ease-in-out
+    }
+
+    .breath-circle.expand {
+      transform: scale(1.5)
+    }
+
+    .breath-title {
+      font-family: var(--font-head);
+      font-size: 24px;
+      color: #c8f0c8
+    }
+
+    .breath-inst {
+      font-size: 14px;
+      color: rgba(200, 240, 200, 0.8)
+    }
+
+    .breath-done-btn {
+      padding: 12px 28px;
+      border-radius: 30px;
+      border: 2px solid #81C784;
+      background: transparent;
+      color: #c8f0c8;
+      font-family: var(--font-head);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px
+    }
+
+    .breath-done-btn:hover {
+      background: rgba(129, 199, 132, 0.2)
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════════════════════════════════════
+     SCREEN 1: GAMES LOBBY
+════════════════════════════════════ -->
+  <div class="screen active" id="screen-lobby">
+    <div class="lobby-hero">
+      <div class="hero-row">
+        <div class="companion-bubble">🐥</div>
+        <div class="hero-text">
+          <h1>ManoKart Games</h1>
+          <p>Play, heal, and grow with Lumi.<br>Every game earns XP for your journey!</p>
+        </div>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-pill">
+          <div class="val" id="lobby-xp">240</div>
+          <div class="lab">Total XP</div>
+        </div>
+        <div class="stat-pill">
+          <div class="val" id="lobby-streak">3</div>
+          <div class="lab">Day streak 🔥</div>
+        </div>
+        <div class="stat-pill">
+          <div class="val" id="lobby-played">12</div>
+          <div class="lab">Games played</div>
+        </div>
+        <div class="stat-pill">
+          <div class="val" id="lobby-lv">3</div>
+          <div class="lab">Level</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Choose your game</h2>
+      <span>7 games available</span>
+    </div>
+
+    <div class="games-list">
+
+      <div class="game-card" onclick="openGame('ocean')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#e8f4fd">🌊</div>
+          <div class="card-info">
+            <div class="card-name">Ocean Escape</div>
+            <div class="card-inspo">Stress Relief</div>
+            <div class="card-desc">Watch animated ocean scenes. Switch moods — calm, drift, storm, aurora. Breathe and
+              relax.</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+5 XP/min</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:70%"></div>
+          </div>
+          <div class="prog-label">70%</div>
+          <div class="score-tag">Best: 18 min</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('island')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#EAF3DE">🌿</div>
+          <div class="card-info">
+            <div class="card-name">Cozy Island</div>
+            <div class="card-inspo">Animal Crossing + Stardew</div>
+            <div class="card-desc">Log your mood, plant seeds, water them daily. Bloom plants to unlock island friends!
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+10 XP/bloom</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:45%"></div>
+          </div>
+          <div class="prog-label">45%</div>
+          <div class="score-tag">Blooms: 2</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('spirit')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#f0eeff">⛵</div>
+          <div class="card-info">
+            <div class="card-name">Spirit Journey</div>
+            <div class="card-inspo">Spiritfarer</div>
+            <div class="card-desc">Guide emotional spirits through conversation. Help them find peace and release them
+              to the stars.</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+30 XP/spirit</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:30%"></div>
+          </div>
+          <div class="prog-label">30%</div>
+          <div class="score-tag">Released: 2</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('blocks')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#ede7f6">🟪</div>
+          <div class="card-info">
+            <div class="card-name">Mood Blocks</div>
+            <div class="card-inspo">Tetris</div>
+            <div class="card-desc">Emotion-colored blocks fall and stack. Clear rows to release stress. Each line =
+              progress!</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+1 XP/line</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:20%"></div>
+          </div>
+          <div class="prog-label">20%</div>
+          <div class="score-tag">Best: 840 pts</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('sudoku')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#e8f5fe">🔢</div>
+          <div class="card-info">
+            <div class="card-name">Calm Grid</div>
+            <div class="card-inspo">Sudoku</div>
+            <div class="card-desc">A gentle, pressure-free number puzzle with color themes, hints, and mindful
+              affirmations.</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+20 XP/puzzle</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:55%"></div>
+          </div>
+          <div class="prog-label">55%</div>
+          <div class="score-tag">Solved: 6</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('gris')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#fce4ec">🎨</div>
+          <div class="card-info">
+            <div class="card-name">Color Your World</div>
+            <div class="card-inspo">Gris</div>
+            <div class="card-desc">Complete wellness moments to unlock colors and paint your canvas. Your week = a
+              painting.</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+15 XP/color</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:40%"></div>
+          </div>
+          <div class="prog-label">40%</div>
+          <div class="score-tag">Colors: 3 / 7</div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openGame('rpg')">
+        <div class="card-top">
+          <div class="card-icon-wrap" style="background:#e8f5e0">⚔️</div>
+          <div class="card-info">
+            <div class="card-name">Breath Quest</div>
+            <div class="card-inspo">Ring Fit Adventure</div>
+            <div class="card-desc">Use breathing exercises and movement to defeat stress monsters. Level up your
+              wellness RPG!</div>
+          </div>
+          <div class="card-right">
+            <div class="xp-badge">+25 XP/battle</div>
+            <div class="play-arrow"><i class="ti ti-player-play"></i></div>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:20%"></div>
+          </div>
+          <div class="prog-label">20%</div>
+          <div class="score-tag">Defeated: 7</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <button class="bnav-item active"><i class="ti ti-layout-grid bi"></i><span class="bl">Games</span></button>
+      <button class="bnav-item"><i class="ti ti-chart-bar bi"></i><span class="bl">Progress</span></button>
+      <button class="bnav-item"><i class="ti ti-heart bi"></i><span class="bl">Lumi</span></button>
+      <button class="bnav-item"><i class="ti ti-user bi"></i><span class="bl">Profile</span></button>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════
+     SCREEN 2: GAME PLAY
+════════════════════════════════════ -->
+  <div class="screen" id="screen-game">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="goBack()"><i class="ti ti-arrow-left"></i></button>
+      <div class="game-topbar-title" id="game-title">Game</div>
+      <div class="live-score" id="live-score">0 XP</div>
+    </div>
+    <div id="game-container"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- BREATH OVERLAY (RPG) -->
+  <div class="rpg-breath-overlay" id="breath-overlay">
+    <div class="breath-title" id="bo-title">Deep Breath</div>
+    <div class="breath-circle" id="bo-circle"></div>
+    <div class="breath-inst" id="bo-inst">Breathe in slowly...</div>
+    <button class="breath-done-btn" onclick="endBreath()">Done ✓</button>
+  </div>
+
+
+  <script>
+    /* ══════════════════════
+       GLOBAL STATE
+    ══════════════════════ */
+    let currentGame = null;
+    let sessionXP = 0;
+    let globalXP = 240;
+    let globalStreak = 3;
+    let globalPlayed = 12;
+    let globalLevel = 3;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function addXP(amt) {
+      sessionXP += amt;
+      globalXP += amt;
+      document.getElementById('live-score').textContent = sessionXP + ' XP';
+      document.getElementById('lobby-xp').textContent = globalXP;
+    }
+
+    /* ══════════════════════
+       NAVIGATION
+    ══════════════════════ */
+    function openGame(gameId) {
+      currentGame = gameId;
+      sessionXP = 0;
+      document.getElementById('screen-lobby').classList.remove('active');
+      document.getElementById('screen-game').classList.add('active');
+      document.getElementById('live-score').textContent = '0 XP';
+
+      const titles = {
+        ocean: '🌊 Ocean Escape',
+        island: '🌿 Cozy Island',
+        spirit: '⛵ Spirit Journey',
+        blocks: '🟪 Mood Blocks',
+        sudoku: '🔢 Calm Grid',
+        gris: '🎨 Color Your World',
+        rpg: '⚔️ Breath Quest',
+      };
+      document.getElementById('game-title').textContent = titles[gameId];
+      initGame(gameId);
+    }
+
+    function goBack() {
+      document.getElementById('screen-game').classList.remove('active');
+      document.getElementById('screen-lobby').classList.add('active');
+      if (currentGame === 'blocks' && tetrisRunning) stopTetris();
+      stopOcean();
+      document.getElementById('game-container').innerHTML = '';
+      if (sessionXP > 0) showToast('Great session! +' + sessionXP + ' XP earned');
+    }
+
+    /* ══════════════════════
+       GAME ROUTER
+    ══════════════════════ */
+    function initGame(id) {
+      const c = document.getElementById('game-container');
+      const games = {
+        ocean: buildOcean,
+        island: buildIsland,
+        spirit: buildSpirit,
+        blocks: buildBlocks,
+        sudoku: buildSudoku,
+        gris: buildGris,
+        rpg: buildRPG,
+      };
+      c.innerHTML = '';
+      games[id](c);
+    }
+
+
+    /* ══════════════════════════════════════
+       GAME 1 — OCEAN ESCAPE
+    ══════════════════════════════════════ */
+    let oceanAnim = null;
+    let oceanT = 0;
+    let oceanMood = 'calm';
+    let oceanSeconds = 0;
+
+    const OCEAN_MOODS = {
+      calm: { speed: 0.4, amp: 12, layers: 4, sky1: '#0a1628', sky2: '#0d2a50', water1: '#0a1e3d', wave: '#1a4a7a', foam: 'rgba(180,220,255,0.15)' },
+      drift: { speed: 0.7, amp: 20, layers: 5, sky1: '#0a0a1a', sky2: '#1a1040', water1: '#0a1030', wave: '#2a1a60', foam: 'rgba(200,180,255,0.12)' },
+      storm: { speed: 1.5, amp: 38, layers: 6, sky1: '#080810', sky2: '#0a1020', water1: '#080c18', wave: '#142040', foam: 'rgba(140,180,220,0.25)' },
+      aurora: { speed: 0.5, amp: 14, layers: 4, sky1: '#040c18', sky2: '#0a2030', water1: '#081820', wave: '#0a3040', foam: 'rgba(80,220,180,0.18)' },
+    };
+
+    function buildOcean(c) {
+      c.innerHTML = `
+  <div id="ocean-game">
+    <canvas id="ocean-canvas" width="420" height="260"></canvas>
+    <div class="ocean-controls">
+      <button class="oc-btn active" onclick="setOcean('calm',this)">Calm</button>
+      <button class="oc-btn" onclick="setOcean('drift',this)">Drift</button>
+      <button class="oc-btn" onclick="setOcean('storm',this)">Release</button>
+      <button class="oc-btn" onclick="setOcean('aurora',this)">Aurora</button>
+    </div>
+    <div class="ocean-info">
+      <div class="oi-card"><div class="oi-val" id="oc-timer">0:00</div><div class="oi-lab">Session time</div></div>
+      <div class="oi-card"><div class="oi-val" id="oc-xp">0</div><div class="oi-lab">XP earned</div></div>
+      <div class="oi-card"><div class="oi-val" id="oc-mood">Calm</div><div class="oi-lab">Current mood</div></div>
+    </div>
+  </div>`;
+      oceanSeconds = 0; oceanT = 0; oceanMood = 'calm';
+      const canvas = document.getElementById('ocean-canvas');
+      canvas.width = canvas.offsetWidth || 420;
+      const stars = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + 0.3, op: Math.random() * 0.7 + 0.2, sp: Math.random() * 2 + 0.5, ph: Math.random() * Math.PI * 2 }));
+
+      function drawOcean() {
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const m = OCEAN_MOODS[oceanMood];
+        ctx.clearRect(0, 0, W, H);
+        const sg = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+        sg.addColorStop(0, m.sky1); sg.addColorStop(1, m.sky2);
+        ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H * 0.6);
+        // stars
+        stars.forEach(s => {
+          const tw = 0.5 + 0.5 * Math.sin(oceanT * s.sp + s.ph);
+          ctx.globalAlpha = s.op * tw; ctx.fillStyle = '#fff';
+          ctx.beginPath(); ctx.arc(s.x * W, s.y * H * 0.5, s.r, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        // moon
+        if (oceanMood !== 'storm') {
+          const mx = W * 0.75, my = H * 0.15, mr = 18;
+          const glow = ctx.createRadialGradient(mx, my, mr * 0.5, mx, my, mr * 3);
+          glow.addColorStop(0, 'rgba(200,230,255,0.15)'); glow.addColorStop(1, 'rgba(200,230,255,0)');
+          ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(mx, my, mr * 3, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#d8eaff'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
+        }
+        // aurora
+        if (oceanMood === 'aurora') {
+          for (let i = 0; i < 3; i++) {
+            const ay = H * (0.06 + i * 0.06), wv = Math.sin(oceanT * 0.3 + i * 1.2) * 25;
+            const ag = ctx.createLinearGradient(0, ay, 0, ay + 70);
+            const cols = ['rgba(0,220,160,0.12)', 'rgba(60,180,220,0.09)', 'rgba(120,80,220,0.07)'];
+            ag.addColorStop(0, cols[i]); ag.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = ag; ctx.beginPath(); ctx.moveTo(0, ay + wv);
+            for (let x = 0; x <= W; x += 8) ctx.lineTo(x, ay + Math.sin(x * 0.008 + oceanT * 0.4 + i) * 20 + wv);
+            ctx.lineTo(W, ay + 70); ctx.lineTo(0, ay + 70); ctx.closePath(); ctx.fill();
+          }
+        }
+        // water bg
+        const wg = ctx.createLinearGradient(0, H * 0.55, 0, H);
+        wg.addColorStop(0, m.water1); wg.addColorStop(1, '#040810');
+        ctx.fillStyle = wg; ctx.fillRect(0, H * 0.55, W, H);
+        // waves
+        for (let l = 0; l < m.layers; l++) {
+          const lp = l / m.layers;
+          const ly = H * 0.56 + lp * (H - H * 0.56) * 0.6;
+          const la = m.amp * (1 - lp * 0.5) * (oceanMood === 'storm' ? (1 + Math.sin(oceanT * 2) * 0.4) : 1);
+          const fr = 0.012 - lp * 0.003, sp = m.speed * (1 + lp * 0.3), al = 0.14 + lp * 0.2;
+          ctx.beginPath(); ctx.moveTo(0, ly);
+          for (let x = 0; x <= W; x += 3) {
+            ctx.lineTo(x, ly + Math.sin(x * fr + oceanT * sp) * la + Math.sin(x * fr * 1.7 + oceanT * sp * 0.6 + l) * la * 0.4);
+          }
+          ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+          const r = parseInt(m.wave.slice(1, 3), 16), g = parseInt(m.wave.slice(3, 5), 16), b = parseInt(m.wave.slice(5, 7), 16);
+          ctx.fillStyle = `rgba(${r},${g},${b},${al})`; ctx.fill();
+        }
+        oceanT += 0.016;
+      }
+
+      function oceanLoop() {
+        drawOcean();
+        oceanAnim = requestAnimationFrame(oceanLoop);
+      }
+      oceanLoop();
+
+      setInterval(() => {
+        if (!document.getElementById('oc-timer')) return;
+        oceanSeconds++;
+        if (oceanSeconds % 12 === 0) { addXP(1); document.getElementById('oc-xp').textContent = sessionXP; }
+        const m = Math.floor(oceanSeconds / 60), s = oceanSeconds % 60;
+        document.getElementById('oc-timer').textContent = m + ':' + String(s).padStart(2, '0');
+      }, 1000);
+    }
+
+    function stopOcean() { if (oceanAnim) { cancelAnimationFrame(oceanAnim); oceanAnim = null; } }
+
+    function setOcean(mood, btn) {
+      oceanMood = mood;
+      document.querySelectorAll('.oc-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const labels = { calm: 'Calm', drift: 'Dreaming', storm: 'Releasing', aurora: 'Wonder' };
+      if (document.getElementById('oc-mood')) document.getElementById('oc-mood').textContent = labels[mood];
+    }
+
+
+    /* ══════════════════════════════════════
+       GAME 2 — COZY ISLAND
+    ══════════════════════════════════════ */
+    const ISLAND_PLANTS = {
+      happy: { icon: ['🌱', '🌿', '🌸', '🌺'], label: 'Sunshine flower' },
+      calm: { icon: ['🌱', '🌿', '💧', '🌊'], label: 'Ocean lily' },
+      sad: { icon: ['🌱', '🌿', '🌧️', '🌈'], label: 'Rainbow sprout' },
+      grateful: { icon: ['🌱', '🌿', '⭐', '✨'], label: 'Star blossom' },
+      anxious: { icon: ['🌱', '🌿', '🌀', '🦋'], label: 'Butterfly bush' },
+      tired: { icon: ['🌱', '🌿', '🌙', '🌟'], label: 'Moon fern' },
+    };
+    let islandState = {
+      coins: 40, streak: 3, blooms: 2, friends: 1,
+      plots: [
+        { mood: 'happy', stage: 3, watered: true }, { mood: 'calm', stage: 2, watered: false },
+        { mood: 'grateful', stage: 1, watered: false }, { mood: 'sad', stage: 0, watered: false },
+        null, null, null, null
+      ]
+    };
+
+    function buildIsland(c) {
+      c.innerHTML = `<div id="island-game">
+    <div class="island-hdr">
+      <div class="island-stat"><div class="v" id="i-streak">3</div><div class="l">Day streak</div></div>
+      <div class="island-stat"><div class="v" id="i-blooms">2</div><div class="l">Blooms</div></div>
+      <div class="island-stat"><div class="v" id="i-friends">1</div><div class="l">Friends</div></div>
+      <div class="island-stat"><div class="v" id="i-coins">40</div><div class="l">Seeds 🌱</div></div>
+    </div>
+    <div class="mood-section">
+      <h3>How are you feeling today?</h3>
+      <div class="mood-btns">
+        <button class="mb" style="background:#fff9e6;border-color:#f9a825;color:#854F0B" onclick="islandMood('happy','Happiness seed planted! 🌺')">😊 Happy</button>
+        <button class="mb" style="background:#e8f5fe;border-color:#85B7EB;color:#0C447C" onclick="islandMood('calm','Calm seed planted! 🌊')">😌 Calm</button>
+        <button class="mb" style="background:#fce4ec;border-color:#ED93B1;color:#72243E" onclick="islandMood('sad','Sad seed planted. It will bloom into strength 🌈')">😢 Sad</button>
+        <button class="mb" style="background:#EAF3DE;border-color:#97C459;color:#27500A" onclick="islandMood('grateful','Grateful seed planted! ✨')">🙏 Grateful</button>
+        <button class="mb" style="background:#ede7f6;border-color:#AFA9EC;color:#3C3489" onclick="islandMood('anxious','Anxious seed planted. Let the roots hold you 🦋')">😰 Anxious</button>
+        <button class="mb" style="background:#fff3e0;border-color:#EF9F27;color:#633806" onclick="islandMood('tired','Rest seed planted. Even soil needs sleep 🌙')">😴 Tired</button>
+      </div>
+    </div>
+    <h3 style="font-family:var(--font-head);font-size:15px;margin-bottom:8px">Your garden</h3>
+    <div class="garden-grid" id="island-garden"></div>
+    <h3 style="font-family:var(--font-head);font-size:15px;margin:12px 0 8px">Island friends</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap" id="island-friends"></div>
+  </div>`;
+      renderIsland();
+    }
+
+    function islandMood(mood, msg) {
+      const empty = islandState.plots.findIndex(p => !p);
+      if (empty === -1) { showToast('All plots full! Water plants first.'); return; }
+      islandState.plots[empty] = { mood, stage: 0, watered: false };
+      islandState.coins += 5;
+      addXP(5);
+      showToast(msg);
+      renderIsland();
+    }
+
+    function islandWater(i) {
+      const p = islandState.plots[i];
+      if (!p || p.watered) return;
+      p.watered = true;
+      p.stage = Math.min(3, p.stage + 1);
+      islandState.coins += 3;
+      addXP(3);
+      if (p.stage === 3) { islandState.blooms++; addXP(10); showToast('Bloom! 🌺 +10 XP'); }
+      else showToast('Watered! Growing nicely 💧');
+      renderIsland();
+      setTimeout(() => { if (p && p.stage < 3) { p.watered = false; renderIsland(); } }, 3000);
+    }
+
+    function renderIsland() {
+      const s = islandState;
+      ['streak', 'blooms', 'friends', 'coins'].forEach(k => {
+        const el = document.getElementById('i-' + k); if (el) el.textContent = s[k];
+      });
+      const g = document.getElementById('island-garden'); if (!g) return;
+      g.innerHTML = '';
+      s.plots.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'plot' + (p ? (p.stage >= 3 ? ' bloomed' : ' planted') : '');
+        if (p) {
+          const pl = ISLAND_PLANTS[p.mood];
+          div.innerHTML = `<div class="plot-icon">${pl.icon[p.stage]}</div><div class="plot-label">${['Seed', 'Sprout', 'Growing', 'Bloomed!'][p.stage]}</div>`;
+          if (p.stage < 3 && !p.watered) {
+            const wb = document.createElement('button');
+            wb.className = 'water-pill'; wb.textContent = '💧 Water'; wb.onclick = (e) => { e.stopPropagation(); islandWater(i); };
+            div.appendChild(wb);
+          }
+        } else {
+          div.innerHTML = '<div class="plot-icon" style="font-size:20px;color:#ccc">+</div><div class="plot-label">Empty plot</div>';
+        }
+        g.appendChild(div);
+      });
+      const friends = document.getElementById('island-friends'); if (!friends) return;
+      const ANIMALS = [{ n: 'Buni', i: '🐰', b: 1 }, { n: 'Finn', i: '🦊', b: 5 }, { n: 'Mochi', i: '🐻', b: 10 }, { n: 'Pip', i: '🐦', b: 20 }];
+      friends.innerHTML = '';
+      ANIMALS.forEach(a => {
+        const div = document.createElement('div');
+        div.style.cssText = 'text-align:center;padding:10px;background:#fff;border:1px solid #d6e8db;border-radius:10px;width:72px';
+        if (s.blooms >= a.b) {
+          div.innerHTML = `<div style="font-size:22px">${a.i}</div><div style="font-size:10px;color:#3B6D11;font-weight:700;margin-top:4px">${a.n}</div>`;
+        } else {
+          div.innerHTML = `<div style="font-size:22px;filter:grayscale(1);opacity:0.4">${a.i}</div><div style="font-size:10px;color:#aaa;margin-top:4px">${a.b} blooms</div>`;
+        }
+        friends.appendChild(div);
+      });
+    }
+
+
+    /* ══════════════════════════════════════
+       GAME 3 — SPIRIT JOURNEY
+    ══════════════════════════════════════ */
+    const SPIRITS = [
+      {
+        name: 'Sorrow', icon: '🌧️', feeling: 'Grief', color: 'rgba(80,100,180,0.25)', barColor: '#7986cb', peace: 0, maxPeace: 3, stages: [
+          { msg: 'I carry something heavy. I do not know how to put it down.', choices: ['Tell me about it.', 'You do not have to carry it alone.'], next: 1 },
+          { msg: 'I loved someone deeply. Now they are gone. I do not know who I am without them.', choices: ['Your love for them still exists — it has not gone anywhere.', 'Grief is the price of love. It means it was real.'], next: 2 },
+          { msg: 'I think I can carry them in my heart. Not as weight. As warmth.', choices: ['Yes. You are ready.'], next: 'done' },
+        ]
+      },
+      {
+        name: 'Worry', icon: '🌀', feeling: 'Anxiety', color: 'rgba(100,70,180,0.2)', barColor: '#9575cd', peace: 0, maxPeace: 3, stages: [
+          { msg: 'I keep thinking about everything that could go wrong. I cannot stop.', choices: ['What feels most urgent right now?', 'Can you take one breath with me?'], next: 1 },
+          { msg: 'It is the future. I cannot control it. And that terrifies me.', choices: ['You have survived every hard day so far.', 'Uncertainty can hold good things too.'], next: 2 },
+          { msg: 'I forgot that uncertainty can hold good things too. I want to trust the river.', choices: ['The river will carry you.'], next: 'done' },
+        ]
+      },
+      {
+        name: 'Anger', icon: '🔥', feeling: 'Frustration', color: 'rgba(180,80,50,0.2)', barColor: '#ef5350', peace: 0, maxPeace: 3, stages: [
+          { msg: 'Nobody listens. Nobody sees how hard I try. I am so tired of being overlooked.', choices: ['I see you. I am listening.', 'How long have you felt this way?'], next: 1 },
+          { msg: 'Years. I have been holding it in because I thought being angry meant being weak.', choices: ['Anger is a signal — it tells us something matters.', 'Feeling it does not make you weak.'], next: 2 },
+          { msg: 'Maybe I can let some of this fire out. Into something, not at people.', choices: ['Your fire can light the way. Release it gently.'], next: 'done' },
+        ]
+      },
+    ];
+    let spiritSelected = null;
+    let spiritPeaceTotal = 12, spiritReleased = 2;
+    let spiritData = SPIRITS.map(s => ({ ...s, peace: 0 }));
+
+    function buildSpirit(c) {
+      c.innerHTML = `<div id="spirit-game">
+    <div class="spirit-arena" id="spirit-arena">
+      <canvas class="spirit-stars" id="spirit-star-c" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <div class="spirit-hdr">
+        <div class="spirit-badge">⭐ ${spiritPeaceTotal} peace</div>
+        <div class="spirit-badge">🏮 ${spiritReleased} released</div>
+      </div>
+      <div class="spirit-msg" id="spirit-msg">Your vessel drifts quietly. Choose a spirit to sit with.</div>
+    </div>
+    <div class="spirit-passengers" id="spirit-passengers"></div>
+    <div class="choices" id="spirit-choices"></div>
+    <button class="release-btn" id="spirit-release" disabled onclick="releaseSpirit()">🌟 Release to the stars</button>
+  </div>`;
+      const sc = document.getElementById('spirit-star-c');
+      if (sc) {
+        sc.width = sc.offsetWidth || 360; sc.height = sc.offsetHeight || 140;
+        const ctx = sc.getContext('2d');
+        for (let i = 0; i < 80; i++) {
+          ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.6 + 0.2})`;
+          ctx.beginPath(); ctx.arc(Math.random() * sc.width, Math.random() * sc.height, Math.random() * 1.2 + 0.3, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      renderSpirits();
+    }
+
+    function renderSpirits() {
+      const list = document.getElementById('spirit-passengers'); if (!list) return;
+      list.innerHTML = '';
+      spiritData.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'passenger-row' + (spiritSelected === i ? ' selected' : '');
+        div.style.background = s.color;
+        const pct = Math.round(s.peace / s.maxPeace * 100);
+        div.innerHTML = `<div class="pr-top"><div class="pr-icon">${s.icon}</div><div><div class="pr-name">${s.name}</div><div class="pr-feel">${s.feeling}</div></div></div><div class="pr-bar-bg"><div class="pr-bar" style="width:${pct}%;background:${s.barColor}"></div></div>`;
+        div.onclick = () => selectSpirit(i);
+        list.appendChild(div);
+      });
+    }
+
+    function selectSpirit(i) {
+      spiritSelected = i; renderSpirits();
+      const s = spiritData[i];
+      const stageIdx = Math.min(s.peace, s.stages.length - 1);
+      const stage = s.stages[stageIdx];
+      const msg = document.getElementById('spirit-msg'); if (msg) msg.textContent = '"' + stage.msg + '"';
+      const cl = document.getElementById('spirit-choices'); if (!cl) return;
+      cl.innerHTML = '';
+      const rb = document.getElementById('spirit-release');
+      if (s.peace >= s.maxPeace) {
+        if (rb) rb.disabled = false;
+        cl.innerHTML = '<div style="font-size:12px;color:#f5a623;text-align:center;padding:8px;font-weight:700">This spirit is at peace. Ready to release.</div>';
+      } else {
+        if (rb) rb.disabled = true;
+        stage.choices.forEach(ch => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn'; btn.textContent = ch;
+          btn.onclick = () => spiritChoose(stage.next);
+          cl.appendChild(btn);
+        });
+      }
+    }
+
+    function spiritChoose(next) {
+      if (spiritSelected === null) return;
+      const s = spiritData[spiritSelected];
+      s.peace = Math.min(s.maxPeace, s.peace + 1);
+      spiritPeaceTotal += 3; addXP(3);
+      if (s.peace >= s.maxPeace) { showToast(s.name + ' found peace. Ready to release!'); }
+      selectSpirit(spiritSelected);
+    }
+
+    function releaseSpirit() {
+      if (spiritSelected === null) return;
+      const s = spiritData[spiritSelected];
+      spiritReleased++; spiritPeaceTotal += 10; addXP(30);
+      showToast(s.icon + ' ' + s.name + ' returns to the stars! +30 XP');
+      spiritData.splice(spiritSelected, 1);
+      spiritSelected = null;
+      const msg = document.getElementById('spirit-msg');
+      if (msg) msg.textContent = 'A lantern drifts into the night sky. Choose another spirit.';
+      const cl = document.getElementById('spirit-choices'); if (cl) cl.innerHTML = '';
+      const rb = document.getElementById('spirit-release'); if (rb) rb.disabled = true;
+      renderSpirits();
+    }
+
+
+    /* ══════════════════════════════════════
+       GAME 4 — MOOD BLOCKS (TETRIS)
+    ══════════════════════════════════════ */
+    const TCOLS = 10, TROWS = 20, TSZ = 22;
+    const TEMO = [
+      { name: 'Joy', color: '#FDD835', dark: '#F57F17' },
+      { name: 'Calm', color: '#4FC3F7', dark: '#0277BD' },
+      { name: 'Love', color: '#F48FB1', dark: '#880E4F' },
+      { name: 'Hope', color: '#A5D6A7', dark: '#1B5E20' },
+      { name: 'Anger', color: '#EF5350', dark: '#B71C1C' },
+      { name: 'Sad', color: '#7986CB', dark: '#1A237E' },
+    ];
+    const TSHAPES = [[[1, 1, 1, 1]], [[1, 1], [1, 1]], [[0, 1, 0], [1, 1, 1]], [[1, 0, 0], [1, 1, 1]], [[0, 0, 1], [1, 1, 1]], [[0, 1, 1], [1, 1, 0]], [[1, 1, 0], [0, 1, 1]]];
+    let tBoard, tCur, tNext, tScore = 0, tLines = 0, tLevel = 1, tetrisRunning = false, tetrisLoop;
+
+    function buildBlocks(c) {
+      c.innerHTML = `<div id="blocks-game">
+    <canvas id="tetris-board" width="${TCOLS * TSZ}" height="${TROWS * TSZ}"></canvas>
+    <div class="tetris-side">
+      <div class="ts-card"><div class="ts-val" id="t-score">0</div><div class="ts-lab">Score</div></div>
+      <div class="ts-card"><div class="ts-val" id="t-level">1</div><div class="ts-lab">Level</div></div>
+      <div class="ts-card"><div class="ts-val" id="t-lines">0</div><div class="ts-lab">Lines</div></div>
+      <div class="ts-card"><canvas id="next-board" width="80" height="80"></canvas><div class="ts-lab" style="margin-top:4px">Next</div></div>
+      <div class="tetris-ctrl">
+        <button class="tc-btn primary" id="t-start-btn" onclick="toggleTetris()">Start</button>
+        <div style="font-size:10px;color:var(--text-muted);text-align:center;line-height:1.8">← → Move<br>↑ Rotate<br>↓ Drop faster<br>Space = instant drop</div>
+      </div>
+      <div class="ts-card">
+        <div class="ts-lab" style="margin-bottom:6px">Emotion key</div>
+        <div class="emo-key">${TEMO.map(e => `<div class="ek-row"><div class="ek-dot" style="background:${e.color}"></div>${e.name}</div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+      tBoard = Array(TROWS).fill(null).map(() => Array(TCOLS).fill(null));
+      tScore = 0; tLines = 0; tLevel = 1;
+      tNext = randTPiece();
+      drawTetris();
+      drawTNext();
+    }
+
+    function randTPiece() { const s = TSHAPES[Math.floor(Math.random() * TSHAPES.length)], e = TEMO[Math.floor(Math.random() * TEMO.length)]; return { shape: s, emo: e, x: Math.floor((TCOLS - s[0].length) / 2), y: 0 }; }
+    function tCollides(p, dx, dy, sh) { const s = sh || p.shape; for (let r = 0; r < s.length; r++)for (let cc = 0; cc < s[r].length; cc++)if (s[r][cc]) { const nx = p.x + cc + (dx || 0), ny = p.y + r + (dy || 0); if (nx < 0 || nx >= TCOLS || ny >= TROWS) return true; if (ny >= 0 && tBoard[ny][nx]) return true; } return false; }
+    function tRotate(p) { const s = p.shape[0].map((_, i) => p.shape.map(r => r[i]).reverse()); return tCollides({ ...p, shape: s }, 0, 0, s) ? p.shape : s; }
+    function tPlace() { tCur.shape.forEach((r, ri) => r.forEach((v, ci) => { if (v) tBoard[tCur.y + ri][tCur.x + ci] = tCur.emo; })); let cleared = 0; for (let r = TROWS - 1; r >= 0; r--) { if (tBoard[r].every(c => c)) { tBoard.splice(r, 1); tBoard.unshift(Array(TCOLS).fill(null)); cleared++; r++; } } if (cleared) { tScore += cleared * 100 * tLevel; tLines += cleared; tLevel = 1 + Math.floor(tLines / 10); addXP(cleared * 2); showToast(['', 'Line cleared!', 'Double clear!', 'Triple! Breathe.', 'QUAD! Clarity!'][Math.min(cleared, 4)]);['t-score', 't-level', 't-lines'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = [tScore, tLevel, tLines][['t-score', 't-level', 't-lines'].indexOf(id)]; }); } tCur = tNext; tNext = randTPiece(); if (tCollides(tCur, 0, 0)) { stopTetris(); setTimeout(() => alert('Game over!\nScore: ' + tScore), 100); } drawTNext(); }
+
+    function drawTetris() { const c = document.getElementById('tetris-board'); if (!c) return; const ctx = c.getContext('2d'); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, c.width, c.height); for (let r = 0; r < TROWS; r++)for (let cc = 0; cc < TCOLS; cc++) { const cell = tBoard[r][cc]; if (cell) drawTCell(ctx, cc, r, cell.color, cell.dark); else { ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.strokeRect(cc * TSZ + 0.5, r * TSZ + 0.5, TSZ - 1, TSZ - 1); } } if (tCur && tetrisRunning) { let gy = tCur.y; while (!tCollides(tCur, 0, gy - tCur.y + 1)) gy++; tCur.shape.forEach((row, ri) => row.forEach((v, ci) => { if (v) { ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect((tCur.x + ci) * TSZ, (gy + ri) * TSZ, TSZ, TSZ); } })); tCur.shape.forEach((row, ri) => row.forEach((v, ci) => { if (v) drawTCell(ctx, tCur.x + ci, tCur.y + ri, tCur.emo.color, tCur.emo.dark); })); } }
+    function drawTCell(ctx, cc, r, color, dark) { ctx.fillStyle = color; ctx.fillRect(cc * TSZ + 1, r * TSZ + 1, TSZ - 2, TSZ - 2); ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fillRect(cc * TSZ + 1, r * TSZ + 1, TSZ - 2, 3); ctx.fillStyle = dark; ctx.fillRect(cc * TSZ + 1, r * TSZ + TSZ - 3, TSZ - 2, 2); }
+    function drawTNext() { const c = document.getElementById('next-board'); if (!c || !tNext) return; const ctx = c.getContext('2d'); ctx.clearRect(0, 0, 80, 80); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, 80, 80); const ox = Math.floor((4 - tNext.shape[0].length) / 2) * TSZ / 1.1; const oy = Math.floor((4 - tNext.shape.length) / 2) * TSZ / 1.1; tNext.shape.forEach((row, ri) => row.forEach((v, ci) => { if (v) { const x = Math.floor(ox + (ci * TSZ)), y = Math.floor(oy + (ri * TSZ)); ctx.fillStyle = tNext.emo.color; ctx.fillRect(x + 1, y + 1, TSZ - 2, TSZ - 2); }; })); }
+
+    function toggleTetris() { if (tetrisRunning) stopTetris(); else startTetris(); }
+    function startTetris() { tBoard = Array(TROWS).fill(null).map(() => Array(TCOLS).fill(null)); tScore = 0; tLines = 0; tLevel = 1; tNext = randTPiece(); tCur = randTPiece(); tNext = randTPiece(); tetrisRunning = true; const b = document.getElementById('t-start-btn'); if (b) b.textContent = 'Pause'; drawTNext(); tetrisStep(); }
+    function stopTetris() { tetrisRunning = false; clearTimeout(tetrisLoop); const b = document.getElementById('t-start-btn'); if (b) b.textContent = 'Start'; }
+    function tetrisStep() { if (!tetrisRunning) return; if (!tCollides(tCur, 0, 1)) tCur.y++; else tPlace(); drawTetris(); tetrisLoop = setTimeout(tetrisStep, Math.max(100, 600 - tLevel * 50)); }
+
+    document.addEventListener('keydown', e => {
+      if (!tetrisRunning || !tCur) return;
+      if (e.key === 'ArrowLeft' && !tCollides(tCur, -1, 0)) tCur.x--;
+      else if (e.key === 'ArrowRight' && !tCollides(tCur, 1, 0)) tCur.x++;
+      else if (e.key === 'ArrowDown' && !tCollides(tCur, 0, 1)) tCur.y++;
+      else if (e.key === 'ArrowUp') tCur.shape = tRotate(tCur);
+      else if (e.key === ' ') { while (!tCollides(tCur, 0, 1)) tCur.y++; tPlace(); }
+      else return;
+      e.preventDefault(); drawTetris();
+    });
+
+
+    /* ══════════════════════════════════════
+       GAME 5 — CALM GRID (SUDOKU)
+    ══════════════════════════════════════ */
+    const SG_THEMES = [
+      { bg: '#e8f8f2', sel: 'rgba(29,158,117,0.15)', dot: '#1D9E75' },
+      { bg: '#f0eeff', sel: 'rgba(127,119,221,0.12)', dot: '#7F77DD' },
+      { bg: '#fff3ee', sel: 'rgba(216,90,48,0.10)', dot: '#D85A30' },
+      { bg: '#e8f4fd', sel: 'rgba(55,138,221,0.10)', dot: '#378ADD' },
+    ];
+    const SG_AFFIRM = ['Take your time. There is no rush here.', 'Each correct number is a small victory.', 'Focus is a form of self-care.', 'A calm mind sees clearly.', 'You are doing wonderfully.', 'One step at a time.'];
+    const SG_BASE = [[5, 3, 0, 0, 7, 0, 0, 0, 0], [6, 0, 0, 1, 9, 5, 0, 0, 0], [0, 9, 8, 0, 0, 0, 0, 6, 0], [8, 0, 0, 0, 6, 0, 0, 0, 3], [4, 0, 0, 8, 0, 3, 0, 0, 1], [7, 0, 0, 0, 2, 0, 0, 0, 6], [0, 6, 0, 0, 0, 0, 2, 8, 0], [0, 0, 0, 4, 1, 9, 0, 0, 5], [0, 0, 0, 0, 8, 0, 0, 7, 9]];
+    const SG_SOL = [[5, 3, 4, 6, 7, 8, 9, 1, 2], [6, 7, 2, 1, 9, 5, 3, 4, 8], [1, 9, 8, 3, 4, 2, 5, 6, 7], [8, 5, 9, 7, 6, 1, 4, 2, 3], [4, 2, 6, 8, 5, 3, 7, 9, 1], [7, 1, 3, 9, 2, 4, 8, 5, 6], [9, 6, 1, 5, 3, 7, 2, 8, 4], [2, 8, 7, 4, 1, 9, 6, 3, 5], [3, 4, 5, 2, 8, 6, 1, 7, 9]];
+    let sgTheme = 0, sgSelR = -1, sgSelC = -1, sgMistakes = 0, sgHints = 3, sgPuzzle, sgGiven, sgErrors;
+
+    function buildSudoku(c) {
+      c.innerHTML = `<div id="sudoku-game">
+    <div class="sg-top">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary)">Calm Grid</div>
+      <div class="sg-controls">
+        <select class="diff-sel" id="sg-diff"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+        <div class="theme-dots" id="sg-theme-dots"></div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);font-style:italic;margin-bottom:12px;text-align:center" id="sg-affirm">Take your time. There is no rush here.</div>
+    <div class="sg-grid-wrap"><table id="sg-table"></table></div>
+    <div class="sg-numpad" id="sg-numpad"></div>
+    <div class="sg-actions">
+      <button class="sg-act" onclick="sgHint()"><i class="ti ti-bulb"></i> Hint (<span id="sg-hints">3</span>)</button>
+      <button class="sg-act" onclick="sgNewGame()"><i class="ti ti-refresh"></i> New puzzle</button>
+      <button class="sg-act" id="sg-erase-btn"><i class="ti ti-eraser"></i> Erase</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <div style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;text-align:center"><div style="font-family:var(--font-head);font-size:18px" id="sg-mistakes">0</div><div style="font-size:10px;color:var(--text-muted)">Mistakes</div></div>
+      <div style="flex:1;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;text-align:center"><div style="font-family:var(--font-head);font-size:18px" id="sg-solved">6</div><div style="font-size:10px;color:var(--text-muted)">Solved</div></div>
+    </div>
+    <div class="sg-win" id="sg-win">🎉 Puzzle complete! Your mind is clear and strong. +20 XP</div>
+  </div>`;
+      const td = document.getElementById('sg-theme-dots');
+      SG_THEMES.forEach((th, i) => { const d = document.createElement('div'); d.className = 'tdot' + (i === 0 ? ' active' : ''); d.style.background = th.dot; d.onclick = () => { sgTheme = i; document.querySelectorAll('.tdot').forEach((x, j) => x.classList.toggle('active', j === i)); sgRenderGrid(); }; td.appendChild(d); });
+      const np = document.getElementById('sg-numpad');
+      for (let n = 1; n <= 9; n++) { const b = document.createElement('button'); b.className = 'sg-num'; b.textContent = n; b.onclick = () => sgEnter(n); np.appendChild(b); }
+      document.getElementById('sg-erase-btn').onclick = () => { if (sgSelR >= 0 && !sgGiven[sgSelR][sgSelC]) { sgPuzzle[sgSelR][sgSelC] = 0; sgErrors[sgSelR][sgSelC] = false; sgRenderGrid(); } };
+      sgNewGame();
+    }
+
+    function sgNewGame() { const diff = document.getElementById('sg-diff') ? document.getElementById('sg-diff').value : 'easy'; sgPuzzle = SG_BASE.map(r => [...r]); sgGiven = SG_BASE.map(r => r.map(v => v !== 0)); sgErrors = Array(9).fill(null).map(() => Array(9).fill(false)); sgMistakes = 0; sgHints = 3; sgSelR = -1; sgSelC = -1; const removals = { easy: 28, medium: 40, hard: 50 }[diff]; let rem = 0, tries = 0; while (rem < removals && tries < 500) { const r = Math.floor(Math.random() * 9), c = Math.floor(Math.random() * 9); if (sgPuzzle[r][c] !== 0) { sgPuzzle[r][c] = 0; sgGiven[r][c] = false; rem++; } tries++; } document.getElementById('sg-mistakes').textContent = 0; document.getElementById('sg-hints').textContent = sgHints; document.getElementById('sg-win').style.display = 'none'; document.getElementById('sg-affirm').textContent = SG_AFFIRM[Math.floor(Math.random() * SG_AFFIRM.length)]; sgRenderGrid(); }
+
+    function sgRenderGrid() { const t = document.getElementById('sg-table'); if (!t) return; const th = SG_THEMES[sgTheme]; t.innerHTML = ''; for (let r = 0; r < 9; r++) { const tr = document.createElement('tr'); for (let cc = 0; cc < 9; cc++) { const td = document.createElement('td'); if ((cc + 1) % 3 === 0 && cc < 8) td.classList.add('thick-r'); if ((r + 1) % 3 === 0 && r < 8) td.classList.add('thick-b'); if (sgGiven[r][cc]) td.classList.add('given'); else td.classList.add('editable'); if (sgErrors[r][cc]) td.classList.add('err'); if (r === sgSelR && cc === sgSelC) td.classList.add('sel'); else if (sgSelR >= 0 && (r === sgSelR || cc === sgSelC || (Math.floor(r / 3) === Math.floor(sgSelR / 3) && Math.floor(cc / 3) === Math.floor(sgSelC / 3)))) td.style.background = th.sel; if (sgPuzzle[r][cc]) td.textContent = sgPuzzle[r][cc]; td.onclick = () => { sgSelR = r; sgSelC = cc; sgRenderGrid(); }; tr.appendChild(td); } t.appendChild(tr); } }
+    function sgEnter(n) { if (sgSelR < 0 || sgGiven[sgSelR][sgSelC]) return; sgPuzzle[sgSelR][sgSelC] = n; sgErrors[sgSelR][sgSelC] = (n !== SG_SOL[sgSelR][sgSelC]); if (sgErrors[sgSelR][sgSelC]) { sgMistakes++; const el = document.getElementById('sg-mistakes'); if (el) el.textContent = sgMistakes; } else if (sgPuzzle.every((r, ri) => r.every((v, ci) => v === SG_SOL[ri][ci]))) { addXP(20); document.getElementById('sg-win').style.display = 'block'; showToast('Puzzle complete! +20 XP 🎉'); } document.getElementById('sg-affirm').textContent = SG_AFFIRM[Math.floor(Math.random() * SG_AFFIRM.length)]; sgRenderGrid(); }
+    function sgHint() { if (sgHints <= 0 || sgSelR < 0 || sgGiven[sgSelR][sgSelC]) return; sgPuzzle[sgSelR][sgSelC] = SG_SOL[sgSelR][sgSelC]; sgErrors[sgSelR][sgSelC] = false; sgHints--; const el = document.getElementById('sg-hints'); if (el) el.textContent = sgHints; sgRenderGrid(); if (sgPuzzle.every((r, ri) => r.every((v, ci) => v === SG_SOL[ri][ci]))) { addXP(20); document.getElementById('sg-win').style.display = 'block'; } }
+
+
+    /* ══════════════════════════════════════
+       GAME 6 — COLOR YOUR WORLD
+    ══════════════════════════════════════ */
+    const GRIS_COLORS = [
+      { name: 'Joy yellow', hex: '#FDD835', unlocked: true },
+      { name: 'Calm blue', hex: '#4FC3F7', unlocked: true },
+      { name: 'Love pink', hex: '#F48FB1', unlocked: true },
+      { name: 'Hope green', hex: '#81C784', unlocked: false, at: 4 },
+      { name: 'Wonder purple', hex: '#CE93D8', unlocked: false, at: 6 },
+      { name: 'Passion coral', hex: '#FF8A65', unlocked: false, at: 8 },
+      { name: 'Peace teal', hex: '#4DB6AC', unlocked: false, at: 10 },
+    ];
+    const GRIS_MOMENTS = [
+      { icon: '🌅', name: 'Morning stretch', done: true, ci: 1 }, { icon: '💧', name: 'Drink water', done: true, ci: 0 },
+      { icon: '📓', name: 'Journal 3 lines', done: true, ci: 0 }, { icon: '🚶', name: '10-min walk', done: false, ci: 3 },
+      { icon: '🧘', name: 'Breathing', done: false, ci: 1 }, { icon: '🌿', name: 'Touch nature', done: false, ci: 4 },
+      { icon: '😴', name: 'Sleep by 11pm', done: false, ci: 6 }, { icon: '🤝', name: 'Connect', done: false, ci: 2 },
+    ];
+    let grisPatches = [], grisColors = GRIS_COLORS.map(c => ({ ...c })), grisMoments = GRIS_MOMENTS.map(m => ({ ...m })), grisDone = 3, grisSelColor = 0;
+
+    function buildGris(c) {
+      c.innerHTML = `<div id="gris-game">
+    <canvas id="gris-canvas" height="200"></canvas>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="font-size:11px;color:var(--text-muted)">Your colors:</span>
+      <div id="gris-palette" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:8px">Complete a wellness moment to add color:</div>
+    <div class="gris-moments" id="gris-moments"></div>
+    <div class="gris-stats">
+      <div class="gris-stat"><div class="v" id="g-colors">3</div><div class="l">Colors unlocked</div></div>
+      <div class="gris-stat"><div class="v" id="g-done">3</div><div class="l">Moments done</div></div>
+      <div class="gris-stat"><div class="v">${Math.round((grisDone / grisMoments.length) * 100)}%</div><div class="l">Canvas colored</div></div>
+    </div>
+  </div>`;
+      const canvas = document.getElementById('gris-canvas');
+      canvas.width = canvas.offsetWidth || 420;
+      grisPatches = [];
+      for (let i = 0; i < 55; i++) {
+        const ci = Math.floor(Math.random() * 3);
+        grisPatches.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 55 + 18, ci, filled: i < 18 });
+      }
+      grisDrawWorld(); grisRenderPalette(); grisRenderMoments();
+    }
+
+    function grisDrawWorld() { const c = document.getElementById('gris-canvas'); if (!c) return; const ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); ctx.fillStyle = '#ddd'; ctx.fillRect(0, 0, c.width, c.height); for (let i = 0; i < c.width; i += 16) { for (let j = 0; j < c.height; j += 16) { ctx.strokeStyle = 'rgba(0,0,0,0.04)'; ctx.lineWidth = 0.5; ctx.strokeRect(i, j, 16, 16); } } grisPatches.forEach(p => { if (p.filled) { ctx.fillStyle = grisColors[p.ci].hex + '90'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); } }); }
+    function grisRenderPalette() { const el = document.getElementById('gris-palette'); if (!el) return; el.innerHTML = ''; grisColors.forEach((col, i) => { const d = document.createElement('div'); d.className = 'gp-swatch' + (col.unlocked ? ' ' : '  locked') + (i === grisSelColor && col.unlocked ? ' sel' : ''); d.style.background = col.unlocked ? col.hex : '#ccc'; d.title = col.unlocked ? col.name : 'Unlock at ' + col.at + ' moments'; if (col.unlocked) d.onclick = () => { grisSelColor = i; grisRenderPalette(); }; el.appendChild(d); }); }
+    function grisRenderMoments() { const el = document.getElementById('gris-moments'); if (!el) return; el.innerHTML = ''; grisMoments.forEach((m, i) => { const d = document.createElement('div'); d.className = 'gm-card' + (m.done ? ' done' : ''); d.innerHTML = `<div class="gm-icon">${m.icon}</div><div class="gm-name">${m.name}</div><div class="gm-reward">${m.done ? '<span style="color:#27500A;font-weight:700">Done!</span>' : '+color +15 XP'}</div>`; if (!m.done) d.onclick = () => grisDo(i); el.appendChild(d); }); }
+    function grisDo(i) { grisMoments[i].done = true; grisDone++; const ci = grisMoments[i].ci; if (!grisColors[ci].unlocked && grisDone >= grisColors[ci].at) { grisColors[ci].unlocked = true; showToast('New color unlocked: ' + grisColors[ci].name + ' 🎨'); const gcEl = document.getElementById('g-colors'); if (gcEl) gcEl.textContent = grisColors.filter(c => c.unlocked).length; } else { showToast(grisMoments[i].name + ' done! Canvas gains color.'); } addXP(15); const np = grisPatches.findIndex(p => !p.filled); if (np >= 0) { grisPatches[np].filled = true; grisPatches[np].ci = ci; } const gdEl = document.getElementById('g-done'); if (gdEl) gdEl.textContent = grisDone; grisDrawWorld(); grisRenderPalette(); grisRenderMoments(); }
+
+
+    /* ══════════════════════════════════════
+       GAME 7 — BREATH QUEST (RPG)
+    ══════════════════════════════════════ */
+    const RPG_MONSTERS = [
+      { name: 'Stress Goblin', icon: '😤', hp: 100, maxHp: 100, reward: 30 },
+      { name: 'Worry Wraith', icon: '👻', hp: 130, maxHp: 130, reward: 45 },
+      { name: 'Anxiety Ogre', icon: '😰', hp: 160, maxHp: 160, reward: 60 },
+      { name: 'Dread Dragon', icon: '🐉', hp: 200, maxHp: 200, reward: 90 },
+    ];
+    const RPG_MOVES = [
+      { name: 'Deep breath', icon: '🌬️', power: 15, type: 'breath', msg: 'You breathe deeply. Calm washes over you.' },
+      { name: 'Box breathing', icon: '🧊', power: 25, type: 'breath', msg: 'Inhale 4, hold 4, exhale 4. The monster weakens!' },
+      { name: 'Body stretch', icon: '🤸', power: 20, type: 'move', msg: 'You stretch tall. Your energy surges!' },
+      { name: 'Power squat', icon: '💪', power: 30, type: 'move', msg: 'You squat and rise strong. Critical hit!' },
+      { name: 'Mindful step', icon: '🚶', power: 18, type: 'move', msg: '10 steps taken. The monster stumbles.' },
+      { name: 'Lion breath', icon: '🦁', power: 35, type: 'breath', msg: 'You ROAR out all tension. Massive damage!' },
+    ];
+    const RPG_PATH = [{ icon: '🌱', n: 'Start', done: true }, { icon: '🌿', n: 'Forest', done: true }, { icon: '🏔️', n: 'Hills', done: true }, { icon: '⭐', n: 'Boss', cur: true }, { icon: '🌊', n: 'Shore' }, { icon: '🏰', n: 'Castle' }, { icon: '🌈', n: 'Peak' }];
+    let rpgMonsterIdx = 0, rpgMonster = { ...RPG_MONSTERS[0] }, rpgPlayerHP = 85, rpgDefeated = 7, rpgBreaths = 24, rpgCurBreathMove = null;
+
+    function buildRPG(c) {
+      rpgMonster = { ...RPG_MONSTERS[rpgMonsterIdx] }; rpgPlayerHP = 85;
+      c.innerHTML = `<div id="rpg-game">
+    <div class="rpg-arena">
+      <div class="rpg-char-col">
+        <div class="rpg-char" id="rpg-player">🧘</div>
+        <div class="rpg-char-name">You</div>
+        <div class="rpg-hp-bar"><div class="rpg-hp-fill" id="rpg-php" style="width:85%;background:#4caf50"></div></div>
+        <div class="rpg-hp-lab" id="rpg-php-lab">HP 85/100</div>
+      </div>
+      <div class="rpg-center">
+        <div class="rpg-battle-msg" id="rpg-msg">A ${rpgMonster.name} appears! Choose your move to attack.</div>
+        <div class="rpg-xp-flash" id="rpg-xp-flash"></div>
+      </div>
+      <div class="rpg-char-col">
+        <div class="rpg-char" id="rpg-monster">${rpgMonster.icon}</div>
+        <div class="rpg-char-name" id="rpg-mname">${rpgMonster.name}</div>
+        <div class="rpg-hp-bar"><div class="rpg-hp-fill" id="rpg-mhp" style="width:100%;background:#ef5350"></div></div>
+        <div class="rpg-hp-lab" id="rpg-mhp-lab">HP 100/100</div>
+      </div>
+    </div>
+    <div class="rpg-path">${RPG_PATH.map(n => `<div class="rpg-node ${n.done ? 'done' : n.cur ? 'cur' : 'locked'}">${n.icon}<span>${n.n}</span></div>`).join('')}</div>
+    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:8px;padding:0 2px">Choose your move:</div>
+    <div class="rpg-moves" id="rpg-moves"></div>
+    <div class="rpg-stats">
+      <div class="rpg-stat"><div class="v" id="rpg-defeated">${rpgDefeated}</div><div class="l">Defeated</div></div>
+      <div class="rpg-stat"><div class="v" id="rpg-breaths">${rpgBreaths}</div><div class="l">Breaths</div></div>
+      <div class="rpg-stat"><div class="v">Lv.3</div><div class="l">Level</div></div>
+      <div class="rpg-stat"><div class="v">🔥3</div><div class="l">Streak</div></div>
+    </div>
+  </div>`;
+      const mg = document.getElementById('rpg-moves');
+      RPG_MOVES.forEach(mv => { const d = document.createElement('div'); d.className = 'rpg-move'; d.innerHTML = `<div class="rpg-move-icon">${mv.icon}</div><div class="rpg-move-name">${mv.name}</div><div class="rpg-move-power">Power: ${mv.power} · ${mv.type === 'breath' ? 'Breath' : 'Movement'}</div>`; d.onclick = () => mv.type === 'breath' ? startBreath(mv) : rpgAttack(mv); mg.appendChild(d); });
+    }
+
+    function rpgFlashXP(txt) { const f = document.getElementById('rpg-xp-flash'); if (f) { f.textContent = txt; setTimeout(() => { if (f) f.textContent = ''; }, 1200); } }
+    function rpgUpdateHP() { const mPct = Math.max(0, Math.round(rpgMonster.hp / rpgMonster.maxHp * 100)); const pPct = Math.max(0, Math.round(rpgPlayerHP / 100 * 100)); const mhp = document.getElementById('rpg-mhp'), php = document.getElementById('rpg-php'); if (mhp) mhp.style.width = mPct + '%'; if (php) php.style.width = pPct + '%'; const ml = document.getElementById('rpg-mhp-lab'), pl = document.getElementById('rpg-php-lab'); if (ml) ml.textContent = 'HP ' + Math.max(0, rpgMonster.hp) + '/' + rpgMonster.maxHp; if (pl) pl.textContent = 'HP ' + rpgPlayerHP + '/100'; }
+
+    function rpgAttack(mv) {
+      const pc = document.getElementById('rpg-player'); if (pc) { pc.classList.add('atk'); setTimeout(() => pc.classList.remove('atk'), 500); }
+      setTimeout(() => { const mc = document.getElementById('rpg-monster'); if (mc) { mc.classList.add('hurt'); setTimeout(() => mc.classList.remove('hurt'), 400); } }, 300);
+      rpgMonster.hp -= mv.power; addXP(mv.power); rpgFlashXP('+' + mv.power + ' XP');
+      if (mv.type === 'breath') { rpgBreaths++; const b = document.getElementById('rpg-breaths'); if (b) b.textContent = rpgBreaths; }
+      const msg = document.getElementById('rpg-msg'); if (msg) msg.textContent = mv.msg;
+      if (rpgMonster.hp <= 0) {
+        rpgDefeated++; addXP(rpgMonster.reward);
+        const d = document.getElementById('rpg-defeated'); if (d) d.textContent = rpgDefeated;
+        if (msg) msg.textContent = rpgMonster.name + ' defeated! +' + rpgMonster.reward + ' XP bonus!';
+        showToast(rpgMonster.name + ' defeated! +' + rpgMonster.reward + ' XP 🏆');
+        setTimeout(() => { rpgMonsterIdx = (rpgMonsterIdx + 1) % RPG_MONSTERS.length; rpgMonster = { ...RPG_MONSTERS[rpgMonsterIdx] }; const mc = document.getElementById('rpg-monster'), mn = document.getElementById('rpg-mname'); if (mc) mc.textContent = rpgMonster.icon; if (mn) mn.textContent = rpgMonster.name; if (msg) msg.textContent = 'A wild ' + rpgMonster.name + ' appears!'; rpgUpdateHP(); }, 1500);
+      } else {
+        setTimeout(() => { const dmg = Math.floor(Math.random() * 10) + 5; rpgPlayerHP = Math.max(0, rpgPlayerHP - dmg); const pc2 = document.getElementById('rpg-player'); if (pc2) { pc2.classList.add('hurt'); setTimeout(() => pc2.classList.remove('hurt'), 400); } if (msg) msg.textContent = rpgMonster.name + ' strikes back for ' + dmg + ' damage! Stay strong!'; if (rpgPlayerHP <= 0) { rpgPlayerHP = 50; if (msg) msg.textContent = 'You fell... but rest restores you. Breathe and try again!'; } rpgUpdateHP(); }, 700);
+      }
+      rpgUpdateHP();
+    }
+
+    let breathInterval = null;
+    function startBreath(mv) { rpgCurBreathMove = mv; const ov = document.getElementById('breath-overlay'); if (ov) ov.classList.add('show'); const bt = document.getElementById('bo-title'), bi = document.getElementById('bo-inst'), bc = document.getElementById('bo-circle'); if (bt) bt.textContent = mv.name; let phase = 0; const phases = ['Breathe in slowly...', 'Hold...', 'Breathe out slowly...', 'Hold...']; if (bi) bi.textContent = phases[0]; if (bc) bc.classList.add('expand'); breathInterval = setInterval(() => { phase = (phase + 1) % 4; if (bi) bi.textContent = phases[phase]; if (bc) { if (phase % 2 === 0) bc.classList.add('expand'); else bc.classList.remove('expand'); } }, 1500); }
+    function endBreath() { clearInterval(breathInterval); const ov = document.getElementById('breath-overlay'); if (ov) ov.classList.remove('show'); const bc = document.getElementById('bo-circle'); if (bc) bc.classList.remove('expand'); if (rpgCurBreathMove) rpgAttack(rpgCurBreathMove); }
+  </script>
+</body>
+
+</html>

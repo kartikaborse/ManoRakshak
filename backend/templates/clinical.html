@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ManoKart — Clinical Screening</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
+      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
+      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
+      --card-border:rgba(93,202,165,.18);
+      --red:#E74C3C;--red-light:#FDEDEC;--red-border:rgba(231,76,60,.2);
+      --orange:#E67E22;--orange-light:#FDF2E9;
+      --green:#27AE60;--green-light:#EAF2F8;
+      --amber:#F39C12;--amber-light:#FEF9E7;
+    }
+    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(93,202,165,.13) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,251,242,.8) 0%,transparent 60%);pointer-events:none}
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;animation:drift 12s ease-in-out infinite alternate}
+    .orb1{width:320px;height:320px;background:#9FE1CB;top:-80px;left:-80px;animation-delay:0s}
+    .orb2{width:240px;height:240px;background:#f4c0d1;top:30%;right:-60px;animation-delay:-4s}
+    .orb3{width:200px;height:200px;background:#fac775;bottom:10%;left:20%;animation-delay:-8s}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+    .page{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 28px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-pill{display:flex;gap:8px}
+    .nav-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);text-decoration:none;display:inline-block}
+    .nav-btn:hover, .nav-btn.active{background:var(--sage);color:white;border-color:var(--sage)}
+    
+    .xp-nav{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid var(--card-border);border-radius:99px;padding:6px 14px;backdrop-filter:blur(8px)}
+    .xp-nav .lv{font-size:.75rem;font-weight:600;color:var(--sage);white-space:nowrap}
+    .xp-track{width:60px;height:5px;background:rgba(93,202,165,.2);border-radius:3px;overflow:hidden}
+    .xp-fill{height:100%;background:var(--sage-light);border-radius:3px;transition:width .4s}
+    .xp-nav .xp-num{font-size:.72rem;color:var(--hint);white-space:nowrap}
+
+    /* Disclaimer & crisis banner */
+    .disclaimer-banner{background:rgba(231,76,60,.08);border:1.5px solid var(--red-border);border-radius:20px;padding:20px 24px;margin-top:28px;display:flex;gap:16px;align-items:flex-start;backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(231,76,60,.04)}
+    .disclaimer-banner .icon{font-size:1.8rem;line-height:1}
+    .disclaimer-banner .content{font-size:.88rem;line-height:1.6;color:var(--ink)}
+    .disclaimer-banner .content strong{color:var(--red)}
+
+    /* Page Header */
+    .header-section{margin-top:40px;margin-bottom:32px;text-align:center}
+    .header-section h1{font-family:'DM Serif Display',serif;font-size:2.8rem;line-height:1.2;color:var(--ink);letter-spacing:-1px}
+    .header-section h1 em{color:var(--sage);font-style:italic}
+    .header-section p{font-size:1.05rem;color:var(--muted);font-weight:300;margin-top:8px}
+
+    /* Tabs navigation */
+    .tabs-nav{display:flex;justify-content:center;gap:12px;margin-bottom:36px;border-bottom:1px solid rgba(209,208,199,.4);padding-bottom:12px}
+    .tab-trigger{padding:10px 22px;border:none;background:none;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:500;color:var(--muted);cursor:pointer;position:relative;transition:color .2s}
+    .tab-trigger:hover{color:var(--sage)}
+    .tab-trigger.active{color:var(--sage);font-weight:600}
+    .tab-trigger.active::after{content:'';position:absolute;bottom:-13px;left:0;right:0;height:3px;background:var(--sage);border-radius:99px}
+
+    /* Tab content pane */
+    .tab-pane{display:none}
+    .tab-pane.active{display:block;animation:fadeIn .4s ease forwards}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* UI Cards */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    @media(max-width:768px){.grid-2{grid-template-columns:1fr}}
+    
+    .card{background:rgba(255,255,255,.75);border:1px solid var(--card-border);border-radius:24px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 8px 40px rgba(93,202,165,.05);margin-bottom:24px}
+    .card-title{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+    .card-desc{font-size:.92rem;color:var(--muted);line-height:1.6;font-weight:300;margin-bottom:20px}
+    
+    /* Buttons */
+    .btn{padding:12px 24px;border-radius:99px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:none}
+    .btn-primary{background:var(--sage);color:white;box-shadow:0 4px 16px rgba(15,110,86,.25)}
+    .btn-primary:hover{background:var(--sage-mid);transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,110,86,.3)}
+    .btn-ghost{background:rgba(255,255,255,.8);color:var(--sage);border:1.5px solid var(--card-border)}
+    .btn-ghost:hover{border-color:var(--sage);background:var(--sage-ghost)}
+
+    /* Overview Stats */
+    .overview-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .stat-box{background:rgba(255,255,255,.5);border-radius:18px;padding:20px;text-align:center;border:1px solid rgba(209,208,199,.3);transition:all .2s}
+    .stat-box:hover{transform:translateY(-2px);background:rgba(255,255,255,.8)}
+    .stat-val{font-family:'DM Serif Display',serif;font-size:2.4rem;line-height:1.2;color:var(--sage);margin-bottom:4px}
+    .stat-lbl{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+
+    /* Interactive Questionnaire Forms */
+    .question-block{border-bottom:1px solid rgba(209,208,199,.3);padding:24px 0}
+    .question-block:last-child{border-bottom:none}
+    .question-text{font-size:1.05rem;font-weight:500;color:var(--ink);margin-bottom:16px;line-height:1.5}
+    .options-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media(max-width:640px){.options-row{grid-template-columns:1fr}}
+    
+    .option-cell{position:relative}
+    .option-cell input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
+    .option-label{display:block;padding:12px;border:1.5px solid var(--card-border);background:white;border-radius:14px;font-size:.82rem;font-weight:500;text-align:center;color:var(--muted);cursor:pointer;transition:all .2s;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    .option-cell input[type="radio"]:checked + .option-label{
+      background:var(--sage-ghost);
+      border-color:var(--sage-mid);
+      color:var(--sage);
+      box-shadow:0 4px 12px rgba(15,110,86,.08);
+      font-weight:600;
+    }
+    .option-cell:hover .option-label{
+      border-color:var(--sage-light);
+      transform:scale(1.02);
+    }
+    
+    .form-footer{display:flex;justify-content:space-between;align-items:center;margin-top:28px}
+    .progress-bar-wrap{width:200px;height:8px;background:rgba(93,202,165,.2);border-radius:4px;overflow:hidden}
+    .progress-bar-fill{height:100%;background:var(--sage);border-radius:4px;width:0%;transition:width .3s}
+
+    /* Assessment Results Card */
+    .results-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:28px}
+    @media(max-width:768px){.results-grid{grid-template-columns:1fr}}
+    
+    .score-circle-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;border-radius:24px;background:white;border:1px solid var(--card-border);text-align:center}
+    .score-circle{width:120px;height:120px;border-radius:50%;border:8px solid var(--sage-light);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:14px;position:relative}
+    .score-circle .num{font-family:'DM Serif Display',serif;font-size:2.8rem;color:var(--sage);line-height:1}
+    .score-circle .max{font-size:.78rem;color:var(--hint);margin-top:2px}
+    
+    .severity-badge{padding:6px 16px;border-radius:99px;font-size:.85rem;font-weight:600;display:inline-block;text-transform:uppercase;letter-spacing:.05em}
+    .severity-badge.minimal{background:var(--green-light);color:var(--green);border:1px solid rgba(39,174,96,.2)}
+    .severity-badge.mild{background:var(--amber-light);color:#D48A00;border:1px solid rgba(243,156,18,.2)}
+    .severity-badge.moderate{background:var(--orange-light);color:var(--orange);border:1px solid rgba(230,126,34,.2)}
+    .severity-badge.severe{background:var(--red-light);color:var(--red);border:1px solid var(--red-border)}
+    
+    /* Recommendations Box */
+    .rec-box{background:rgba(255,255,255,.5);border-radius:18px;border:1px solid rgba(209,208,199,.4);padding:24px}
+    .rec-box h3{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:14px;color:var(--ink)}
+    .rec-list{display:flex;flex-direction:column;gap:12px}
+    .rec-item{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;line-height:1.5;color:var(--muted)}
+    .rec-item .bullet{width:18px;height:18px;border-radius:50%;background:var(--sage-ghost);color:var(--sage);font-weight:600;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+    .rec-item a{color:var(--sage);font-weight:600;text-decoration:none}
+    .rec-item a:hover{text-decoration:underline}
+
+    /* History & Chart Components */
+    .history-selector-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .select-dropdown{padding:8px 16px;border-radius:12px;border:1.5px solid var(--card-border);background:white;font-family:inherit;font-size:.88rem;color:var(--ink);outline:none;cursor:pointer}
+    
+    /* SVG Chart */
+    .chart-container{width:100%;height:260px;background:white;border-radius:20px;border:1px solid var(--card-border);padding:20px;position:relative;margin-bottom:24px;overflow:hidden}
+    .chart-svg{width:100%;height:100%}
+    .chart-tooltip{position:absolute;background:var(--ink);color:white;padding:6px 12px;border-radius:8px;font-size:.75rem;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+
+    /* History Table */
+    .history-table-wrap{overflow-x:auto}
+    .history-table{width:100%;border-collapse:collapse;text-align:left;font-size:.88rem}
+    .history-table th{padding:12px 16px;border-bottom:1.5px solid rgba(209,208,199,.5);color:var(--hint);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+    .history-table td{padding:14px 16px;border-bottom:1px solid rgba(209,208,199,.3);color:var(--muted)}
+    .history-table tr:last-child td{border-bottom:none}
+    .history-table tr:hover td{background:rgba(93,202,165,.04)}
+
+    /* Toast notification */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--sage);color:white;padding:12px 24px;border-radius:99px;font-size:.88rem;z-index:999;box-shadow:0 4px 24px rgba(15,110,86,.25);transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;white-space:nowrap;opacity:0;pointer-events:none;display:flex;align-items:center;gap:8px}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+
+    footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
+    footer span{color:var(--sage-light)}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+  <!-- Top Navbar -->
+  <div class="topbar">
+    <a href="/" class="logo">🌿 ManoKart</a>
+    <nav class="nav-pill">
+      <div class="xp-nav" id="xp-nav" style="display:none">
+        <span class="lv" id="nav-lv">Lv 1</span>
+        <div class="xp-track"><div class="xp-fill" id="nav-xp-fill" style="width:0%"></div></div>
+        <span class="xp-num" id="nav-xp-num">0 XP</span>
+      </div>
+      <a href="/diary"   class="nav-btn">Diary</a>
+      <a href="/chatbot" class="nav-btn">Chat</a>
+      <a href="/music"   class="nav-btn">Music</a>
+      <a href="/voice"   class="nav-btn">Voice</a>
+      <a href="games/manokart_games_hub.html"   class="nav-btn">Games</a>
+      <a href="/clinical" class="nav-btn active">Check-in</a>
+      <a href="/therapists" class="nav-btn">Therapists</a>
+      <a href="/profile" class="nav-btn">Profile</a>
+      <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
+    </nav>
+  </div>
+
+  <!-- Non-negotiable Disclaimer and Helpline Banner -->
+  <div class="disclaimer-banner">
+    <div class="icon">⚠️</div>
+    <div class="content">
+      <strong>Disclaimer:</strong> This is a mental health self-check tool, not a clinical medical diagnosis. If you are feeling overwhelmed, please consult a qualified mental health professional.
+      <br>
+      <strong>Emergency / Crisis Support:</strong> If you are in distress or having thoughts of self-harm, please reach out to the <strong>iCall Helpline</strong> (Tata Institute of Social Sciences) at <strong>9152987821</strong> (Monday to Saturday, 8:00 AM to 10:00 PM), or call 112/100 for local emergency assistance.
+    </div>
+  </div>
+
+  <div class="header-section">
+    <h1>Clinical <em>Screening</em></h1>
+    <p>Check in on your mental wellbeing using standard clinical self-assessments.</p>
+  </div>
+
+  <!-- Tabs Trigger Navigation -->
+  <div class="tabs-nav">
+    <button class="tab-trigger active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-trigger" onclick="switchTab('phq9')">Depression (PHQ-9)</button>
+    <button class="tab-trigger" onclick="switchTab('gad7')">Anxiety (GAD-7)</button>
+    <button class="tab-trigger" onclick="switchTab('history')">Progress History</button>
+  </div>
+
+  <!-- 1. OVERVIEW TAB PANE -->
+  <div class="tab-pane active" id="pane-overview">
+    <div class="grid-2">
+      <!-- PHQ-9 Card -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between">
+        <div>
+          <div class="card-title">📝 Depression Self-Check (PHQ-9)</div>
+          <p class="card-desc">The Patient Health Questionnaire-9 is a standard 9-question clinical tool used worldwide by doctors and psychologists to screen for depressive symptoms and monitor progress over time.</p>
+          <div class="overview-stats">
+            <div class="stat-box">
+              <div class="stat-val" id="last-phq9-score">—</div>
+              <div class="stat-lbl">Last Score</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" style="font-size:1.1rem; line-height: 2.2" id="last-phq9-severity">—</div>
+              <div class="stat-lbl">Last Check</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="switchTab('phq9')">Begin PHQ-9 Assessment →</button>
+      </div>
+
+      <!-- GAD-7 Card -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between">
+        <div>
+          <div class="card-title">📉 Anxiety Self-Check (GAD-7)</div>
+          <p class="card-desc">The Generalized Anxiety Disorder-7 is a standard 7-question clinical tool designed to measure anxiety levels, including symptoms like nervous tension, worry, and irritability.</p>
+          <div class="overview-stats">
+            <div class="stat-box">
+              <div class="stat-val" id="last-gad7-score">—</div>
+              <div class="stat-lbl">Last Score</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" style="font-size:1.1rem; line-height: 2.2" id="last-gad7-severity">—</div>
+              <div class="stat-lbl">Last Check</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="switchTab('gad7')">Begin GAD-7 Assessment →</button>
+      </div>
+    </div>
+
+    <!-- Quick Info Box -->
+    <div class="card">
+      <div class="card-title">💡 Why track clinical scores?</div>
+      <p class="card-desc" style="margin-bottom:0">Self-checks help identify trends in your mental health. Taking these screenings every 1-2 weeks provides a clearer picture of how your symptoms respond to coping mechanisms, games, or professional therapy. <strong>Always discuss scores with a medical professional.</strong></p>
+    </div>
+  </div>
+
+  <!-- 2. PHQ-9 SCREENING FORM TAB PANE -->
+  <div class="tab-pane" id="pane-phq9">
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span>Patient Health Questionnaire (PHQ-9)</span>
+        <span class="severity-badge minimal" style="font-size:.7rem">9 Questions</span>
+      </div>
+      <p class="card-desc">Over the last 2 weeks, how often have you been bothered by any of the following problems? Please answer honestly for the most accurate reflections.</p>
+      
+      <form id="phq9-form" onsubmit="submitForm(event, 'PHQ9')">
+        <div id="phq9-questions-container"></div>
+        
+        <div class="form-footer">
+          <div style="display:flex; align-items:center; gap:12px">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="phq9-progress"></div>
+            </div>
+            <span id="phq9-progress-lbl" style="font-size:.8rem; color:var(--muted)">0/9 answered</span>
+          </div>
+          <button type="submit" class="btn btn-primary" id="phq9-submit-btn" disabled>Submit Assessment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. GAD-7 SCREENING FORM TAB PANE -->
+  <div class="tab-pane" id="pane-gad7">
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span>Generalized Anxiety Disorder (GAD-7)</span>
+        <span class="severity-badge minimal" style="font-size:.7rem">7 Questions</span>
+      </div>
+      <p class="card-desc">Over the last 2 weeks, how often have you been bothered by any of the following problems? Mark your responses below.</p>
+      
+      <form id="gad7-form" onsubmit="submitForm(event, 'GAD7')">
+        <div id="gad7-questions-container"></div>
+        
+        <div class="form-footer">
+          <div style="display:flex; align-items:center; gap:12px">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="gad7-progress"></div>
+            </div>
+            <span id="gad7-progress-lbl" style="font-size:.8rem; color:var(--muted)">0/7 answered</span>
+          </div>
+          <button type="submit" class="btn btn-primary" id="gad7-submit-btn" disabled>Submit Assessment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. RESULTS SECTION (POPULATED DYNAMICALLY AFTER SUBMISSION) -->
+  <div class="tab-pane" id="pane-results">
+    <div class="card">
+      <div class="card-title">📊 Assessment Result</div>
+      
+      <div class="results-grid">
+        <div class="score-circle-wrap">
+          <div class="score-circle" id="result-circle">
+            <span class="num" id="result-score">0</span>
+            <span class="max" id="result-max">/27</span>
+          </div>
+          <div class="severity-badge" id="result-badge">Minimal</div>
+          <div style="font-size:.8rem; color:var(--hint); margin-top:10px" id="result-type-lbl">PHQ-9 screening completed</div>
+        </div>
+
+        <div class="rec-box">
+          <h3>🌿 Dynamic Recommendations</h3>
+          <div class="rec-list" id="result-recommendations">
+            <!-- Recommendation items injected here -->
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:center; margin-top:32px; gap:16px">
+        <button class="btn btn-ghost" onclick="switchTab('history')">View History Progress</button>
+        <button class="btn btn-primary" onclick="switchTab('overview')">Back to Clinical Hub</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. PROGRESS HISTORY TAB PANE -->
+  <div class="tab-pane" id="pane-history">
+    <!-- Chart Card -->
+    <div class="card">
+      <div class="history-selector-row">
+        <div class="card-title" style="margin-bottom:0">📈 Score Progress Chart</div>
+        <select class="select-dropdown" id="chart-filter" onchange="updateHistoryView()">
+          <option value="PHQ9">Depression (PHQ-9)</option>
+          <option value="GAD7">Anxiety (GAD-7)</option>
+        </select>
+      </div>
+      <p class="card-desc">Track your score variations over the past weeks to evaluate your self-care progress.</p>
+      
+      <div class="chart-container" id="chart-card-container">
+        <div class="chart-tooltip" id="chart-tooltip"></div>
+        <svg class="chart-svg" id="score-chart"></svg>
+      </div>
+    </div>
+
+    <!-- History Log Table -->
+    <div class="card">
+      <div class="card-title">📋 Detailed Screening History Log</div>
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Assessment</th>
+              <th>Score</th>
+              <th>Severity</th>
+              <th>Coping Routing</th>
+            </tr>
+          </thead>
+          <tbody id="history-log-body">
+            <!-- History entries injected dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+</div>
+
+<!-- Toast element -->
+<div class="toast" id="toast">
+  <span>✨</span> <span id="toast-text">Assessment completed successfully! +50 XP</span>
+</div>
+
+<script>
+  // Questions datasets extracted from the PDF materials
+  const PHQ9_QUESTIONS = [
+    "Little interest or pleasure in doing things",
+    "Feeling down, depressed, or hopeless",
+    "Trouble falling or staying asleep, or sleeping too much",
+    "Feeling tired or having little energy",
+    "Poor appetite or overeating",
+    "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+    "Trouble concentrating on things, such as reading the newspaper or watching television",
+    "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual",
+    "Thoughts that you would be better off dead or of hurting yourself in some way"
+  ];
+
+  const GAD7_QUESTIONS = [
+    "Feeling nervous, anxious, or on edge",
+    "Not being able to stop or control worrying",
+    "Worrying too much about different things",
+    "Trouble relaxing",
+    "Being so restless that it's hard to sit still",
+    "Becoming easily annoyed or irritable",
+    "Feeling afraid as if something awful might happen"
+  ];
+
+  const OPTION_TEXTS = ["Not at all", "Several days", "More than half the days", "Nearly every day"];
+
+  let assessmentHistory = [];
+
+  // Generate forms inside HTML dynamically
+  function buildQuestions(questions, type, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    
+    questions.forEach((q, idx) => {
+      const qBlock = document.createElement("div");
+      qBlock.className = "question-block";
+      
+      const qText = document.createElement("div");
+      qText.className = "question-text";
+      qText.textContent = `${idx + 1}. ${q}`;
+      qBlock.appendChild(qText);
+      
+      const optionsRow = document.createElement("div");
+      optionsRow.className = "options-row";
+      
+      for (let val = 0; val <= 3; val++) {
+        const optionCell = document.createElement("div");
+        optionCell.className = "option-cell";
+        
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `${type.toLowerCase()}-q-${idx}`;
+        radio.id = `${type.toLowerCase()}-q-${idx}-val-${val}`;
+        radio.value = val;
+        radio.required = true;
+        radio.addEventListener("change", () => updateFormProgress(type, questions.length));
+        
+        const label = document.createElement("label");
+        label.className = "option-label";
+        label.htmlFor = radio.id;
+        
+        const scoreSpan = document.createElement("span");
+        scoreSpan.style.fontSize = ".7rem";
+        scoreSpan.style.color = "var(--hint)";
+        scoreSpan.style.marginBottom = "4px";
+        scoreSpan.textContent = `Score ${val}`;
+        
+        const textSpan = document.createElement("span");
+        textSpan.textContent = OPTION_TEXTS[val];
+        
+        label.appendChild(scoreSpan);
+        label.appendChild(textSpan);
+        
+        optionCell.appendChild(radio);
+        optionCell.appendChild(label);
+        optionsRow.appendChild(optionCell);
+      }
+      qBlock.appendChild(optionsRow);
+      container.appendChild(qBlock);
+    });
+  }
+
+  function updateFormProgress(type, total) {
+    const form = document.getElementById(`${type.toLowerCase()}-form`);
+    const checked = form.querySelectorAll('input[type="radio"]:checked').length;
+    const pct = Math.round((checked / total) * 100);
+    
+    document.getElementById(`${type.toLowerCase()}-progress`).style.width = pct + "%";
+    document.getElementById(`${type.toLowerCase()}-progress-lbl`).textContent = `${checked}/${total} answered`;
+    
+    const submitBtn = document.getElementById(`${type.toLowerCase()}-submit-btn`);
+    if (checked === total) {
+      submitBtn.removeAttribute("disabled");
+    } else {
+      submitBtn.setAttribute("disabled", "true");
+    }
+  }
+
+  // Switch tabs cleanly
+  function switchTab(tabId) {
+    document.querySelectorAll(".tab-trigger").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+    
+    // Find active trigger
+    const triggers = Array.from(document.querySelectorAll(".tab-trigger"));
+    const matchingTrigger = triggers.find(t => t.textContent.toLowerCase().includes(tabId));
+    if (matchingTrigger) {
+      matchingTrigger.classList.add("active");
+    } else if (tabId === 'overview') {
+      triggers[0].classList.add("active");
+    } else if (tabId === 'history') {
+      triggers[3].classList.add("active");
+    }
+    
+    const pane = document.getElementById(`pane-${tabId}`);
+    if (pane) {
+      pane.classList.add("active");
+    }
+    
+    if (tabId === "history") {
+      updateHistoryView();
+    }
+  }
+
+  // Award XP to gamified engine
+  function awardXP(amount) {
+    try {
+      var raw = localStorage.getItem('manokart_engine_v1');
+      var data = raw ? JSON.parse(raw) : { totalXP: 0, level: 1 };
+      data.totalXP = (data.totalXP || 0) + amount;
+      data.level = Math.floor(data.totalXP / 500) + 1;
+      localStorage.setItem('manokart_engine_v1', JSON.stringify(data));
+      updateXPNav();
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  function updateXPNav() {
+    try {
+      var raw = localStorage.getItem('manokart_engine_v1');
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (!data || data.totalXP === undefined) return;
+      var xpPerLevel = 500;
+      var level      = data.level || 1;
+      var xpIn       = data.totalXP % xpPerLevel;
+      var pct        = Math.round(xpIn / xpPerLevel * 100);
+      document.getElementById('nav-lv').textContent       = 'Lv ' + level;
+      document.getElementById('nav-xp-fill').style.width = pct + '%';
+      document.getElementById('nav-xp-num').textContent   = data.totalXP + ' XP';
+      document.getElementById('xp-nav').style.display    = 'flex';
+    } catch(e) {}
+  }
+
+  // Handle Form Submission
+  async function submitForm(event, type) {
+    event.preventDefault();
+    const form = document.getElementById(`${type.toLowerCase()}-form`);
+    const answers = [];
+    const questionsLength = type === "PHQ9" ? 9 : 7;
+    
+    for (let i = 0; i < questionsLength; i++) {
+      const selected = form.querySelector(`input[name="${type.toLowerCase()}-q-${i}"]:checked`);
+      if (selected) {
+        answers.push(parseInt(selected.value));
+      }
+    }
+
+    try {
+      const res = await fetch("/api/assessments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: type, answers: answers })
+      });
+      const data = await res.json();
+      
+      if (data.ok) {
+        // Reset form
+        form.reset();
+        updateFormProgress(type, questionsLength);
+        
+        // Award gamification XP
+        awardXP(50);
+        showToast("Assessment submitted successfully! +50 XP");
+        
+        // Show result panel
+        showResult(data.assessment);
+        
+        // Fetch updated history
+        await loadHistory();
+      } else {
+        alert("Failed to save assessment: " + (data.error || "Unknown error"));
+      }
+    } catch(e) {
+      alert("Error sending request to server: " + e.message);
+    }
+  }
+
+  function showResult(assessment) {
+    const isPHQ9 = assessment.type === "PHQ9";
+    const maxScore = isPHQ9 ? 27 : 21;
+    
+    document.getElementById("result-score").textContent = assessment.score;
+    document.getElementById("result-max").textContent = "/" + maxScore;
+    document.getElementById("result-type-lbl").textContent = `${isPHQ9 ? 'PHQ-9 Depression Check-in' : 'GAD-7 Anxiety Check-in'} completed`;
+    
+    const badge = document.getElementById("result-badge");
+    badge.className = "severity-badge " + assessment.severity.toLowerCase().replace(" ", "-");
+    badge.textContent = assessment.severity;
+    
+    const recsList = document.getElementById("result-recommendations");
+    recsList.innerHTML = "";
+    
+    // Core clinical recommendations
+    let html = "";
+    
+    if (isPHQ9) {
+      // PHQ-9 recommendations
+      if (assessment.score >= 10) {
+        html += `
+          <div class="rec-item">
+            <span class="bullet">1</span>
+            <div>
+              <strong>Schedule a Professional Check-in:</strong> Your score suggests moderate or elevated levels of depression symptoms. We highly recommend booking a guidance session with a registered professional in our <a href="/therapists">Therapists Directory</a>.
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="rec-item">
+            <span class="bullet">1</span>
+            <div>
+              <strong>Maintain Positive Routines:</strong> Your score is in the minimal or mild range. Keep up your active habits, and continue tracking your progress every week.
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      // GAD-7 recommendations
+      if (assessment.score >= 5) {
+        html += `
+          <div class="rec-item">
+            <span class="bullet">1</span>
+            <div>
+              <strong>Calm Your Mind:</strong> Your score indicates mild or moderate anxiety. Try listening to calming, relaxing music playlist in our <a href="/music">Mood Music</a> page to help slow down racing thoughts.
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="rec-item">
+            <span class="bullet">1</span>
+            <div>
+              <strong>Strengthen your peace:</strong> Your anxiety levels are in the minimal range. Keep using mindfulness exercises to stay grounded.
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+    // General recommendations for all
+    html += `
+      <div class="rec-item">
+        <span class="bullet">2</span>
+        <div>
+          <strong>Express Yourself:</strong> Try writing down how you feel about your check-in score in your <a href="/diary">Wellness Diary</a>. Journaling helps categorize feelings and release psychological tension.
+        </div>
+      </div>
+      <div class="rec-item">
+        <span class="bullet">3</span>
+        <div>
+          <strong>Relax with a Mindful game:</strong> Play a calming game like guided breathing or stack blocks to soothe your mind. Head over to the <a href="games/manokart_games_hub.html">Games Hub</a>.
+        </div>
+      </div>
+    `;
+    
+    recsList.innerHTML = html;
+    switchTab("results");
+  }
+
+  function showToast(text) {
+    const toast = document.getElementById("toast");
+    document.getElementById("toast-text").textContent = text;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4000);
+  }
+
+  // Load assessment logs from API
+  async function loadHistory() {
+    try {
+      const res = await fetch("/api/assessments");
+      const data = await res.json();
+      if (data.ok) {
+        assessmentHistory = data.assessments || [];
+        updateOverviewCards();
+      }
+    } catch(e) {
+      console.error("Failed to load assessments history:", e);
+    }
+  }
+
+  function updateOverviewCards() {
+    const phq9s = assessmentHistory.filter(a => a.type === "PHQ9");
+    const gad7s = assessmentHistory.filter(a => a.type === "GAD7");
+    
+    if (phq9s.length > 0) {
+      const last = phq9s[0]; // sorted by taken_at DESC
+      document.getElementById("last-phq9-score").textContent = last.score;
+      document.getElementById("last-phq9-severity").textContent = last.severity;
+      document.getElementById("last-phq9-severity").className = "stat-val severity-badge " + last.severity.toLowerCase().replace(" ", "-");
+    }
+    if (gad7s.length > 0) {
+      const last = gad7s[0];
+      document.getElementById("last-gad7-score").textContent = last.score;
+      document.getElementById("last-gad7-severity").textContent = last.severity;
+      document.getElementById("last-gad7-severity").className = "stat-val severity-badge " + last.severity.toLowerCase().replace(" ", "-");
+    }
+  }
+
+  function updateHistoryView() {
+    const type = document.getElementById("chart-filter").value;
+    const filtered = assessmentHistory.filter(a => a.type === type).reverse(); // chronological order
+    
+    // Draw SVG Chart
+    drawSVGChart(filtered, type);
+    
+    // Update Log Table
+    const tbody = document.getElementById("history-log-body");
+    tbody.innerHTML = "";
+    
+    if (assessmentHistory.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state" style="text-align:center; padding: 24px">No screening logs found yet. Take a self-check to start tracking!</td></tr>`;
+      return;
+    }
+    
+    assessmentHistory.forEach(a => {
+      const tr = document.createElement("tr");
+      
+      const date = new Date(a.taken_at);
+      const dateStr = date.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) + " at " + date.toLocaleTimeString(undefined, {hour: '2-digit', minute: '2-digit'});
+      
+      const typeStr = a.type === "PHQ9" ? "Depression (PHQ-9)" : "Anxiety (GAD-7)";
+      
+      let actionRoute = "";
+      if (a.type === "PHQ9") {
+        actionRoute = a.score >= 10 ? `<a href="/therapists">Book Therapist</a>` : `<a href="/diary">Write Journal</a>`;
+      } else {
+        actionRoute = a.score >= 5 ? `<a href="/music">Play Calm Music</a>` : `<a href="/diary">Write Journal</a>`;
+      }
+
+      tr.innerHTML = `
+        <td><strong>${dateStr}</strong></td>
+        <td>${typeStr}</td>
+        <td><strong style="color:var(--sage); font-size: 1.1rem">${a.score}</strong> <span style="font-size: .75rem; color: var(--hint)">/${a.type === 'PHQ9' ? 27 : 21}</span></td>
+        <td><span class="severity-badge ${a.severity.toLowerCase().replace(" ", "-")}">${a.severity}</span></td>
+        <td>${actionRoute}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Draw custom high-fidelity SVG chart
+  function drawSVGChart(data, type) {
+    const svg = document.getElementById("score-chart");
+    svg.innerHTML = "";
+    
+    const container = document.getElementById("chart-card-container");
+    const width = container.clientWidth - 40;
+    const height = 220;
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    
+    if (data.length === 0) {
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", (width / 2).toString());
+      text.setAttribute("y", (height / 2).toString());
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "var(--hint)");
+      text.setAttribute("font-size", "14px");
+      text.textContent = "No checks logged yet for this assessment type.";
+      svg.appendChild(text);
+      return;
+    }
+    
+    const maxScore = type === "PHQ9" ? 27 : 21;
+    const paddingLeft = 40;
+    const paddingRight = 20;
+    const paddingTop = 20;
+    const paddingBottom = 30;
+    
+    const chartWidth = width - paddingLeft - paddingRight;
+    const chartHeight = height - paddingTop - paddingBottom;
+    
+    // Draw Y-Axis Gridlines
+    const yGridlinesCount = 4;
+    for (let i = 0; i <= yGridlinesCount; i++) {
+      const val = Math.round((maxScore / yGridlinesCount) * i);
+      const y = paddingTop + chartHeight - (val / maxScore) * chartHeight;
+      
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", paddingLeft.toString());
+      line.setAttribute("y1", y.toString());
+      line.setAttribute("x2", (width - paddingRight).toString());
+      line.setAttribute("y2", y.toString());
+      line.setAttribute("stroke", "rgba(209, 208, 199, 0.3)");
+      line.setAttribute("stroke-dasharray", "4 4");
+      svg.appendChild(line);
+      
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", (paddingLeft - 10).toString());
+      label.setAttribute("y", (y + 4).toString());
+      label.setAttribute("text-anchor", "end");
+      label.setAttribute("fill", "var(--hint)");
+      label.setAttribute("font-size", "10px");
+      label.textContent = val.toString();
+      svg.appendChild(label);
+    }
+    
+    // Plot points & calculate coordinates
+    const points = [];
+    const count = data.length;
+    
+    data.forEach((item, idx) => {
+      const x = count > 1 
+        ? paddingLeft + (idx / (count - 1)) * chartWidth 
+        : paddingLeft + chartWidth / 2;
+      const y = paddingTop + chartHeight - (item.score / maxScore) * chartHeight;
+      points.push({ x, y, score: item.score, date: new Date(item.taken_at), severity: item.severity });
+    });
+    
+    // Draw line connecting points
+    if (points.length > 1) {
+      let pathD = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        pathD += ` L ${points[i].x} ${points[i].y}`;
+      }
+      
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathD);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "var(--sage)");
+      path.setAttribute("stroke-width", "3");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      
+      // Gradient fill under line
+      let areaD = `${pathD} L ${points[points.length - 1].x} ${paddingTop + chartHeight} L ${points[0].x} ${paddingTop + chartHeight} Z`;
+      
+      // Define linear gradient in SVG
+      const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+      grad.setAttribute("id", "chart-grad");
+      grad.setAttribute("x1", "0%");
+      grad.setAttribute("y1", "0%");
+      grad.setAttribute("x2", "0%");
+      grad.setAttribute("y2", "100%");
+      
+      const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop1.setAttribute("offset", "0%");
+      stop1.setAttribute("stop-color", "var(--sage-light)");
+      stop1.setAttribute("stop-opacity", "0.3");
+      
+      const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop2.setAttribute("offset", "100%");
+      stop2.setAttribute("stop-color", "var(--sage-light)");
+      stop2.setAttribute("stop-opacity", "0");
+      
+      grad.appendChild(stop1);
+      grad.appendChild(stop2);
+      defs.appendChild(grad);
+      svg.appendChild(defs);
+      
+      const area = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      area.setAttribute("d", areaD);
+      area.setAttribute("fill", "url(#chart-grad)");
+      svg.appendChild(area);
+    }
+    
+    // Draw dots and X-Axis Labels
+    const tooltip = document.getElementById("chart-tooltip");
+    
+    points.forEach((pt, idx) => {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", pt.x.toString());
+      circle.setAttribute("cy", pt.y.toString());
+      circle.setAttribute("r", "6");
+      circle.setAttribute("fill", "white");
+      circle.setAttribute("stroke", "var(--sage)");
+      circle.setAttribute("stroke-width", "3");
+      circle.style.cursor = "pointer";
+      
+      // Tooltip interactive events
+      circle.addEventListener("mouseenter", (e) => {
+        circle.setAttribute("r", "8");
+        tooltip.style.opacity = "1";
+        const dateStr = pt.date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+        tooltip.innerHTML = `<strong>Score: ${pt.score}</strong> (${pt.severity})<br>${dateStr}`;
+        tooltip.style.left = `${pt.x - tooltip.offsetWidth / 2}px`;
+        tooltip.style.top = `${pt.y - 50}px`;
+      });
+      
+      circle.addEventListener("mouseleave", () => {
+        circle.setAttribute("r", "6");
+        tooltip.style.opacity = "0";
+      });
+      
+      svg.appendChild(circle);
+      
+      // X-Axis Labels (draw on alternate points if too dense)
+      if (count <= 7 || idx % Math.ceil(count / 7) === 0 || idx === count - 1) {
+        const dateStr = pt.date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", pt.x.toString());
+        label.setAttribute("y", (height - 8).toString());
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "var(--hint)");
+        label.setAttribute("font-size", "10px");
+        label.textContent = dateStr;
+        svg.appendChild(label);
+      }
+    });
+  }
+
+  // Initializations
+  window.onload = async () => {
+    buildQuestions(PHQ9_QUESTIONS, "PHQ9", "phq9-questions-container");
+    buildQuestions(GAD7_QUESTIONS, "GAD7", "gad7-questions-container");
+    
+    updateXPNav();
+    window.addEventListener('gameEngineSynced', updateXPNav);
+    
+    // Load historical scores
+    await loadHistory();
+  };
+</script>
+</body>
+</html>

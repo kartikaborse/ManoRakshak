@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ManoKart — Mood Blocks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #0a0f0d;
+      color: #e8ede4;
+      min-height: 100vh
+    }
+
+    .gbar {
+      background: rgba(255, 255, 255, .04);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px)
+    }
+
+    .gbar a {
+      color: #9aaa90;
+      text-decoration: none;
+      font-size: 14px
+    }
+
+    .gbar a:hover {
+      color: #4ade80
+    }
+
+    .gbar .t {
+      flex: 1;
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center
+    }
+
+    .gbar .xb {
+      font-size: 12px;
+      color: #4ade80;
+      background: rgba(74, 222, 128, .12);
+      padding: 4px 12px;
+      border-radius: 20px
+    }
+
+    #mb {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      max-width: 700px;
+      margin: 0 auto;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center
+    }
+
+    #bw {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 14px;
+      padding: 10px;
+      flex-shrink: 0
+    }
+
+    canvas#board {
+      display: block;
+      border-radius: 8px
+    }
+
+    #sb {
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .sp {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      padding: 12px
+    }
+
+    .st {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #5a6b54;
+      margin-bottom: 10px
+    }
+
+    .sv {
+      font-size: 26px;
+      font-weight: 500
+    }
+
+    .sl {
+      font-size: 11px;
+      color: #9aaa90;
+      margin-top: 2px
+    }
+
+    .nc {
+      display: block;
+      margin: 0 auto
+    }
+
+    .cb {
+      width: 100%;
+      padding: 9px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      background: transparent;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      color: #e8ede4;
+      transition: all .15s;
+      margin-bottom: 6px
+    }
+
+    .cb:hover {
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .cb.pr {
+      background: rgba(74, 222, 128, .12);
+      border-color: rgba(74, 222, 128, .3);
+      color: #4ade80
+    }
+
+    .ek {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .er {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #9aaa90
+    }
+
+    .es {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0
+    }
+
+    .kh {
+      font-size: 11px;
+      color: #5a6b54;
+      line-height: 1.6
+    }
+
+    .cm {
+      font-size: 12px;
+      color: #4ade80;
+      min-height: 18px;
+      margin-top: 4px
+    }
+
+    .wo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 13, .94);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(8px)
+    }
+
+    .wo.show {
+      display: flex
+    }
+
+    .wt {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #a78bfa
+    }
+
+    .ws2 {
+      font-size: 1rem;
+      color: #9aaa90
+    }
+
+    .wsc {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fbbf24
+    }
+
+    .wxp {
+      font-size: 1.1rem;
+      color: #5eead4
+    }
+
+    .wbd {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center
+    }
+
+    .wbg {
+      background: rgba(251, 191, 36, .15);
+      border: 1px solid rgba(251, 191, 36, .3);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: .85rem;
+      color: #fbbf24
+    }
+
+    .wbs {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .wb {
+      padding: 12px 28px;
+      border-radius: 99px;
+      border: none;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-block
+    }
+
+    .wb.p {
+      background: #4ade80;
+      color: #0a0f0d
+    }
+
+    .wb.s {
+      background: rgba(255, 255, 255, .08);
+      color: #e8ede4;
+      border: 1px solid rgba(255, 255, 255, .15)
+    }
+
+    /* Mobile touch controls */
+    #touchCtrl {
+      display: none;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+      flex-wrap: wrap
+    }
+
+    .tc {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 20px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      color: #e8ede4;
+      min-width: 50px;
+      text-align: center
+    }
+
+    .tc:active {
+      background: rgba(74, 222, 128, .18);
+      border-color: rgba(74, 222, 128, .4)
+    }
+
+    @media(max-width:600px) {
+      #touchCtrl {
+        display: flex
+      }
+
+      #mb {
+        padding: 10px
+      }
+
+      #bw {
+        flex-shrink: 0
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gbar"><a href="manokart_games_hub.html">← Hub</a>
+    <div class="t">🟦 Mood Blocks</div>
+    <div class="xb" id="lxp">0 XP</div>
+  </div>
+  <div id="mb">
+    <div id="bw"><canvas id="board" width="200" height="400"></canvas></div>
+    <div id="sb">
+      <div class="sp">
+        <div class="st">Score</div>
+        <div class="sv" id="score">0</div>
+        <div class="sl">mood points</div>
+        <div class="cm" id="cmsg"></div>
+      </div>
+      <div class="sp">
+        <div class="st">Next piece</div><canvas class="nc" id="nc" width="80" height="80"></canvas>
+      </div>
+      <div class="sp">
+        <div class="st">Level</div>
+        <div class="sv" id="level">1</div>
+        <div class="sl">lines: <span id="lines">0</span></div>
+      </div>
+      <div class="sp">
+        <button class="cb pr" id="sbtn" onclick="tg()">Start game</button>
+        <div class="kh">← → Move &nbsp; ↑ Rotate &nbsp; ↓ Drop &nbsp; Space Hard drop</div>
+      </div>
+      <div class="sp">
+        <div class="st">Emotion key</div>
+        <div class="ek" id="ek"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile touch controls -->
+  <div id="touchCtrl">
+    <button class="tc" id="tcLeft" ontouchstart="handleTouch('left')" onclick="handleTouch('left')">←</button>
+    <button class="tc" id="tcDown" ontouchstart="handleTouch('down')" onclick="handleTouch('down')">↓</button>
+    <button class="tc" id="tcRot" ontouchstart="handleTouch('rot')" onclick="handleTouch('rot')">↻</button>
+    <button class="tc" id="tcRight" ontouchstart="handleTouch('right')" onclick="handleTouch('right')">→</button>
+    <button class="tc" id="tcDrop" ontouchstart="handleTouch('drop')" onclick="handleTouch('drop')">⬇</button>
+  </div>
+
+  <div class="wo" id="wo">
+    <div class="wt">🟦 Game Over!</div>
+    <div class="ws2">Your emotions have been processed.</div>
+    <div class="wsc" id="wsc">0</div>
+    <div class="wxp" id="wxp">+0 XP</div>
+    <div class="wbd" id="wbd"></div>
+    <div class="wbs">
+      <button class="wb p" onclick="sg();document.getElementById('wo').classList.remove('show')">Play Again</button>
+      <a href="manokart_games_hub.html" class="wb s">Back to Hub</a>
+    </div>
+  </div>
+
+  <script src="gameEngine.js"></script>
+  <script>
+    const CO = 10, RO = 20, SZ = 20;
+
+    const EM = [
+      { name: 'Joy', color: '#FDD835', dark: '#F57F17' },
+      { name: 'Calm', color: '#4FC3F7', dark: '#0277BD' },
+      { name: 'Love', color: '#F48FB1', dark: '#880E4F' },
+      { name: 'Hope', color: '#A5D6A7', dark: '#1B5E20' },
+      { name: 'Anger', color: '#EF5350', dark: '#B71C1C' },
+      { name: 'Sad', color: '#7986CB', dark: '#1A237E' },
+      { name: 'Fear', color: '#CE93D8', dark: '#4A148C' }
+    ];
+
+    const SH = [
+      [[1, 1, 1, 1]],
+      [[1, 1], [1, 1]],
+      [[0, 1, 0], [1, 1, 1]],
+      [[1, 0, 0], [1, 1, 1]],
+      [[0, 0, 1], [1, 1, 1]],
+      [[0, 1, 1], [1, 1, 0]],
+      [[1, 1, 0], [0, 1, 1]]
+    ];
+
+    const CM = ['', 'Nice! Worry lifted.', 'Double release!', 'Triple! Stress melting.', 'QUAD! Pure clarity!'];
+
+    let bd, cu, nx, sc, ln, lv, running, loopTimer;
+
+    /* ── BUG FIX 1: board init ── */
+    function eb() { return Array(RO).fill(null).map(() => Array(CO).fill(null)); }
+
+    /* ── BUG FIX 2: rp() — give each piece a fresh random emotion ── */
+    function rp() {
+      const s = SH[Math.floor(Math.random() * SH.length)];
+      const e = EM[Math.floor(Math.random() * EM.length)];
+      return { shape: JSON.parse(JSON.stringify(s)), emo: e, x: Math.floor((CO - s[0].length) / 2), y: 0 };
+    }
+
+    /*
+     * BUG FIX 3: Collision — original used variable name 'nx2' which shadowed
+     * the outer canvas context 'nx2'. Renamed to 'nx_col' and 'ny_col'.
+     * Also: original used dx||0 / dy||0 which treated 0 as falsy — fixed with
+     * explicit null checks so passing dx=0 works correctly.
+     */
+    function cl(p, dx, dy, overrideShape) {
+      const sh = overrideShape || p.shape;
+      const odx = (dx !== undefined && dx !== null) ? dx : 0;
+      const ody = (dy !== undefined && dy !== null) ? dy : 0;
+      for (let r = 0; r < sh.length; r++) {
+        for (let c = 0; c < sh[r].length; c++) {
+          if (!sh[r][c]) continue;
+          const nx_col = p.x + c + odx;
+          const ny_col = p.y + r + ody;
+          if (nx_col < 0 || nx_col >= CO || ny_col >= RO) return true;
+          if (ny_col >= 0 && bd[ny_col][nx_col]) return true;
+        }
+      }
+      return false;
+    }
+
+    /* ── BUG FIX 4: Rotation with wall kick ── */
+    function rot(p) {
+      const s = p.shape[0].map((_, i) => p.shape.map(row => row[i]).reverse());
+      // Try natural rotation
+      if (!cl({ ...p, shape: s }, 0, 0, s)) return s;
+      // Wall kick: try shifting left or right
+      if (!cl({ ...p, shape: s }, 1, 0, s)) { p.x += 1; return s; }
+      if (!cl({ ...p, shape: s }, -1, 0, s)) { p.x -= 1; return s; }
+      if (!cl({ ...p, shape: s }, 2, 0, s)) { p.x += 2; return s; }
+      if (!cl({ ...p, shape: s }, -2, 0, s)) { p.x -= 2; return s; }
+      return p.shape; // can't rotate
+    }
+
+    /* ── Canvas refs (NOT named nx2 to avoid shadowing) ── */
+    const boardCanvas = document.getElementById('board');
+    const bx = boardCanvas.getContext('2d');
+    const nextCanvas = document.getElementById('nc');
+    const nctx = nextCanvas.getContext('2d');   /* BUG FIX 5: was 'nx2' — renamed to 'nctx' */
+
+    /* ── Draw one cell ── */
+    function dc(ctx, c, r, color, dark) {
+      ctx.fillStyle = color;
+      ctx.fillRect(c * SZ + 1, r * SZ + 1, SZ - 2, SZ - 2);
+      ctx.fillStyle = 'rgba(255,255,255,.25)';
+      ctx.fillRect(c * SZ + 1, r * SZ + 1, SZ - 2, 3);
+      ctx.fillStyle = dark;
+      ctx.fillRect(c * SZ + 1, r * SZ + SZ - 3, SZ - 2, 2);
+    }
+
+    /* ── Draw board ── */
+    function db() {
+      bx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+      bx.fillStyle = '#0f1923';
+      bx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+      // Grid
+      for (let r = 0; r < RO; r++) {
+        for (let c = 0; c < CO; c++) {
+          const cell = bd[r][c];
+          if (cell) {
+            dc(bx, c, r, cell.color, cell.dark);
+          } else {
+            bx.strokeStyle = 'rgba(255,255,255,.04)';
+            bx.strokeRect(c * SZ + .5, r * SZ + .5, SZ - 1, SZ - 1);
+          }
+        }
+      }
+
+      if (cu && running) {
+        // Ghost piece
+        let ghostY = cu.y;
+        while (!cl({ ...cu, y: ghostY + 1 }, 0, 0)) ghostY++;
+        cu.shape.forEach((row, ri) => row.forEach((v, ci) => {
+          if (v) {
+            bx.fillStyle = 'rgba(255,255,255,.08)';
+            bx.fillRect((cu.x + ci) * SZ, (ghostY + ri) * SZ, SZ, SZ);
+          }
+        }));
+
+        // Active piece
+        cu.shape.forEach((row, ri) => row.forEach((v, ci) => {
+          if (v) dc(bx, cu.x + ci, cu.y + ri, cu.emo.color, cu.emo.dark);
+        }));
+      }
+    }
+
+    /* ── BUG FIX 6: Draw next piece — fixed coordinate math ── */
+    function drawNext() {
+      nctx.clearRect(0, 0, 80, 80);
+      nctx.fillStyle = '#0f1923';
+      nctx.fillRect(0, 0, 80, 80);
+      if (!nx) return;
+      const cols = nx.shape[0].length;
+      const rows = nx.shape.length;
+      // Centre the piece in the 80x80 preview (4×4 grid of SZ=20)
+      const offC = Math.floor((4 - cols) / 2);
+      const offR = Math.floor((4 - rows) / 2);
+      nx.shape.forEach((row, ri) => row.forEach((v, ci) => {
+        if (v) dc(nctx, offC + ci, offR + ri, nx.emo.color, nx.emo.dark);
+      }));
+    }
+
+    /* ── Place piece & clear lines ── */
+    function pl() {
+      cu.shape.forEach((row, ri) => row.forEach((v, ci) => {
+        if (v) bd[cu.y + ri][cu.x + ci] = cu.emo;
+      }));
+
+      let cleared = 0;
+      for (let r = RO - 1; r >= 0; r--) {
+        if (bd[r].every(c => c)) {
+          bd.splice(r, 1);
+          bd.unshift(Array(CO).fill(null));
+          cleared++;
+          r++; // recheck same row index
+        }
+      }
+
+      if (cleared) {
+        sc += cleared * 100 * lv;
+        ln += cleared;
+        lv = 1 + Math.floor(ln / 10);
+        document.getElementById('cmsg').textContent = CM[Math.min(cleared, 4)];
+        setTimeout(() => document.getElementById('cmsg').textContent = '', 1800);
+      }
+
+      document.getElementById('score').textContent = sc;
+      document.getElementById('level').textContent = lv;
+      document.getElementById('lines').textContent = ln;
+
+      /* BUG FIX 7: sg() was setting nx=rp() twice — fixed spawn order:
+         after placing, current becomes next, then draw new next */
+      cu = nx;
+      nx = rp();
+
+      if (cl(cu, 0, 0)) {
+        running = false;
+        clearTimeout(loopTimer);
+        document.getElementById('sbtn').textContent = 'Start game';
+        onGO();
+        return;
+      }
+      drawNext();
+    }
+
+    /* ── Game loop ── */
+    function gl() {
+      if (!running) return;
+      if (!cl(cu, 0, 1)) {
+        cu.y++;
+      } else {
+        pl();
+      }
+      db();
+      loopTimer = setTimeout(gl, Math.max(100, 600 - lv * 50));
+    }
+
+    /* ── Toggle pause / start ── */
+    function tg() {
+      if (running) {
+        running = false;
+        clearTimeout(loopTimer);
+        document.getElementById('sbtn').textContent = 'Resume';
+      } else {
+        if (!bd || bd.every(r => r.every(c => !c)) && !cu) {
+          sg(); // fresh game
+        } else {
+          // resume
+          running = true;
+          document.getElementById('sbtn').textContent = 'Pause';
+          gl();
+        }
+      }
+    }
+
+    /* ── BUG FIX 8: Start game — was nx=rp();cu=rp();nx=rp() (nx set twice, cu wrong order) ── */
+    function sg() {
+      bd = eb();
+      sc = 0; ln = 0; lv = 1;
+      document.getElementById('score').textContent = 0;
+      document.getElementById('lines').textContent = 0;
+      document.getElementById('level').textContent = 1;
+      document.getElementById('cmsg').textContent = '';
+      cu = rp();   // current piece first
+      nx = rp();   // then next
+      running = true;
+      document.getElementById('sbtn').textContent = 'Pause';
+      drawNext();
+      gl();
+    }
+
+    /* ── Game over ── */
+    function onGO() {
+      try {
+        const r = GameEngine.saveScore('mood_blocks_tetris', sc);
+        document.getElementById('wsc').textContent = sc + ' pts';
+        document.getElementById('wxp').textContent = '+' + r.xpEarned + ' XP';
+        document.getElementById('lxp').textContent = r.totalXP + ' XP';
+        const wbd = document.getElementById('wbd'); wbd.innerHTML = '';
+        if (r.leveledUp) { const l = document.createElement('div'); l.className = 'wbg'; l.textContent = '🎉 Level ' + r.newLevel + '!'; wbd.appendChild(l); }
+        r.newBadges.forEach(b => { const x = document.createElement('div'); x.className = 'wbg'; x.textContent = b.icon + ' ' + b.name; wbd.appendChild(x); });
+      } catch (e) {
+        document.getElementById('wsc').textContent = sc + ' pts';
+        document.getElementById('wxp').textContent = '+0 XP';
+      }
+      document.getElementById('wo').classList.add('show');
+    }
+
+    /*
+     * BUG FIX 9: Keyboard handler — original had `else return` before `e.preventDefault()`,
+     * meaning only recognised keys called preventDefault BUT only when running.
+     * Arrow keys were scrolling the page during gameplay. Fixed: always prevent
+     * default for game keys regardless of running state.
+     */
+    const GAME_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ']);
+    document.addEventListener('keydown', e => {
+      if (GAME_KEYS.has(e.key)) e.preventDefault(); // always stop scroll for game keys
+
+      if (!running || !cu) return;
+
+      if (e.key === 'ArrowLeft') {
+        if (!cl(cu, -1, 0)) cu.x--;
+      } else if (e.key === 'ArrowRight') {
+        if (!cl(cu, 1, 0)) cu.x++;
+      } else if (e.key === 'ArrowDown') {
+        if (!cl(cu, 0, 1)) cu.y++;
+      } else if (e.key === 'ArrowUp') {
+        /* BUG FIX 10: Rotation was cu.shape=rot(cu) but rot() also mutates
+           p.x for wall kicks — need to apply to cu directly */
+        cu.shape = rot(cu);
+      } else if (e.key === ' ') {
+        while (!cl(cu, 0, 1)) cu.y++;
+        pl();
+      } else {
+        return;
+      }
+      db();
+    });
+
+    /* ── BUG FIX 11: Mobile touch controls ── */
+    function handleTouch(action) {
+      if (!running || !cu) return;
+      if (action === 'left') { if (!cl(cu, -1, 0)) cu.x--; }
+      if (action === 'right') { if (!cl(cu, 1, 0)) cu.x++; }
+      if (action === 'down') { if (!cl(cu, 0, 1)) cu.y++; }
+      if (action === 'rot') { cu.shape = rot(cu); }
+      if (action === 'drop') { while (!cl(cu, 0, 1)) cu.y++; pl(); }
+      db();
+    }
+
+    /* ── Build emotion key ── */
+    const ek = document.getElementById('ek');
+    EM.forEach(e => {
+      const r = document.createElement('div');
+      r.className = 'er';
+      r.innerHTML = `<div class="es" style="background:${e.color}"></div>${e.name}`;
+      ek.appendChild(r);
+    });
+
+    /* ── Init display ── */
+    try { document.getElementById('lxp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch (e) { }
+    bd = eb();
+    db();
+    drawNext();
+  </script>
+</body>
+
+</html>

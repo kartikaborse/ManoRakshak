@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ManoKart — Cozy Island Garden</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lora:ital,wght@0,500;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #07110d;
+      --surf: #0d1a10;
+      --surf2: #121f14;
+      --border: rgba(255, 255, 255, .07);
+      --text: #deebd8;
+      --muted: #607a58;
+      --gold: #f5c842;
+      --green: #5ddb8a;
+      --water: #5ab8f5;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
+    }
+
+    /* ── NAV ── */
+    .gbar {
+      background: rgba(7, 17, 13, .85);
+      border-bottom: 1px solid var(--border);
+      padding: 11px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      backdrop-filter: blur(16px)
+    }
+
+    .gbar a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color .2s
+    }
+
+    .gbar a:hover {
+      color: var(--green)
+    }
+
+    .gbar .t {
+      flex: 1;
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center
+    }
+
+    .gbar .xb {
+      font-size: 11px;
+      color: var(--green);
+      background: rgba(93, 219, 138, .1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600
+    }
+
+    /* ── LAYOUT ── */
+    #gm {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 16px 14px 48px
+    }
+
+    /* ── ISLAND CANVAS ── */
+    .island-wrap {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5)
+    }
+
+    #islandCanvas {
+      display: block;
+      width: 100%;
+      height: 200px
+    }
+
+    .island-hud {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none
+    }
+
+    .seed-badge {
+      background: rgba(7, 17, 13, .78);
+      border: 1px solid rgba(245, 200, 66, .3);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      backdrop-filter: blur(8px)
+    }
+
+    .time-badge {
+      background: rgba(7, 17, 13, .78);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--muted);
+      backdrop-filter: blur(8px)
+    }
+
+    /* ── MOOD CHECK-IN ── */
+    .section-eye {
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .section-eye::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .checkin-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px
+    }
+
+    .checkin-q {
+      font-family: 'Lora', serif;
+      font-size: 17px;
+      font-style: italic;
+      margin-bottom: 14px;
+      line-height: 1.4;
+      color: var(--text)
+    }
+
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px
+    }
+
+    .mb {
+      background: var(--surf2);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 11px 6px;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500
+    }
+
+    .mb:hover {
+      border-color: rgba(93, 219, 138, .4);
+      background: rgba(93, 219, 138, .06);
+      transform: translateY(-2px)
+    }
+
+    .mb.picked {
+      border-color: var(--green);
+      background: rgba(93, 219, 138, .12)
+    }
+
+    .mb .mi {
+      font-size: 22px;
+      line-height: 1
+    }
+
+    .mb .mt {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    /* ── GARDEN PLOTS ── */
+    .garden-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px
+    }
+
+    .garden-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 2px
+    }
+
+    .plot {
+      background: var(--surf2);
+      border: 1.5px dashed rgba(255, 255, 255, .09);
+      border-radius: 12px;
+      min-height: 82px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      transition: all .2s;
+      position: relative;
+      padding: 6px 4px
+    }
+
+    .plot.has-plant {
+      border-style: solid;
+      border-color: rgba(93, 219, 138, .2);
+      background: rgba(93, 219, 138, .04)
+    }
+
+    .plot.bloomed {
+      border-color: rgba(245, 200, 66, .3);
+      background: rgba(245, 200, 66, .05)
+    }
+
+    .plot.needs-water {
+      animation: pulse-water 2s ease-in-out infinite
+    }
+
+    @keyframes pulse-water {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(90, 184, 245, .0)
+      }
+
+      50% {
+        box-shadow: 0 0 0 3px rgba(90, 184, 245, .25)
+      }
+    }
+
+    .plot-icon {
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 3px
+    }
+
+    .plot-stage {
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3
+    }
+
+    .plot-name {
+      font-size: 8.5px;
+      color: var(--muted);
+      margin-top: 2px;
+      text-align: center
+    }
+
+    .water-btn {
+      margin-top: 5px;
+      background: rgba(90, 184, 245, .15);
+      border: 1px solid rgba(90, 184, 245, .3);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 9px;
+      color: var(--water);
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .water-btn:hover {
+      background: rgba(90, 184, 245, .25)
+    }
+
+    .plot-empty-hint {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .12);
+      text-align: center
+    }
+
+    /* ── HOW TO PLAY ── */
+    .how-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 14px
+    }
+
+    .how-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .how-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .how-step .hs-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      width: 28px;
+      text-align: center
+    }
+
+    .how-step strong {
+      color: var(--text)
+    }
+
+    /* ── FRIENDS ── */
+    .friends-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 14px
+    }
+
+    .friends-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px
+    }
+
+    .friend-chip {
+      background: var(--surf2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 120px;
+      transition: all .2s
+    }
+
+    .friend-chip.unlocked {
+      border-color: rgba(93, 219, 138, .25);
+      background: rgba(93, 219, 138, .04)
+    }
+
+    .friend-chip.locked {
+      opacity: .45
+    }
+
+    .fc-icon {
+      font-size: 22px
+    }
+
+    .fc-info {
+      flex: 1
+    }
+
+    .fc-name {
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .fc-tip {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.35
+    }
+
+    .fc-lock {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .stat-c {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center
+    }
+
+    .stat-v {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      color: var(--green);
+      line-height: 1;
+      margin-bottom: 3px
+    }
+
+    .stat-l {
+      font-size: 10px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted)
+    }
+
+    /* ── SAVE ── */
+    .svb {
+      text-align: center;
+      margin-top: 6px
+    }
+
+    .svb button {
+      padding: 13px 32px;
+      border-radius: 99px;
+      border: none;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #5ddb8a, #38c96e);
+      color: #07110d;
+      box-shadow: 0 4px 20px rgba(93, 219, 138, .25);
+      transition: all .2s;
+      letter-spacing: .02em
+    }
+
+    .svb button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(93, 219, 138, .38)
+    }
+
+    /* ── TOAST ── */
+    .tst {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(7, 17, 13, .97);
+      border: 1px solid rgba(93, 219, 138, .3);
+      color: var(--text);
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: .83rem;
+      z-index: 999;
+      transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+      backdrop-filter: blur(12px)
+    }
+
+    .tst.show {
+      transform: translateX(-50%) translateY(0)
+    }
+
+    /* ── BLOOM BURST ── */
+    @keyframes bloomBurst {
+      0% {
+        transform: scale(0) translateY(0);
+        opacity: 1
+      }
+
+      100% {
+        transform: scale(1) translateY(-60px);
+        opacity: 0
+      }
+    }
+
+    .bloom-particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 22px;
+      animation: bloomBurst .8s ease-out forwards;
+      z-index: 500
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gbar">
+    <a href="manokart_games_hub.html">← Hub</a>
+    <div class="t">🌴 Cozy Island Garden</div>
+    <div class="xb" id="lxp">0 XP</div>
+  </div>
+
+  <div id="gm">
+
+    <!-- ISLAND CANVAS -->
+    <div class="island-wrap">
+      <canvas id="islandCanvas"></canvas>
+      <div class="island-hud">
+        <div class="seed-badge">🌟 <span id="coins">20</span> seeds</div>
+        <div class="time-badge" id="timeBadge">Day 1 · Morning</div>
+      </div>
+    </div>
+
+    <!-- HOW TO PLAY -->
+    <div class="how-card">
+      <div class="section-eye">How to grow your island</div>
+      <div class="how-steps">
+        <div class="how-step"><span class="hs-icon">💭</span><span><strong>Check in your mood</strong> below — every
+            feeling becomes a seed worth planting</span></div>
+        <div class="how-step"><span class="hs-icon">💧</span><span><strong>Water your plants</strong> to grow them
+            through 4 stages — sprout → sapling → budding → bloomed</span></div>
+        <div class="how-step"><span class="hs-icon">🌸</span><span><strong>Bloom 3 plants</strong> to unlock island
+            friends who share wellness tips with you</span></div>
+        <div class="how-step"><span class="hs-icon">🎯</span><span><strong>Save your session</strong> — score grows with
+            every bloom, friend, and streak day</span></div>
+      </div>
+    </div>
+
+    <!-- MOOD CHECK-IN -->
+    <div class="checkin-card">
+      <div class="checkin-q" id="checkinQ">How are you feeling right now?</div>
+      <div class="mood-grid" id="moodGrid">
+        <button class="mb" onclick="logMood('happy')"><span class="mi">☀️</span><span>Happy</span><span
+            class="mt">Plants a Sunshine flower</span></button>
+        <button class="mb" onclick="logMood('calm')"><span class="mi">🌊</span><span>Calm</span><span class="mt">Plants
+            an Ocean lily</span></button>
+        <button class="mb" onclick="logMood('grateful')"><span class="mi">⭐</span><span>Grateful</span><span
+            class="mt">Plants a Star blossom</span></button>
+        <button class="mb" onclick="logMood('sad')"><span class="mi">🌧️</span><span>Sad</span><span class="mt">Plants a
+            Rainbow sprout</span></button>
+        <button class="mb" onclick="logMood('anxious')"><span class="mi">🦋</span><span>Anxious</span><span
+            class="mt">Plants a Butterfly bush</span></button>
+        <button class="mb" onclick="logMood('tired')"><span class="mi">🌙</span><span>Tired</span><span
+            class="mt">Plants a Moon fern</span></button>
+      </div>
+    </div>
+
+    <!-- GARDEN PLOTS -->
+    <div class="garden-card">
+      <div class="section-eye">Your garden</div>
+      <div class="garden-grid" id="gardenGrid"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-c">
+        <div class="stat-v" id="statBlooms">0</div>
+        <div class="stat-l">Blooms</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-v" id="statMoods">0</div>
+        <div class="stat-l">Moods logged</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-v" id="statFriends">0</div>
+        <div class="stat-l">Friends</div>
+      </div>
+    </div>
+
+    <!-- ISLAND FRIENDS -->
+    <div class="friends-card">
+      <div class="section-eye">Island friends</div>
+      <div class="friends-row" id="friendsRow"></div>
+    </div>
+
+    <div class="svb"><button onclick="sav()">💾 Save & Exit</button></div>
+  </div>
+
+  <div class="tst" id="tst"></div>
+
+  <script src="gameEngine.js"></script>
+  <script>
+    /* ── DATA ── */
+    const PLANTS = {
+      happy: { name: 'Sunshine flower', icons: ['🌱', '🌿', '🌻', '🌻'], bloomIcon: '🌻', color: 'rgba(253,200,50,.12)', borderColor: 'rgba(253,200,50,.35)' },
+      calm: { name: 'Ocean lily', icons: ['🌱', '🌿', '💧', '🪷'], bloomIcon: '🪷', color: 'rgba(90,184,245,.10)', borderColor: 'rgba(90,184,245,.3)' },
+      grateful: { name: 'Star blossom', icons: ['🌱', '🌿', '⭐', '🌟'], bloomIcon: '🌟', color: 'rgba(245,200,66,.10)', borderColor: 'rgba(245,200,66,.3)' },
+      sad: { name: 'Rainbow sprout', icons: ['🌱', '🌿', '🌈', '🌈'], bloomIcon: '🌈', color: 'rgba(167,139,250,.10)', borderColor: 'rgba(167,139,250,.3)' },
+      anxious: { name: 'Butterfly bush', icons: ['🌱', '🌿', '🌀', '🦋'], bloomIcon: '🦋', color: 'rgba(200,130,255,.10)', borderColor: 'rgba(200,130,255,.3)' },
+      tired: { name: 'Moon fern', icons: ['🌱', '🌿', '🌙', '🌠'], bloomIcon: '🌠', color: 'rgba(56,189,248,.10)', borderColor: 'rgba(56,189,248,.3)' }
+    };
+
+    const FRIENDS = [
+      { name: 'Buni', icon: '🐰', unlock: 1, tip: 'A kind thought a day softens even tough weeks.' },
+      { name: 'Finn', icon: '🦊', unlock: 3, tip: 'Stepping outside for 5 min resets the mind.' },
+      { name: 'Mochi', icon: '🐻', unlock: 5, tip: 'Write 3 things you noticed today — tiny ones count.' },
+      { name: 'Pip', icon: '🐦', unlock: 8, tip: 'Rest is not laziness. Your body knows what it needs.' }
+    ];
+
+    const STAGES = ['Seed', 'Sprout', 'Budding', 'Bloomed! 🎉'];
+
+    /* ── STATE ── */
+    let coins = 20;
+    let plots = Array(8).fill(null).map(() => ({ mood: null, stage: 0, watered: false }));
+    let moodsDone = 0, blooms = 0, friendsUnlocked = 0;
+    let todayMood = null;
+
+    /* ── ISLAND CANVAS ── */
+    const cv = document.getElementById('islandCanvas');
+    const ctx2 = cv.getContext('2d');
+
+    function resizeCanvas() {
+      const wrap = cv.parentElement;
+      cv.width = wrap.clientWidth;
+      cv.height = 200;
+      drawIsland();
+    }
+
+    function drawIsland() {
+      const W = cv.width, H = cv.height;
+      ctx2.clearRect(0, 0, W, H);
+
+      // Sky gradient — shifts warmer as more plants bloom
+      const skyA = blooms > 3 ? '#1a2a12' : '#0a1a10';
+      const skyB = blooms > 3 ? '#2a4018' : '#12280f';
+      const sky = ctx2.createLinearGradient(0, 0, 0, H * .55);
+      sky.addColorStop(0, skyA); sky.addColorStop(1, skyB);
+      ctx2.fillStyle = sky; ctx2.fillRect(0, 0, W, H);
+
+      // Stars (fewer as blooms increase — day breaks)
+      const starCount = Math.max(0, 30 - blooms * 4);
+      ctx2.fillStyle = 'rgba(255,255,255,.7)';
+      for (let i = 0; i < starCount; i++) {
+        const sx = (Math.sin(i * 127.3) * 0.5 + 0.5) * W, sy = (Math.sin(i * 91.7) * 0.5 + 0.5) * H * .45;
+        ctx2.beginPath(); ctx2.arc(sx, sy, Math.random() < .3 ? 1.2 : .6, 0, Math.PI * 2); ctx2.fill();
+      }
+
+      // Moon / Sun — transitions with blooms
+      if (blooms < 5) {
+        // Moon
+        const mx = W * .8, my = H * .2, mr = 18;
+        const mg = ctx2.createRadialGradient(mx, my, 0, mx, my, mr * 2.5);
+        mg.addColorStop(0, 'rgba(230,240,255,.2)'); mg.addColorStop(1, 'rgba(230,240,255,0)');
+        ctx2.fillStyle = mg; ctx2.beginPath(); ctx2.arc(mx, my, mr * 2.5, 0, Math.PI * 2); ctx2.fill();
+        ctx2.fillStyle = '#d8eaff'; ctx2.beginPath(); ctx2.arc(mx, my, mr, 0, Math.PI * 2); ctx2.fill();
+      } else {
+        // Sun rising!
+        const sx = W * .75, sy = H * .18, sr = 22;
+        const sg = ctx2.createRadialGradient(sx, sy, 0, sx, sy, sr * 3);
+        sg.addColorStop(0, 'rgba(255,210,80,.35)'); sg.addColorStop(1, 'rgba(255,180,40,0)');
+        ctx2.fillStyle = sg; ctx2.beginPath(); ctx2.arc(sx, sy, sr * 3, 0, Math.PI * 2); ctx2.fill();
+        ctx2.fillStyle = '#FFD54F'; ctx2.beginPath(); ctx2.arc(sx, sy, sr, 0, Math.PI * 2); ctx2.fill();
+      }
+
+      // Water — shimmers
+      const waterY = H * .58;
+      const wg = ctx2.createLinearGradient(0, waterY, 0, H);
+      wg.addColorStop(0, '#0d3040'); wg.addColorStop(1, '#091822');
+      ctx2.fillStyle = wg; ctx2.fillRect(0, waterY, W, H - waterY);
+
+      // Water shimmer lines
+      for (let i = 0; i < 5; i++) {
+        const wy = waterY + 20 + i * 18;
+        ctx2.strokeStyle = `rgba(90,184,245,${0.04 + i * .01})`;
+        ctx2.lineWidth = 1; ctx2.beginPath(); ctx2.moveTo(W * .05, wy);
+        for (let x = 0; x <= W * .9; x += 12) ctx2.lineTo(W * .05 + x, wy + Math.sin(x * .05 + i) * 3);
+        ctx2.stroke();
+      }
+
+      // Island ground
+      const gx = W * .12, gy = waterY - 14, gw = W * .76, gh = 38;
+      const gg = ctx2.createLinearGradient(0, gy, 0, gy + gh);
+      gg.addColorStop(0, '#2d5a1e'); gg.addColorStop(1, '#1a3a10');
+      ctx2.fillStyle = gg;
+      ctx2.beginPath();
+      ctx2.ellipse(gx + gw / 2, gy + gh * .5, gw / 2, gh / 2, 0, 0, Math.PI * 2);
+      ctx2.fill();
+
+      // Sand strip
+      const sg2 = ctx2.createLinearGradient(0, gy + gh * .3, 0, waterY + 6);
+      sg2.addColorStop(0, '#c8a850'); sg2.addColorStop(1, '#a07c30');
+      ctx2.fillStyle = sg2;
+      ctx2.beginPath();
+      ctx2.ellipse(gx + gw / 2, waterY, gw * .52, 14, 0, 0, Math.PI * 2);
+      ctx2.fill();
+
+      // Draw bloomed plants on island
+      const bloomed = plots.filter(p => p.stage === 3);
+      const plantX = [gx + gw * .18, gx + gw * .35, gx + gw * .52, gx + gw * .68, gx + gw * .82];
+      bloomed.slice(0, 5).forEach((p, i) => {
+        const px = plantX[i] || gx + gw * .5, py = gy + 5;
+        ctx2.font = '16px serif';
+        ctx2.fillText(PLANTS[p.mood].bloomIcon, px - 8, py);
+      });
+
+      // Friends on island (unlocked)
+      const unlockedF = FRIENDS.filter((_, i) => friendsUnlocked > i);
+      const friendX = [gx + gw * .25, gx + gw * .55, gx + gw * .72, gx + gw * .42];
+      unlockedF.slice(0, 4).forEach((f, i) => {
+        ctx2.font = '15px serif';
+        ctx2.fillText(f.icon, friendX[i] || gx + gw * .5, gy + 22);
+      });
+
+      // Palm tree
+      const tx = gx + gw * .08, ty = gy + 2;
+      ctx2.strokeStyle = '#4a3010'; ctx2.lineWidth = 3;
+      ctx2.beginPath(); ctx2.moveTo(tx, waterY); ctx2.lineTo(tx + 8, ty); ctx2.stroke();
+      ctx2.font = '20px serif'; ctx2.fillText('🌴', tx - 4, ty + 4);
+
+      document.getElementById('timeBadge').textContent = blooms >= 5 ? 'Day 3 · Sunrise 🌅' : blooms >= 3 ? 'Day 2 · Night 🌙' : 'Day 1 · Night 🌙';
+    }
+
+    /* ── TOAST ── */
+    function toast(msg) {
+      const t = document.getElementById('tst');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    /* ── BLOOM BURST ── */
+    function bloomBurst(x, y, icon) {
+      const emojis = [icon, '✨', '🌟', '💫'];
+      emojis.forEach((e, i) => {
+        const el = document.createElement('div');
+        el.className = 'bloom-particle'; el.textContent = e;
+        el.style.left = (x + (i - 1.5) * 20) + 'px';
+        el.style.top = (y) + 'px';
+        el.style.animationDelay = (i * .08) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+      });
+    }
+
+    /* ── LOG MOOD ── */
+    function logMood(mood) {
+      if (todayMood) {
+        toast('You already checked in today! Water your plants 💧');
+        return;
+      }
+      const empty = plots.findIndex(p => !p.mood);
+      if (empty === -1) { toast('All plots full — water & grow your plants first!'); return; }
+
+      todayMood = mood;
+      plots[empty] = { mood, stage: 0, watered: false };
+      moodsDone++;
+      coins += 5;
+
+      // Mark mood button
+      document.querySelectorAll('.mb').forEach(b => b.classList.remove('picked'));
+      event.currentTarget.classList.add('picked');
+
+      // Update check-in question with affirming response
+      const affirmations = {
+        happy: "Love that energy ☀️ Your Sunshine flower is planted!",
+        calm: "That calm is a superpower 🌊 Your Ocean lily is sprouting.",
+        grateful: "Gratitude grows things ⭐ Your Star blossom is in the ground.",
+        sad: "Sad days make room for rainbows 🌧️ Your Rainbow sprout is planted.",
+        anxious: "Your feelings are valid 🦋 Your Butterfly bush will help you breathe.",
+        tired: "Rest is growth too 🌙 Your Moon fern is planted."
+      };
+      document.getElementById('checkinQ').textContent = affirmations[mood];
+
+      toast(`${PLANTS[mood].name} planted! Now water it to help it grow 💧`);
+      updateStats(); renderGarden(); drawIsland();
+    }
+
+    /* ── WATER PLANT ── */
+    function waterPlant(i) {
+      const p = plots[i];
+      if (!p.mood || p.watered || p.stage === 3) return;
+      p.watered = true;
+      p.stage++;
+      coins += 3;
+
+      if (p.stage === 3) {
+        blooms++;
+        const icon = PLANTS[p.mood].bloomIcon;
+        // Burst from the plot card
+        const card = document.querySelectorAll('.plot')[i];
+        if (card) {
+          const r = card.getBoundingClientRect();
+          bloomBurst(r.left + r.width / 2, r.top + window.scrollY, icon);
+        }
+        toast(`🌸 Your ${PLANTS[p.mood].name} bloomed! +5 seeds`);
+        coins += 5;
+      } else {
+        toast(`💧 Watered! Stage ${p.stage}/3 — keep going!`);
+        // Allow re-water after 3s for demo purposes
+        setTimeout(() => { p.watered = false; renderGarden(); }, 4000);
+      }
+      updateStats(); renderGarden(); drawIsland();
+    }
+
+    /* ── RENDER GARDEN ── */
+    function renderGarden() {
+      const grid = document.getElementById('gardenGrid');
+      grid.innerHTML = '';
+      plots.forEach((p, i) => {
+        const d = document.createElement('div');
+        const isBloomed = p.stage === 3;
+        const needsWater = p.mood && p.stage < 3 && !p.watered;
+        d.className = 'plot' + (p.mood ? ' has-plant' : '') + (isBloomed ? ' bloomed' : '') + (needsWater ? ' needs-water' : '');
+        if (p.mood && PLANTS[p.mood]) {
+          const pl = PLANTS[p.mood];
+          d.style.background = isBloomed ? `rgba(245,200,66,.07)` : pl.color;
+          d.style.borderColor = isBloomed ? pl.borderColor : 'rgba(93,219,138,.2)';
+          d.innerHTML = `
+        <div class="plot-icon">${pl.icons[p.stage]}</div>
+        <div class="plot-stage">${STAGES[p.stage]}</div>
+        <div class="plot-name">${pl.name}</div>
+      `;
+          if (p.stage < 3 && !p.watered) {
+            const wb = document.createElement('button');
+            wb.className = 'water-btn'; wb.textContent = '💧 Water';
+            wb.onclick = (e) => { e.stopPropagation(); waterPlant(i); };
+            d.appendChild(wb);
+          }
+        } else {
+          d.innerHTML = `<div class="plot-empty-hint">Log a mood<br>to plant here</div>`;
+        }
+        grid.appendChild(d);
+      });
+    }
+
+    /* ── RENDER FRIENDS ── */
+    function renderFriends() {
+      const row = document.getElementById('friendsRow');
+      row.innerHTML = '';
+      FRIENDS.forEach((f, i) => {
+        const unlocked = blooms >= f.unlock;
+        if (unlocked && friendsUnlocked <= i) friendsUnlocked = i + 1;
+        const d = document.createElement('div');
+        d.className = 'friend-chip' + (unlocked ? ' unlocked' : ' locked');
+        d.innerHTML = `
+      <div class="fc-icon">${f.icon}</div>
+      <div class="fc-info">
+        <div class="fc-name">${f.name}</div>
+        ${unlocked
+            ? `<div class="fc-tip">${f.tip}</div>`
+            : `<div class="fc-lock">Needs ${f.unlock} blooms (${Math.max(0, f.unlock - blooms)} more)</div>`}
+      </div>`;
+        row.appendChild(d);
+      });
+    }
+
+    /* ── UPDATE STATS ── */
+    function updateStats() {
+      document.getElementById('coins').textContent = coins;
+      document.getElementById('statBlooms').textContent = blooms;
+      document.getElementById('statMoods').textContent = moodsDone;
+      const fl = FRIENDS.filter(f => blooms >= f.unlock).length;
+      friendsUnlocked = fl;
+      document.getElementById('statFriends').textContent = fl;
+      renderFriends();
+    }
+
+    /* ── SAVE ── */
+    function sav() {
+      const score = blooms * 50 + moodsDone * 20 + friendsUnlocked * 100;
+      try {
+        const r = GameEngine.saveScore('cozy_island_garden', score);
+        document.getElementById('lxp').textContent = r.totalXP + ' XP';
+        toast('Saved! +' + r.xpEarned + ' XP earned 🌟');
+        setTimeout(() => { try { window.location.href = 'manokart_games_hub.html'; } catch (e) { } }, 1800);
+      } catch (e) { toast('Score: ' + score + ' pts 🌟'); }
+    }
+
+    /* ── INIT ── */
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      renderGarden();
+      updateStats();
+      try { document.getElementById('lxp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch (e) { }
+    });
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+
+</html>

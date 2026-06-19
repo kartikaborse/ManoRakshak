@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ManoKart — Mindful Companion Chat</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Talk to ManoKart, your supportive mental health companion. Share your feelings, explore your mood trends, and get personalized wellness recommendations."/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  
+  <style>
+    :root {
+      --primary-green: #0F6E56;
+      --medium-green: #1D9E75;
+      --light-green: #5DCAA5;
+      --pale-green: #9FE1CB;
+      --ghost-green: #E1F5EE;
+      --warm-white: #fcfbfa;
+      --ink: #2C2C2A;
+      --muted: #5F5E5A;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(93, 202, 165, 0.2);
+      --shadow: 0 8px 32px rgba(15, 110, 86, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--warm-white);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient animated blobs */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: 
+        radial-gradient(ellipse 60% 50% at 10% 10%, rgba(93, 202, 165, 0.15) 0%, transparent 80%),
+        radial-gradient(ellipse 50% 50% at 90% 80%, rgba(253, 244, 248, 0.8) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255, 251, 242, 0.6) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 0;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 350px; height: 350px; background: var(--pale-green); top: -100px; left: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: #f4c0d1; bottom: -50px; right: -50px; animation-delay: -5s; }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    .back-btn {
+      position: relative;
+      z-index: 10;
+      align-self: flex-start;
+      margin-bottom: 16px;
+      color: var(--medium-green);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+    .back-btn:hover {
+      color: var(--primary-green);
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(-2px);
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 700px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 1.5px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .header-emoji {
+      font-size: 2.2rem;
+      animation: wave 2.5s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(15deg); }
+    }
+
+    .chat-header-text h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary-green);
+      letter-spacing: -0.3px;
+    }
+
+    .chat-header-text p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar */
+    .messages-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .messages-area::-webkit-scrollbar-thumb {
+      background: var(--pale-green);
+      border-radius: 99px;
+    }
+
+    .msg-bubble {
+      max-width: 80%;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      border-radius: 20px;
+      animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .msg-bubble.bot {
+      background: var(--ghost-green);
+      color: var(--primary-green);
+      border-top-left-radius: 4px;
+      align-self: flex-start;
+      border: 0.5px solid rgba(93, 202, 165, 0.15);
+    }
+
+    .msg-bubble.user {
+      background: var(--primary-green);
+      color: white;
+      border-top-right-radius: 4px;
+      align-self: flex-end;
+      box-shadow: 0 4px 12px rgba(15, 110, 86, 0.15);
+    }
+
+    /* Quick Action suggestions */
+    .suggestions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 24px 12px 24px;
+      background: transparent;
+      z-index: 6;
+    }
+
+    .suggestion-chip {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--glass-border);
+      color: var(--primary-green);
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .suggestion-chip:hover {
+      background: var(--primary-green);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 110, 86, 0.1);
+    }
+
+    /* Game Card Styling */
+    .game-card {
+      margin-top: 12px;
+      background: white;
+      border: 1.5px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      max-width: 320px;
+    }
+
+    .game-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .game-card-icon {
+      font-size: 2rem;
+      background: var(--ghost-green);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+
+    .game-card-title h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary-green);
+    }
+
+    .game-card-title p {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .game-card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .game-card-btn {
+      align-self: flex-start;
+      background: var(--primary-green);
+      color: white;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .game-card-btn:hover {
+      background: var(--light-green);
+      transform: translateY(-1px);
+    }
+
+    /* Input area */
+    .input-area {
+      padding: 16px 24px 24px 24px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.4);
+      align-items: center;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 99px;
+      border: 1.5px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--light-green);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(93, 202, 165, 0.1);
+    }
+
+    .send-btn {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 99px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(15, 110, 86, 0.1);
+    }
+
+    .send-btn:hover {
+      background: var(--medium-green);
+      transform: translateY(-1px);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 6px 12px;
+      align-self: flex-start;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--medium-green);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+      .chat-container {
+        height: 85vh;
+        border-radius: 20px;
+      }
+      .input-area {
+        padding: 12px 16px 16px 16px;
+        gap: 8px;
+      }
+      .send-btn {
+        padding: 12px 20px;
+      }
+      .suggestions-row {
+        padding: 0 16px 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <a href="/" class="back-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to dashboard
+  </a>
+
+  <main class="chat-container">
+    <header class="chat-header">
+      <div class="header-emoji">🌿</div>
+      <div class="chat-header-text">
+        <h1>ManoKart Companion</h1>
+        <p>A safe, local space to reflect, pause, and talk.</p>
+      </div>
+    </header>
+
+    <div class="messages-area" id="msg-area">
+      <div class="msg-bubble bot">Hello! 🌸 I'm your wellness companion. How are you doing today? If you want to check your progress or play an activity, feel free to ask or click one of the tags below!</div>
+    </div>
+
+    <div class="suggestions-row" id="suggestions">
+      <button class="suggestion-chip" onclick="clickSuggestion('Suggest a game')">🧘 Suggest a game</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('How is my mood lately?')">📊 How is my mood?</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('Summarize my last diary entry')">📖 Summarize my diary</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('Give me some tips to feel better')">🌿 Quick coping tips</button>
+    </div>
+
+    <footer class="input-area">
+      <div class="input-wrapper">
+        <input id="input-field" type="text" placeholder="Share what's on your mind..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+      </div>
+      <button class="send-btn" onclick="sendMessage()">
+        Send
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </footer>
+  </main>
+
+  <script>
+    const msgArea = document.getElementById('msg-area');
+    const inputField = document.getElementById('input-field');
+
+    function createBubble(text, role) {
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${role}`;
+      
+      // Parse markdown-style links [text](url) into clean HTML links
+      let cleanText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: inherit; font-weight: 600; text-decoration: underline;">$1</a>');
+      
+      // Highlight bold text **text**
+      cleanText = cleanText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      
+      bubble.innerHTML = cleanText;
+      msgArea.appendChild(bubble);
+      scrollToBottom();
+      return bubble;
+    }
+
+    function createGameCard(game) {
+      if (!game || !game.slug) return;
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <div class="game-card-header">
+          <div class="game-card-icon">${game.emoji || '🎮'}</div>
+          <div class="game-card-title">
+            <h3>${game.title}</h3>
+            <p>Recommended Activity</p>
+          </div>
+        </div>
+        <div class="game-card-desc">${game.desc || ''}</div>
+        <a href="games/${game.slug}.html" class="game-card-btn">
+          Play Game 🎮
+        </a>
+      `;
+      msgArea.appendChild(card);
+      scrollToBottom();
+    }
+
+    function showTypingIndicator() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg-bubble bot';
+      wrapper.id = 'typing-wrapper';
+      
+      const indicator = document.createElement('div');
+      indicator.className = 'typing-indicator';
+      indicator.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      wrapper.appendChild(indicator);
+      msgArea.appendChild(wrapper);
+      scrollToBottom();
+      return wrapper;
+    }
+
+    function scrollToBottom() {
+      msgArea.scrollTop = msgArea.scrollHeight;
+    }
+
+    function clickSuggestion(text) {
+      inputField.value = text;
+      sendMessage();
+    }
+
+    async function sendMessage() {
+      const message = inputField.value.trim();
+      if (!message) return;
+
+      inputField.value = '';
+      createBubble(message, 'user');
+
+      const indicator = showTypingIndicator();
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message, session_id: 'local_web_session' })
+        });
+
+        // Remove indicator
+        indicator.remove();
+
+        if (response.status === 401) {
+          createBubble('Session expired — redirecting to login... 🌿', 'bot');
+          setTimeout(() => window.location.href = '/auth', 1500);
+          return;
+        }
+
+        const data = await response.json();
+        if (data.reply) {
+          createBubble(data.reply, 'bot');
+          if (data.recommendation) {
+            createGameCard(data.recommendation);
+          }
+        } else if (data.error) {
+          createBubble(data.error + ' 🌧️', 'bot');
+        } else {
+          createBubble('Something went wrong — please try again. 🌿', 'bot');
+        }
+      } catch (e) {
+        if (indicator) indicator.remove();
+        createBubble('Could not reach the server. Is it running? 🌿', 'bot');
+      }
+    }
+  </script>
+</body>
+</html>

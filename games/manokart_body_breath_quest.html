@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Body &amp; Breath Quest</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <style>
+    :root {
+      --bg: #f7f8f5;
+      --surface: #ffffff;
+      --surface2: #f0f2ec;
+      --border: rgba(0, 0, 0, 0.1);
+      --border2: rgba(0, 0, 0, 0.18);
+      --text: #1a1f14;
+      --text2: #5a6350;
+      --text3: #8a9478;
+      --teal: #1D9E75;
+      --teal-bg: #E1F5EE;
+      --teal-border: #5DCAA5;
+      --teal-text: #085041;
+      --amber: #EF9F27;
+      --amber-bg: #FAEEDA;
+      --amber-border: #FAC775;
+      --amber-text: #633806;
+      --purple: #7F77DD;
+      --purple-bg: #EEEDFE;
+      --purple-border: #AFA9EC;
+      --purple-text: #3C3489;
+      --red: #E24B4A;
+      --red-bg: #FCEBEB;
+      --red-border: #F7C1C1;
+      --red-text: #791F1F;
+      --green-fill: #1D9E75;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141a10;
+        --surface: #1e2619;
+        --surface2: #252d1e;
+        --border: rgba(255, 255, 255, 0.1);
+        --border2: rgba(255, 255, 255, 0.18);
+        --text: #e8eddf;
+        --text2: #9aaa85;
+        --text3: #6a7a58;
+        --teal-bg: #04342C;
+        --teal-border: #1D9E75;
+        --teal-text: #9FE1CB;
+        --amber-bg: #412402;
+        --amber-border: #BA7517;
+        --amber-text: #FAC775;
+        --purple-bg: #26215C;
+        --purple-border: #534AB7;
+        --purple-text: #CECBF6;
+        --red-bg: #501313;
+        --red-border: #A32D2D;
+        --red-text: #F7C1C1;
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: var(--font);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    #rpg {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .game-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .game-title .ti {
+      font-size: 18px;
+      color: var(--teal);
+    }
+
+    .top-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 12px;
+      color: var(--text2);
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge.lv {
+      color: var(--teal-text);
+      border-color: var(--teal-border);
+      background: var(--teal-bg);
+    }
+
+    .badge.xp {
+      color: var(--amber-text);
+      border-color: var(--amber-border);
+      background: var(--amber-bg);
+    }
+
+    .badge.hp-b {
+      color: var(--red-text);
+      border-color: var(--red-border);
+      background: var(--red-bg);
+    }
+
+    /* How to play */
+    .how-section {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .how-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      padding: 0;
+    }
+
+    .how-toggle .ti-chevron-down {
+      font-size: 16px;
+      color: var(--text3);
+      transition: transform 0.2s;
+    }
+
+    .how-toggle.open .ti-chevron-down {
+      transform: rotate(180deg);
+    }
+
+    .how-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease;
+    }
+
+    .how-body.open {
+      max-height: 700px;
+    }
+
+    .how-inner {
+      padding-top: 12px;
+    }
+
+    .rule {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .rule:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .rule-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rule-icon .ti {
+      font-size: 16px;
+    }
+
+    .rule-icon.teal {
+      background: var(--teal-bg);
+      color: var(--teal);
+    }
+
+    .rule-icon.amber {
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    .rule-icon.purple {
+      background: var(--purple-bg);
+      color: var(--purple);
+    }
+
+    .rule-icon.red {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .rule-text {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    .rule-text strong {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .rule-text ul {
+      margin: 4px 0 0 14px;
+    }
+
+    /* Arena */
+    .arena {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .arena-fighters {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .fighter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 100px;
+      max-width: 120px;
+    }
+
+    .char-emoji {
+      font-size: 54px;
+      line-height: 1;
+      display: block;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .char-emoji.do-attack {
+      animation: atk 0.4s;
+    }
+
+    .char-emoji.do-hurt {
+      animation: hurt 0.35s;
+    }
+
+    @keyframes atk {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      40% {
+        transform: translateX(28px);
+      }
+    }
+
+    @keyframes hurt {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-12px);
+      }
+
+      60% {
+        transform: translateX(8px);
+      }
+    }
+
+    .char-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .hp-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .hp-track {
+      flex: 1;
+      height: 8px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .hp-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .hp-fill.green {
+      background: var(--green-fill);
+    }
+
+    .hp-fill.red {
+      background: var(--red);
+    }
+
+    .hp-num {
+      font-size: 10px;
+      color: var(--text3);
+      min-width: 48px;
+      text-align: right;
+    }
+
+    .arena-mid {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      padding: 0 8px;
+    }
+
+    .turn-badge {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .battle-log {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 52px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      width: 100%;
+    }
+
+    .xp-pop {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--amber-text);
+      opacity: 0;
+      transition: opacity 0.25s;
+      min-height: 20px;
+    }
+
+    .xp-pop.show {
+      opacity: 1;
+    }
+
+    /* Breath modal */
+    .breath-modal {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 52, 44, 0.94);
+      border-radius: var(--radius-lg);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 30;
+      padding: 24px;
+    }
+
+    .breath-modal.active {
+      display: flex;
+    }
+
+    .breath-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: #c8f0c8;
+    }
+
+    .breath-ring {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #5DCAA5;
+      background: rgba(29, 158, 117, 0.15);
+      transition: transform 1.5s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breath-ring-inner {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(29, 158, 117, 0.25);
+    }
+
+    .breath-phase {
+      font-size: 13px;
+      color: rgba(200, 240, 200, 0.85);
+      font-weight: 500;
+    }
+
+    .breath-tip {
+      font-size: 11px;
+      color: rgba(200, 240, 200, 0.5);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 200px;
+    }
+
+    .breath-done-btn {
+      padding: 8px 24px;
+      border-radius: 20px;
+      border: 1px solid #5DCAA5;
+      background: transparent;
+      color: #c8f0c8;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 13px;
+      transition: background 0.15s;
+    }
+
+    .breath-done-btn:hover {
+      background: rgba(93, 202, 165, 0.15);
+    }
+
+    /* Path */
+    .section-title {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+
+    .path-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .path-scroll::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .path-scroll::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px;
+    }
+
+    .pnode {
+      flex-shrink: 0;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 18px;
+    }
+
+    .pnode .pname {
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--text3);
+    }
+
+    .pnode.done {
+      background: var(--teal-bg);
+      border-color: var(--teal-border);
+    }
+
+    .pnode.done .pname {
+      color: var(--teal-text);
+    }
+
+    .pnode.current {
+      background: var(--amber-bg);
+      border-color: var(--amber-border);
+      box-shadow: 0 0 0 3px rgba(239, 159, 39, 0.2);
+    }
+
+    .pnode.current .pname {
+      color: var(--amber-text);
+    }
+
+    .pnode.locked {
+      background: var(--surface2);
+      opacity: 0.45;
+    }
+
+    .pnode-arrow {
+      flex-shrink: 0;
+      color: var(--text3);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Moves */
+    .moves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .move-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      font-family: var(--font);
+    }
+
+    .move-card:hover:not(:disabled) {
+      border-color: var(--border2);
+      background: var(--surface2);
+    }
+
+    .move-card:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .move-card:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .move-card.breath-type {
+      border-left: 2px solid var(--teal);
+    }
+
+    .move-card.move-type {
+      border-left: 2px solid var(--purple);
+    }
+
+    .move-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .move-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .move-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .move-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .move-tag.pwr {
+      background: var(--amber-bg);
+      color: var(--amber-text);
+    }
+
+    .move-tag.typ-breath {
+      background: var(--teal-bg);
+      color: var(--teal-text);
+    }
+
+    .move-tag.typ-move {
+      background: var(--purple-bg);
+      color: var(--purple-text);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stat-lab {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+<style>
+.gbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.gbar a{color:var(--text2);text-decoration:none;font-size:14px;transition:color .2s}
+.gbar a:hover{color:var(--teal)}
+.gbar .t{flex:1;font-weight:600;font-size:15px;text-align:center;color:var(--text)}
+.gbar .xb{font-size:12px;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:4px 12px;border-radius:20px}
+</style>
+</head>
+
+<body>
+  <div class="gbar">
+    <a href="manokart_games_hub.html">← Hub</a>
+    <div class="t">🧘 Body & Breath Quest</div>
+    <div class="xb" id="ge-xp">0 XP</div>
+  </div>
+  <h2 class="sr-only">Body and Breath Quest — a movement and breathing RPG where real exercises defeat stress monsters.
+  </h2>
+
+  <div id="rpg">
+    <div class="top-bar">
+      <div class="game-title">
+        <i class="ti ti-flame"></i>
+        Body &amp; Breath Quest
+      </div>
+      <div class="top-badges">
+        <div class="badge lv"><i class="ti ti-shield" style="font-size:11px"></i> Lv. <span id="player-lv">3</span>
+        </div>
+        <div class="badge xp"><i class="ti ti-bolt" style="font-size:11px"></i> <span id="xp-val">240</span> XP</div>
+        <div class="badge hp-b"><i class="ti ti-heart" style="font-size:11px"></i> <span id="hp-badge-val">85</span>/100
+          HP</div>
+      </div>
+    </div>
+
+    <!-- How to play -->
+    <div class="how-section">
+      <button class="how-toggle" id="how-toggle" onclick="toggleHow()" aria-expanded="false">
+        <span><i class="ti ti-info-circle"
+            style="font-size:15px;vertical-align:-2px;margin-right:6px;color:var(--text3)"></i>How to play &amp;
+          rules</span>
+        <i class="ti ti-chevron-down"></i>
+      </button>
+      <div class="how-body" id="how-body">
+        <div class="how-inner">
+          <div class="rule">
+            <div class="rule-icon teal"><i class="ti ti-target"></i></div>
+            <div class="rule-text"><strong>Goal</strong> — Defeat stress monsters along your adventure map. Each monster
+              you beat earns XP and unlocks the next encounter. Reach Rainbow Peak to win!</div>
+          </div>
+          <div class="rule">
+            <div class="rule-icon amber"><i class="ti ti-cards"></i></div>
+            <div class="rule-text"><strong>Your moves</strong> — <strong>Breath moves</strong> (green border) open a
+              guided breathing animation — follow it honestly, then tap "Done" to land the hit. <strong>Movement
+                moves</strong> (purple border) require you to actually do the action (squat, walk, stretch) before
+              clicking.</div>
+          </div>
+          <div class="rule">
+            <div class="rule-icon purple"><i class="ti ti-sword"></i></div>
+            <div class="rule-text"><strong>Combat</strong> — Each move deals Power damage to the monster. After your
+              move, the monster strikes back for 5–16 random damage.
+              <ul>
+                <li>If your HP hits 0, you revive at 50 HP.</li>
+                <li>Deplete the monster's HP bar to defeat it.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="rule">
+            <div class="rule-icon teal"><i class="ti ti-trending-up"></i></div>
+            <div class="rule-text"><strong>Leveling up</strong> — Gain XP from every move. Level up when XP reaches 100
+              × your level. Monsters grow tougher with each encounter (Goblin → Wraith → Ogre → Dragon → loops).</div>
+          </div>
+          <div class="rule">
+            <div class="rule-icon red"><i class="ti ti-heart-handshake"></i></div>
+            <div class="rule-text"><strong>Real-life rules</strong> — The game only works if you actually do the
+              exercises! For breath moves, follow the animation honestly. For movement moves, complete the action before
+              clicking. No cheating your own wellness!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arena -->
+    <div class="arena" id="arena">
+      <div class="arena-fighters">
+        <div class="fighter">
+          <span class="char-emoji" id="player-char">🧘</span>
+          <div class="char-label">You</div>
+          <div class="hp-row">
+            <div class="hp-track">
+              <div class="hp-fill green" id="player-hp-fill" style="width:85%"></div>
+            </div>
+            <div class="hp-num" id="player-hp-num">85/100</div>
+          </div>
+        </div>
+        <div class="arena-mid">
+          <div class="turn-badge" id="turn-badge">Your turn</div>
+          <div class="battle-log" id="battle-msg" role="status" aria-live="polite">A Stress Monster appears! Choose a
+            move to begin.</div>
+          <div class="xp-pop" id="xp-pop"></div>
+        </div>
+        <div class="fighter">
+          <span class="char-emoji" id="monster-char">😤</span>
+          <div class="char-label" id="monster-name">Stress Goblin</div>
+          <div class="hp-row">
+            <div class="hp-track">
+              <div class="hp-fill red" id="monster-hp-fill" style="width:100%"></div>
+            </div>
+            <div class="hp-num" id="monster-hp-num">100/100</div>
+          </div>
+        </div>
+      </div>
+      <!-- Breath overlay -->
+      <div class="breath-modal" id="breath-modal">
+        <div class="breath-title" id="breath-title">Deep Breath</div>
+        <div class="breath-ring" id="breath-ring">
+          <div class="breath-ring-inner"></div>
+        </div>
+        <div class="breath-phase" id="breath-phase">Breathe in...</div>
+        <div class="breath-tip" id="breath-tip">Inhale slowly through your nose for 4 counts</div>
+        <button class="breath-done-btn" onclick="endBreath()">Done — land the hit</button>
+      </div>
+    </div>
+
+    <!-- Adventure map -->
+    <div class="section-title">Adventure map</div>
+    <div class="path-scroll" id="path-scroll"></div>
+
+    <!-- Moves -->
+    <div class="section-title">Your moves</div>
+    <div class="moves-grid" id="moves-grid"></div>
+
+    <div class="divider"></div>
+
+    <!-- Stats -->
+    <div class="section-title">Session stats</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" id="s-defeated">7</div>
+        <div class="stat-lab">monsters defeated</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="s-breaths">24</div>
+        <div class="stat-lab">mindful breaths</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="s-moves">0</div>
+        <div class="stat-lab">moves used today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="s-streak">3</div>
+        <div class="stat-lab">day streak</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var MONSTERS = [
+      { name: 'Stress Goblin', icon: '😤', maxHp: 100, reward: 30 },
+      { name: 'Worry Wraith', icon: '👻', maxHp: 130, reward: 45 },
+      { name: 'Anxiety Ogre', icon: '😰', maxHp: 160, reward: 60 },
+      { name: 'Dread Dragon', icon: '🐉', maxHp: 200, reward: 90 }
+    ];
+
+    var MOVES = [
+      {
+        name: 'Deep breath', icon: '🌬️', power: 15, type: 'breath',
+        msg: 'You breathe deeply. Calm washes over you.',
+        steps: ['Breathe in...', 'Hold...', 'Breathe out...', 'Done'],
+        tips: ['Inhale slowly through your nose for 4 counts', 'Hold gently', 'Exhale fully through your mouth', 'Release all tension']
+      },
+      {
+        name: 'Box breathing', icon: '🧊', power: 25, type: 'breath',
+        msg: 'Inhale 4, hold 4, exhale 4. The monster weakens!',
+        steps: ['Breathe in...', 'Hold...', 'Breathe out...', 'Hold...'],
+        tips: ['Inhale for 4 counts', 'Hold for 4 counts', 'Exhale for 4 counts', 'Hold for 4 counts']
+      },
+      {
+        name: 'Body stretch', icon: '🤸', power: 20, type: 'move',
+        msg: 'You stretch tall and wide. Energy surges through you!'
+      },
+      {
+        name: 'Power squat', icon: '💪', power: 30, type: 'move',
+        msg: 'Squat low and rise strong — critical hit!'
+      },
+      {
+        name: 'Mindful steps', icon: '🚶', power: 18, type: 'move',
+        msg: '10 deliberate steps taken. The monster stumbles.'
+      },
+      {
+        name: 'Lion breath', icon: '🦁', power: 35, type: 'breath',
+        msg: 'You ROAR out all tension. Massive damage!',
+        steps: ['Open wide...', 'ROAR!', 'Breathe in...', 'Settle...'],
+        tips: ['Open your mouth and eyes wide', 'Stick tongue out and ROAR loudly', 'Inhale deeply through your nose', 'Feel the tension release']
+      }
+    ];
+
+    var PATH = [
+      { icon: '🌱', name: 'Start', done: true },
+      { icon: '🌿', name: 'Forest', done: true },
+      { icon: '🏔️', name: 'Hills', done: true },
+      { icon: '⭐', name: 'Boss', current: true },
+      { icon: '🌊', name: 'Shore' },
+      { icon: '🏰', name: 'Castle' },
+      { icon: '🌈', name: 'Peak' }
+    ];
+
+    var monsterIdx = 0;
+    var monster = { name: MONSTERS[0].name, icon: MONSTERS[0].icon, maxHp: MONSTERS[0].maxHp, hp: MONSTERS[0].maxHp, reward: MONSTERS[0].reward };
+    var playerHp = 85;
+    var playerXp = 240;
+    var playerLv = 3;
+    var monstersDefeated = 7;
+    var breathsTaken = 24;
+    var movesUsed = 0;
+    var playerTurn = true;
+    var breathInterval = null;
+    var currentBreathMove = null;
+
+    function clamp(v, lo, hi) {
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    function pct(v, max) {
+      return Math.round(clamp(v / max * 100, 0, 100));
+    }
+
+    function updateUI() {
+      document.getElementById('player-lv').textContent = playerLv;
+      document.getElementById('xp-val').textContent = playerXp;
+      document.getElementById('hp-badge-val').textContent = playerHp;
+      document.getElementById('player-hp-fill').style.width = pct(playerHp, 100) + '%';
+      document.getElementById('player-hp-num').textContent = playerHp + '/100';
+      document.getElementById('monster-hp-fill').style.width = pct(monster.hp, monster.maxHp) + '%';
+      document.getElementById('monster-hp-num').textContent = Math.max(0, monster.hp) + '/' + monster.maxHp;
+      document.getElementById('s-defeated').textContent = monstersDefeated;
+      document.getElementById('s-breaths').textContent = breathsTaken;
+      document.getElementById('s-moves').textContent = movesUsed;
+    }
+
+    function popXp(txt) {
+      var el = document.getElementById('xp-pop');
+      el.textContent = txt;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 1300);
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(function () { t.classList.remove('show'); }, 2200);
+    }
+
+    function setMsg(msg) { document.getElementById('battle-msg').textContent = msg; }
+    function setTurnBadge(s) { document.getElementById('turn-badge').textContent = s; }
+
+    function setMovesDisabled(d) {
+      document.querySelectorAll('.move-card').forEach(function (b) { b.disabled = d; });
+    }
+
+    function anim(id, cls) {
+      var el = document.getElementById(id);
+      el.classList.add(cls);
+      setTimeout(function () { el.classList.remove(cls); }, 450);
+    }
+
+    function enemyAttack() {
+      setMovesDisabled(true);
+      setTurnBadge("Monster's turn");
+      setTimeout(function () {
+        var dmg = Math.floor(Math.random() * 12) + 5;
+        playerHp = Math.max(0, playerHp - dmg);
+        anim('player-char', 'do-hurt');
+        if (playerHp <= 0) {
+          playerHp = 50;
+          setMsg('You fell... Rest restores you to 50 HP. Breathe and try again!');
+          showToast('Revived at 50 HP — keep going!');
+        } else {
+          setMsg(monster.name + ' strikes back for ' + dmg + ' damage!');
+        }
+        updateUI();
+        setTimeout(function () {
+          playerTurn = true;
+          setTurnBadge('Your turn');
+          setMovesDisabled(false);
+        }, 600);
+      }, 800);
+    }
+
+    function applyMove(mv) {
+      if (!playerTurn || monster.hp <= 0) { return; }
+      playerTurn = false;
+      setMovesDisabled(true);
+      setTurnBadge('Attacking...');
+      movesUsed++;
+      if (mv.type === 'breath') { breathsTaken++; }
+      anim('player-char', 'do-attack');
+      setTimeout(function () { anim('monster-char', 'do-hurt'); }, 320);
+      monster.hp = Math.max(0, monster.hp - mv.power);
+      playerXp += mv.power;
+      popXp('+' + mv.power + ' XP');
+      if (playerXp >= playerLv * 100) {
+        playerLv++;
+        setTimeout(function () {
+          popXp('LEVEL UP! 🎉');
+          showToast('Level ' + playerLv + '! You\'re getting stronger!');
+        }, 700);
+      }
+      setMsg(mv.msg);
+      updateUI();
+      if (monster.hp <= 0) {
+        monstersDefeated++;
+        playerXp += monster.reward;
+        setMsg(monster.name + ' defeated! +' + monster.reward + ' bonus XP! 🎉');
+        showToast(monster.name + ' defeated! ✓');
+        updateUI();
+        setTimeout(function () {
+          monsterIdx = (monsterIdx + 1) % MONSTERS.length;
+          var m = MONSTERS[monsterIdx];
+          monster = { name: m.name, icon: m.icon, maxHp: m.maxHp, hp: m.maxHp, reward: m.reward };
+          document.getElementById('monster-char').textContent = monster.icon;
+          document.getElementById('monster-name').textContent = monster.name;
+          setMsg('A wild ' + monster.name + ' appears! Choose your move wisely.');
+          playerTurn = true;
+          setTurnBadge('Your turn');
+          setMovesDisabled(false);
+          updateUI();
+        }, 1800);
+      } else {
+        enemyAttack();
+      }
+    }
+
+    function startBreath(mv) {
+      currentBreathMove = mv;
+      var step = 0;
+      var steps = mv.steps || ['Breathe in...', 'Hold...', 'Breathe out...', 'Settle...'];
+      var tips = mv.tips || ['Inhale slowly', 'Hold gently', 'Exhale fully', 'Relax'];
+      document.getElementById('breath-title').textContent = mv.name;
+      document.getElementById('breath-phase').textContent = steps[0];
+      document.getElementById('breath-tip').textContent = tips[0];
+      document.getElementById('breath-ring').style.transform = 'scale(1.4)';
+      document.getElementById('breath-modal').classList.add('active');
+      breathInterval = setInterval(function () {
+        step = (step + 1) % steps.length;
+        document.getElementById('breath-phase').textContent = steps[step];
+        document.getElementById('breath-tip').textContent = tips[step];
+        document.getElementById('breath-ring').style.transform = (step % 2 === 0) ? 'scale(1.4)' : 'scale(1)';
+      }, 1600);
+    }
+
+    function endBreath() {
+      clearInterval(breathInterval);
+      document.getElementById('breath-modal').classList.remove('active');
+      document.getElementById('breath-ring').style.transform = 'scale(1)';
+      if (currentBreathMove) { applyMove(currentBreathMove); }
+      currentBreathMove = null;
+    }
+
+    function toggleHow() {
+      var btn = document.getElementById('how-toggle');
+      var body = document.getElementById('how-body');
+      var open = body.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open);
+    }
+
+    function renderPath() {
+      var pr = document.getElementById('path-scroll');
+      pr.innerHTML = '';
+      PATH.forEach(function (node, i) {
+        var d = document.createElement('div');
+        var cls = 'pnode' + (node.done ? ' done' : (node.current ? ' current' : ' locked'));
+        d.className = cls;
+        d.innerHTML = '<span>' + node.icon + '</span><span class="pname">' + node.name + '</span>';
+        pr.appendChild(d);
+        if (i < PATH.length - 1) {
+          var arr = document.createElement('div');
+          arr.className = 'pnode-arrow';
+          arr.innerHTML = '<i class="ti ti-chevron-right"></i>';
+          pr.appendChild(arr);
+        }
+      });
+    }
+
+    function renderMoves() {
+      var mg = document.getElementById('moves-grid');
+      mg.innerHTML = '';
+      MOVES.forEach(function (mv) {
+        var btn = document.createElement('button');
+        btn.className = 'move-card ' + (mv.type === 'breath' ? 'breath-type' : 'move-type');
+        btn.innerHTML =
+          '<div class="move-icon">' + mv.icon + '</div>' +
+          '<div class="move-name">' + mv.name + '</div>' +
+          '<div class="move-meta">' +
+          '<span class="move-tag pwr">Power ' + mv.power + '</span>' +
+          '<span class="move-tag typ-' + mv.type + '">' + (mv.type === 'breath' ? 'Breath' : 'Movement') + '</span>' +
+          '</div>';
+        btn.onclick = (function (m) {
+          return function () {
+            if (m.type === 'breath') { startBreath(m); } else { applyMove(m); }
+          };
+        }(mv));
+        mg.appendChild(btn);
+      });
+    }
+
+    renderPath();
+    renderMoves();
+    updateUI();
+  </script>
+  <script src="gameEngine.js"></script>
+  <script>
+    // Init XP display from GameEngine
+    try { document.getElementById('ge-xp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch(e) {}
+
+    // Patch monster defeat to persist score via GameEngine
+    var _origApplyMove = applyMove;
+    applyMove = function(mv) {
+      var prevDefeated = monstersDefeated;
+      _origApplyMove(mv);
+      // If a monster was just defeated, save the score
+      if (monstersDefeated > prevDefeated) {
+        try {
+          var score = playerXp;
+          var r = GameEngine.saveScore('body_breath_quest', score);
+          document.getElementById('ge-xp').textContent = r.totalXP + ' XP';
+        } catch(e) {}
+      }
+    };
+
+    // Also save on page unload so partial progress is captured
+    window.addEventListener('beforeunload', function() {
+      try { GameEngine.saveScore('body_breath_quest', playerXp); } catch(e) {}
+    });
+  </script>
+</body>
+
+</html>

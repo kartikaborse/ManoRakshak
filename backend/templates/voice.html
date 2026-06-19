@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ManoKart — Voice Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
+      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
+      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
+      --amber:#EF9F27;--amber-light:#FAC775;--amber-ghost:#FAEEDA;
+      --card-border:rgba(93,202,165,.18);
+    }
+    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(239,159,39,.1) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(225,245,238,.6) 0%,transparent 60%);pointer-events:none}
+    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.3;z-index:0;animation:drift 12s ease-in-out infinite alternate}
+    .orb1{width:280px;height:280px;background:var(--amber-light);top:-60px;right:-40px}
+    .orb2{width:200px;height:200px;background:var(--sage-pale);bottom:10%;left:-40px;animation-delay:-5s}
+    .orb3{width:160px;height:160px;background:#f4c0d1;top:50%;right:15%;animation-delay:-9s}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+    .page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 28px 80px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0;flex-wrap:wrap;gap:10px}
+    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
+    .back{color:var(--sage-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+    .back:hover{color:var(--sage)}
+    h1.page-title{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--ink);letter-spacing:-1px;margin:32px 0 6px}
+    h1.page-title em{color:var(--amber);font-style:italic}
+    .page-sub{font-size:1rem;color:var(--muted);font-weight:300;margin-bottom:32px}
+    /* Recorder */
+    .recorder-card{background:rgba(255,255,255,.85);border:1px solid var(--card-border);border-radius:28px;padding:36px 32px;backdrop-filter:blur(12px);box-shadow:0 8px 40px rgba(93,202,165,.08);text-align:center;margin-bottom:24px}
+    .mic-btn{width:100px;height:100px;border-radius:50%;border:none;cursor:pointer;font-size:2.4rem;transition:all .3s;position:relative;display:inline-flex;align-items:center;justify-content:center}
+    .mic-btn.idle{background:linear-gradient(135deg,var(--amber),#f0c060);color:white;box-shadow:0 6px 24px rgba(239,159,39,.3)}
+    .mic-btn.idle:hover{transform:scale(1.08);box-shadow:0 8px 32px rgba(239,159,39,.4)}
+    .mic-btn.recording{background:linear-gradient(135deg,#E74C3C,#ff6b6b);color:white;box-shadow:0 6px 24px rgba(231,76,60,.4);animation:pulse-rec 1.5s infinite}
+    @keyframes pulse-rec{0%,100%{box-shadow:0 6px 24px rgba(231,76,60,.4)}50%{box-shadow:0 6px 40px rgba(231,76,60,.6),0 0 0 12px rgba(231,76,60,.1)}}
+    .mic-label{margin-top:14px;font-size:.9rem;color:var(--muted);font-weight:400}
+    .timer{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--ink);margin-top:10px}
+    /* Waveform */
+    .waveform-wrap{height:80px;margin:20px 0;border-radius:12px;background:rgba(239,159,39,.06);border:1px solid rgba(239,159,39,.15);overflow:hidden;display:none}
+    .waveform-wrap.active{display:block}
+    canvas#waveform{width:100%;height:100%}
+    /* Transcription */
+    .transcript-card{background:rgba(255,255,255,.85);border:1px solid var(--card-border);border-radius:24px;padding:24px 28px;backdrop-filter:blur(8px);margin-bottom:20px;text-align:left}
+    .transcript-card h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--sage);margin-bottom:12px}
+    .transcript-text{font-size:1rem;color:var(--ink);line-height:1.7;min-height:60px;white-space:pre-wrap;font-family:'Outfit',sans-serif}
+    .transcript-text.placeholder{color:var(--hint);font-style:italic}
+    .transcript-text .interim{color:var(--hint);font-style:italic}
+    /* Emotion result */
+    .emotion-card{background:linear-gradient(135deg,var(--sage-ghost),var(--amber-ghost));border:1px solid rgba(93,202,165,.2);border-radius:24px;padding:24px 28px;margin-bottom:20px;display:none}
+    .emotion-card.visible{display:block;animation:fadeUp .5s ease}
+    .emotion-card h3{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--sage);margin-bottom:10px}
+    .emotion-tag{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:99px;font-size:1rem;font-weight:600;margin-right:8px;margin-bottom:8px}
+    .emotion-details{font-size:.85rem;color:var(--muted);margin-top:10px;line-height:1.6}
+    /* Audio features */
+    .audio-features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+    .af-box{background:white;border-radius:14px;padding:12px;text-align:center;border:1px solid rgba(209,208,199,.3)}
+    .af-val{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--amber)}
+    .af-lbl{font-size:.72rem;color:var(--hint);margin-top:3px}
+    /* Actions */
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+    .btn{padding:12px 26px;border-radius:99px;border:none;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+    .btn-primary{background:var(--sage);color:white;box-shadow:0 4px 16px rgba(15,110,86,.2)}
+    .btn-primary:hover{background:var(--sage-mid);transform:translateY(-1px)}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .btn-ghost{background:rgba(255,255,255,.7);color:var(--sage);border:1.5px solid var(--card-border)}
+    .btn-ghost:hover{border-color:var(--sage);background:var(--sage-ghost)}
+    /* Playback */
+    .playback-card{background:rgba(255,255,255,.85);border:1px solid var(--card-border);border-radius:20px;padding:18px 24px;margin-bottom:20px;display:none;align-items:center;gap:14px}
+    .playback-card.visible{display:flex}
+    .play-btn{width:44px;height:44px;border-radius:50%;border:none;background:var(--amber);color:white;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+    .play-btn:hover{background:#d08a1f;transform:scale(1.08)}
+    /* Toast */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--sage);color:white;padding:10px 22px;border-radius:99px;font-size:.85rem;z-index:999;animation:fadeUp .3s ease;box-shadow:0 4px 24px rgba(15,110,86,.25);display:none}
+    .toast.show{display:block}
+    /* Browser warning */
+    .browser-warn{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:16px;padding:18px 24px;margin-bottom:20px;font-size:.9rem;color:#C0392B;display:none}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .5s ease}
+    footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="page">
+  <div class="topbar">
+    <a href="/" class="logo">🌿 ManoKart</a>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <a href="/clinical" class="back" style="color:var(--sage); font-weight:500;">📋 Check-in</a>
+      <a href="/profile" class="back" style="color:var(--sage); font-weight:500;">👤 Profile</a>
+      <a href="/" class="back">← Back to hub</a>
+    </div>
+  </div>
+
+  <h1 class="page-title fade-up">🎙️ Voice <em>Journal</em></h1>
+  <p class="page-sub fade-up">Speak freely — let your voice carry what words alone cannot. We'll listen, transcribe, and gently understand.</p>
+
+  <div class="browser-warn" id="browser-warn">
+    ⚠️ Your browser doesn't support speech recognition. Please use <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> for the best voice journaling experience.
+  </div>
+
+  <!-- Recorder -->
+  <div class="recorder-card fade-up">
+    <button class="mic-btn idle" id="mic-btn" onclick="toggleRecording()">🎙️</button>
+    <div class="mic-label" id="mic-label">Tap to start recording</div>
+    <div class="timer" id="timer" style="display:none">0:00</div>
+    <div class="waveform-wrap" id="waveform-wrap">
+      <canvas id="waveform"></canvas>
+    </div>
+  </div>
+
+  <!-- Playback -->
+  <div class="playback-card" id="playback-card">
+    <button class="play-btn" id="play-btn" onclick="togglePlayback()">▶️</button>
+    <div style="flex:1">
+      <div style="font-weight:500;font-size:.9rem">Your recording</div>
+      <div style="font-size:.78rem;color:var(--hint)" id="rec-duration">0:00</div>
+    </div>
+    <button class="btn btn-ghost" onclick="discardRecording()" style="font-size:.8rem;padding:8px 16px">Discard</button>
+  </div>
+
+  <!-- Transcript -->
+  <div class="transcript-card fade-up">
+    <h3>📝 Transcription</h3>
+    <div class="transcript-text placeholder" id="transcript">Your words will appear here as you speak...</div>
+  </div>
+
+  <!-- Emotion Analysis -->
+  <div class="emotion-card" id="emotion-card">
+    <h3>🔮 Emotion Detected</h3>
+    <div id="emotion-tags"></div>
+    <div class="audio-features" id="audio-features"></div>
+    <div class="emotion-details" id="emotion-details"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions" id="actions" style="display:none">
+    <button class="btn btn-primary" id="save-btn" onclick="saveToDiary()" disabled>📖 Save to Diary</button>
+    <button class="btn btn-ghost" onclick="analyzeEmotion()">🔮 Analyze Emotion</button>
+    <button class="btn btn-ghost" onclick="resetAll()">🔄 New Recording</button>
+  </div>
+
+  <footer>ManoKart &mdash; made with 🌿 for your wellbeing</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let audioBlob = null;
+let audioUrl = null;
+let audioPlayer = null;
+let recognition = null;
+let finalTranscript = '';
+let interimTranscript = '';
+let timerInterval = null;
+let seconds = 0;
+let audioContext = null;
+let analyserNode = null;
+let animFrame = null;
+
+// Audio feature tracking
+let pitchSamples = [];
+let volumeSamples = [];
+let speechRate = 0;
+let wordCount = 0;
+
+// ── Check browser support ──
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+  document.getElementById('browser-warn').style.display = 'block';
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ── Timer ──
+function startTimer() {
+  seconds = 0;
+  const el = document.getElementById('timer');
+  el.style.display = 'block';
+  timerInterval = setInterval(() => {
+    seconds++;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ── Waveform ──
+function initWaveform(stream) {
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioContext.createMediaStreamSource(stream);
+  analyserNode = audioContext.createAnalyser();
+  analyserNode.fftSize = 256;
+  source.connect(analyserNode);
+
+  const canvas = document.getElementById('waveform');
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('waveform-wrap');
+  wrap.classList.add('active');
+
+  function draw() {
+    animFrame = requestAnimationFrame(draw);
+    canvas.width = wrap.offsetWidth;
+    canvas.height = wrap.offsetHeight;
+    const bufLen = analyserNode.frequencyBinCount;
+    const data = new Uint8Array(bufLen);
+    analyserNode.getByteTimeDomainData(data);
+
+    // Track volume
+    let sum = 0;
+    for (let i = 0; i < bufLen; i++) {
+      const v = (data[i] - 128) / 128;
+      sum += v * v;
+    }
+    const rms = Math.sqrt(sum / bufLen);
+    volumeSamples.push(rms);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    gradient.addColorStop(0, '#EF9F27');
+    gradient.addColorStop(0.5, '#5DCAA5');
+    gradient.addColorStop(1, '#EF9F27');
+    ctx.strokeStyle = gradient;
+    ctx.beginPath();
+
+    const sliceW = canvas.width / bufLen;
+    let x = 0;
+    for (let i = 0; i < bufLen; i++) {
+      const v = data[i] / 128.0;
+      const y = (v * canvas.height) / 2;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+      x += sliceW;
+    }
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+  }
+  draw();
+}
+
+function stopWaveform() {
+  cancelAnimationFrame(animFrame);
+  document.getElementById('waveform-wrap').classList.remove('active');
+  if (audioContext && audioContext.state !== 'closed') {
+    audioContext.close().catch(() => {});
+  }
+}
+
+// ── Recording ──
+async function toggleRecording() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    pitchSamples = [];
+    volumeSamples = [];
+    wordCount = 0;
+    finalTranscript = '';
+    interimTranscript = '';
+
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      audioUrl = URL.createObjectURL(audioBlob);
+      audioPlayer = new Audio(audioUrl);
+      document.getElementById('playback-card').classList.add('visible');
+      document.getElementById('rec-duration').textContent = formatTime(seconds);
+      document.getElementById('actions').style.display = 'flex';
+      document.getElementById('save-btn').disabled = !finalTranscript.trim();
+      stream.getTracks().forEach(t => t.stop());
+    };
+    mediaRecorder.start(250);
+
+    // Speech recognition
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.onresult = (e) => {
+        interimTranscript = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) {
+            finalTranscript += t + ' ';
+            wordCount = finalTranscript.trim().split(/\s+/).length;
+          } else {
+            interimTranscript = t;
+          }
+        }
+        updateTranscript();
+      };
+      recognition.onerror = (e) => {
+        if (e.error !== 'no-speech') console.warn('Speech error:', e.error);
+      };
+      recognition.onend = () => {
+        if (isRecording && recognition) {
+          try { recognition.start(); } catch(e) {}
+        }
+      };
+      recognition.start();
+    }
+
+    initWaveform(stream);
+    startTimer();
+    isRecording = true;
+
+    const btn = document.getElementById('mic-btn');
+    btn.className = 'mic-btn recording';
+    btn.textContent = '⏹️';
+    document.getElementById('mic-label').textContent = 'Recording... tap to stop';
+
+  } catch (err) {
+    showToast('Microphone access denied. Please allow mic access.');
+    console.error(err);
+  }
+}
+
+function stopRecording() {
+  isRecording = false;
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if (recognition) { recognition.stop(); recognition = null; }
+  stopTimer();
+  stopWaveform();
+  speechRate = seconds > 0 ? Math.round((wordCount / seconds) * 60) : 0;
+
+  const btn = document.getElementById('mic-btn');
+  btn.className = 'mic-btn idle';
+  btn.textContent = '🎙️';
+  document.getElementById('mic-label').textContent = 'Recording complete';
+}
+
+function updateTranscript() {
+  const el = document.getElementById('transcript');
+  if (finalTranscript || interimTranscript) {
+    el.classList.remove('placeholder');
+    el.innerHTML = finalTranscript + (interimTranscript ? `<span class="interim">${interimTranscript}</span>` : '');
+  }
+}
+
+function formatTime(s) {
+  return Math.floor(s/60) + ':' + (s%60).toString().padStart(2,'0');
+}
+
+// ── Playback ──
+let isPlaying = false;
+function togglePlayback() {
+  if (!audioPlayer) return;
+  const btn = document.getElementById('play-btn');
+  if (isPlaying) {
+    audioPlayer.pause();
+    btn.textContent = '▶️';
+    isPlaying = false;
+  } else {
+    audioPlayer.play();
+    btn.textContent = '⏸️';
+    isPlaying = true;
+    audioPlayer.onended = () => { btn.textContent = '▶️'; isPlaying = false; };
+  }
+}
+
+function discardRecording() {
+  if (audioPlayer) { audioPlayer.pause(); audioPlayer = null; }
+  if (audioUrl) URL.revokeObjectURL(audioUrl);
+  audioBlob = null; audioUrl = null;
+  document.getElementById('playback-card').classList.remove('visible');
+  showToast('Recording discarded');
+}
+
+// ── Emotion Analysis ──
+async function analyzeEmotion() {
+  const text = finalTranscript.trim();
+  if (!text) { showToast('Record something first 🎙️'); return; }
+
+  try {
+    const res = await fetch('/api/voice/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, speech_rate: speechRate, avg_volume: getAvgVolume() })
+    });
+    const data = await res.json();
+
+    const card = document.getElementById('emotion-card');
+    card.classList.add('visible');
+
+    // Emotion tags
+    const emojiMap = {
+      happy:'☀️', sad:'🌧️', anxious:'😰', angry:'🔥', stressed:'😤',
+      calm:'🌿', neutral:'🙂', lonely:'🌙', depression:'🌑',
+      grateful:'🙏', hopeful:'🌈', suicidal:'🚨', self_harm:'🚨',
+      grief:'💔', guilt_shame:'😞'
+    };
+    const colorMap = {
+      happy:'#EF9F27', sad:'#378ADD', anxious:'#7C3AED', angry:'#E74C3C',
+      stressed:'#D35400', calm:'#1D9E75', neutral:'#888780', lonely:'#6C5CE7',
+      depression:'#34495E', grateful:'#27AE60', hopeful:'#2ECC71',
+      suicidal:'#C0392B', self_harm:'#C0392B', grief:'#8E44AD', guilt_shame:'#7F8C8D'
+    };
+
+    const tag = data.emotion || data.tag || 'neutral';
+    const conf = data.confidence || 0;
+    const emoji = emojiMap[tag] || '🔮';
+    const color = colorMap[tag] || '#888';
+
+    document.getElementById('emotion-tags').innerHTML = `
+      <span class="emotion-tag" style="background:${color}18;color:${color};border:1px solid ${color}30">
+        ${emoji} ${tag.charAt(0).toUpperCase() + tag.slice(1)} — ${(conf * 100).toFixed(0)}% confidence
+      </span>`;
+
+    // Audio features
+    const avgVol = getAvgVolume();
+    const volLabel = avgVol > 0.15 ? 'Loud' : avgVol > 0.06 ? 'Normal' : 'Soft';
+    const rateLabel = speechRate > 160 ? 'Fast' : speechRate > 100 ? 'Normal' : 'Slow';
+    document.getElementById('audio-features').innerHTML = `
+      <div class="af-box"><div class="af-val">${speechRate}</div><div class="af-lbl">Words/min (${rateLabel})</div></div>
+      <div class="af-box"><div class="af-val">${volLabel}</div><div class="af-lbl">Volume Level</div></div>
+      <div class="af-box"><div class="af-val">${wordCount}</div><div class="af-lbl">Total Words</div></div>`;
+
+    // Heuristic insight
+    let insight = data.response || '';
+    if (speechRate > 160 && tag !== 'happy') insight += ' Your speech pace was quite fast — you might be feeling rushed or anxious.';
+    if (avgVol < 0.04 && (tag === 'sad' || tag === 'lonely')) insight += ' Your voice was very soft — remember, it\'s okay to feel this way.';
+    document.getElementById('emotion-details').textContent = insight;
+
+    // Enable save
+    document.getElementById('save-btn').disabled = false;
+
+  } catch (err) {
+    showToast('Could not analyze — is the server running?');
+    console.error(err);
+  }
+}
+
+function getAvgVolume() {
+  if (!volumeSamples.length) return 0;
+  return volumeSamples.reduce((a, b) => a + b, 0) / volumeSamples.length;
+}
+
+// ── Save to Diary ──
+async function saveToDiary() {
+  const text = finalTranscript.trim();
+  if (!text) { showToast('Nothing to save — record first 🎙️'); return; }
+  const today = new Date().toISOString().split('T')[0];
+  const prefix = '🎙️ Voice Journal:\n\n';
+
+  try {
+    const res = await fetch(`/api/entries/${today}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: prefix + text,
+        mood: getMoodNumber(),
+        tags: ['voice-journal'],
+        photos: []
+      })
+    });
+    if (res.ok) {
+      showToast('Saved to your diary 📖🌿');
+      document.getElementById('save-btn').disabled = true;
+      document.getElementById('save-btn').innerHTML = '✓ Saved to Diary';
+    } else {
+      showToast('Could not save — try again');
+    }
+  } catch {
+    showToast('Server offline — could not save');
+  }
+}
+
+function getMoodNumber() {
+  const tag = document.getElementById('emotion-tags')?.textContent?.toLowerCase() || '';
+  if (tag.includes('happy') || tag.includes('grateful') || tag.includes('hopeful')) return 4;
+  if (tag.includes('calm')) return 3;
+  if (tag.includes('sad') || tag.includes('lonely') || tag.includes('grief')) return 2;
+  if (tag.includes('anxious') || tag.includes('stressed') || tag.includes('angry')) return 1;
+  return 3;
+}
+
+// ── Reset ──
+function resetAll() {
+  discardRecording();
+  finalTranscript = '';
+  interimTranscript = '';
+  seconds = 0;
+  wordCount = 0;
+  speechRate = 0;
+  pitchSamples = [];
+  volumeSamples = [];
+  document.getElementById('transcript').innerHTML = 'Your words will appear here as you speak...';
+  document.getElementById('transcript').classList.add('placeholder');
+  document.getElementById('emotion-card').classList.remove('visible');
+  document.getElementById('actions').style.display = 'none';
+  document.getElementById('timer').style.display = 'none';
+  document.getElementById('mic-label').textContent = 'Tap to start recording';
+  document.getElementById('save-btn').disabled = true;
+  document.getElementById('save-btn').innerHTML = '📖 Save to Diary';
+}
+</script>
+</body>
+</html>
