@@ -1,27 +1,36 @@
-import torch
-import torch.nn as nn
+try:
+    import torch
+    import torch.nn as nn
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
+
 import numpy as np
 
 # ══════════════════════════════════════════════════════════════
 #  1. PYTORCH LSTM FOR MOOD FORECASTING
 # ══════════════════════════════════════════════════════════════
 
-class MoodLSTM(nn.Module):
-    def __init__(self, input_size=1, hidden_size=16, num_layers=1, output_size=1):
-        super(MoodLSTM, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
-        
-    def forward(self, x):
-        # x shape: (batch_size, seq_len, input_size)
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        out, _ = self.lstm(x, (h0, c0))
-        # Take the output of the last time step
-        out = self.fc(out[:, -1, :])
-        return out
+if HAS_TORCH:
+    class MoodLSTM(nn.Module):
+        def __init__(self, input_size=1, hidden_size=16, num_layers=1, output_size=1):
+            super(MoodLSTM, self).__init__()
+            self.hidden_size = hidden_size
+            self.num_layers = num_layers
+            self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+            self.fc = nn.Linear(hidden_size, output_size)
+            
+        def forward(self, x):
+            # x shape: (batch_size, seq_len, input_size)
+            h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
+            c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
+            out, _ = self.lstm(x, (h0, c0))
+            # Take the output of the last time step
+            out = self.fc(out[:, -1, :])
+            return out
+else:
+    class MoodLSTM:
+        pass
 
 def normalize_mood_sequence(seq, target_len=5):
     """
