@@ -1400,7 +1400,11 @@ def upload_photo():
 @user_only
 def analyze_diary():
     from db import get_analytics, get_user_assessments, get_diary_entries
-    import torch
+    try:
+        import torch
+        has_torch = True
+    except ImportError:
+        has_torch = False
     from recommendation_models import normalize_mood_sequence
     
     uid = get_current_user_id()
@@ -1427,7 +1431,7 @@ def analyze_diary():
         
         # Determine forecast using LSTM
         forecast_direction = "stable"
-        if len(moods) >= 3:
+        if len(moods) >= 3 and has_torch:
             try:
                 _, lstm_model = load_recommendation_models()
                 if lstm_model is not None:
@@ -1541,7 +1545,11 @@ def analytics():
 @app.route("/api/mood/forecast", methods=["GET"])
 @user_only
 def mood_forecast():
-    import torch
+    try:
+        import torch
+        has_torch = True
+    except ImportError:
+        has_torch = False
     from recommendation_models import normalize_mood_sequence, denormalize_mood
     from db import get_diary_entries
     
@@ -1563,7 +1571,7 @@ def mood_forecast():
             pred_score = round(avg, 2)
         else:
             _, lstm_model = load_recommendation_models()
-            if lstm_model is not None:
+            if lstm_model is not None and has_torch:
                 norm_seq = normalize_mood_sequence(moods, target_len=5)
                 x_tensor = torch.tensor([norm_seq], dtype=torch.float32).unsqueeze(-1)
                 with torch.no_grad():
