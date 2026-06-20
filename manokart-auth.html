@@ -106,12 +106,12 @@
     /* Logo */
     .logo-wrap {
       display: flex;
-      justify-content: center;
+      align-items: center;
       margin-bottom: 2.5rem
     }
 
     .logo-img {
-      width: 240px;
+      width: 30px;
       height: auto;
       display: block
     }
@@ -428,7 +428,7 @@
       color: var(--text);
       outline: none;
       transition: border-color .2s, box-shadow .2s, background .2s;
-      -webkit-appearance: none;
+
       cursor: pointer
     }
 
@@ -694,6 +694,7 @@
       color: var(--green)
     }
 
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 2rem;
@@ -709,16 +710,12 @@
       gap: 8px;
       z-index: 999;
       white-space: nowrap;
-      transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
-      box-shadow: 0 8px 30px rgba(11, 45, 90, .35);
-      opacity: 0;
-      pointer-events: none
+      transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: 0 8px 30px rgba(11, 45, 90, .35)
     }
 
     .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-      pointer-events: auto
+      transform: translateX(-50%) translateY(0)
     }
 
     .toast-dot {
@@ -826,7 +823,17 @@
         </div>
       </div>
 
-
+      <div class="testimonial">
+        <div class="tq">ManoKart helped me understand my anxiety patterns. The daily check-ins changed everything for
+          me.</div>
+        <div class="ta">
+          <div class="av">PS</div>
+          <div>
+            <div class="an">Priya Sharma</div>
+            <div class="ar">Product Manager, Pune</div>
+          </div>
+        </div>
+      </div>
     </aside>
 
     <!-- RIGHT PANEL -->
