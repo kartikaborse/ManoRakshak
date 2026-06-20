@@ -1,4 +1,3 @@
-import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
 // React hooks are provided as globals via the HTML shell (UMD build)
 // const { useState, useEffect, useRef, useCallback } = React;
 
@@ -96,7 +95,7 @@ function TagPill({
   color = "#1D9E75",
   bg = "#E1F5EE"
 }) {
-  return /*#__PURE__*/_jsxDEV("span", {
+  return /*#__PURE__*/React.createElement("span", {
     style: {
       display: "inline-flex",
       alignItems: "center",
@@ -108,18 +107,16 @@ function TagPill({
       fontSize: 12,
       fontFamily: "Georgia,serif",
       border: `1px solid ${color}30`
-    },
-    children: ["#", tag, onRemove && /*#__PURE__*/_jsxDEV("span", {
-      onClick: onRemove,
-      style: {
-        cursor: "pointer",
-        fontWeight: 700,
-        opacity: 0.6,
-        marginLeft: 2
-      },
-      children: "×"
-    }, void 0, false)]
-  }, void 0, true);
+    }
+  }, "#", tag, onRemove && /*#__PURE__*/React.createElement("span", {
+    onClick: onRemove,
+    style: {
+      cursor: "pointer",
+      fontWeight: 700,
+      opacity: 0.6,
+      marginLeft: 2
+    }
+  }, "×"));
 }
 
 // ── Photo Thumbnail ───────────────────────────────────────────
@@ -127,7 +124,7 @@ function PhotoThumb({
   url,
   onRemove
 }) {
-  return /*#__PURE__*/_jsxDEV("div", {
+  return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       width: 80,
@@ -136,37 +133,35 @@ function PhotoThumb({
       overflow: "hidden",
       border: "1.5px solid #9FE1CB40",
       flexShrink: 0
-    },
-    children: [/*#__PURE__*/_jsxDEV("img", {
-      src: url.startsWith("/api") ? `http://localhost:5000${url}` : url,
-      alt: "",
-      style: {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover"
-      }
-    }, void 0, false), onRemove && /*#__PURE__*/_jsxDEV("button", {
-      onClick: onRemove,
-      style: {
-        position: "absolute",
-        top: 3,
-        right: 3,
-        width: 18,
-        height: 18,
-        borderRadius: "50%",
-        background: "rgba(0,0,0,0.55)",
-        border: "none",
-        color: "white",
-        fontSize: 11,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        lineHeight: 1
-      },
-      children: "×"
-    }, void 0, false)]
-  }, void 0, true);
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: url,
+    alt: "",
+    style: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover"
+    }
+  }), onRemove && /*#__PURE__*/React.createElement("button", {
+    onClick: onRemove,
+    style: {
+      position: "absolute",
+      top: 3,
+      right: 3,
+      width: 18,
+      height: 18,
+      borderRadius: "50%",
+      background: "rgba(0,0,0,0.55)",
+      border: "none",
+      color: "white",
+      fontSize: 11,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      lineHeight: 1
+    }
+  }, "×"));
 }
 
 // ── Mood-Aware Chatbot Panel ──────────────────────────────────
@@ -252,7 +247,7 @@ function ChatPanel({
   const today = todayKey();
   const todayEntry = entries[today];
   const todayMood = todayEntry ? getMood(todayEntry.mood) : null;
-  return /*#__PURE__*/_jsxDEV("div", {
+  return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 90,
@@ -268,237 +263,218 @@ function ChatPanel({
       zIndex: 100,
       overflow: "hidden",
       animation: "slideUp .25s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg,#E1F5EE,#FBEAF0 60%,#FAEEDA)",
+      padding: "14px 18px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      borderBottom: "0.5px solid #9FE1CB30"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 36,
+      height: 36,
+      borderRadius: "50%",
+      background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 18,
+      flexShrink: 0
+    }
+  }, "🌿"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: "#0F6E56",
+      fontFamily: "Georgia,serif"
+    }
+  }, "Your Sanctuary Companion"), todayMood ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#5DCAA5",
+      fontStyle: "italic"
+    }
+  }, "Feeling ", todayMood.label, " today ", todayMood.emoji) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#5DCAA5",
+      fontStyle: "italic"
+    }
+  }, "Here for you, always 🌱")), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    style: {
+      background: "none",
+      border: "none",
+      fontSize: 18,
+      color: "#B4B2A9",
+      cursor: "pointer",
+      lineHeight: 1,
+      padding: 4
+    }
+  }, "×")), todayEntry && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 14px",
+      background: "#f5fcf9",
+      borderBottom: "0.5px solid #E1F5EE",
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11
+    }
+  }, todayMood.emoji), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "#5DCAA5",
+      fontStyle: "italic",
+      fontFamily: "Georgia,serif"
+    }
+  }, "Reading your ", todayMood.label.toLowerCase(), " diary entry from today")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      overflowY: "auto",
+      padding: "14px 14px 8px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, messages.map((m, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      justifyContent: m.role === "user" ? "flex-end" : "flex-start"
+    }
+  }, m.role === "assistant" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 26,
+      height: 26,
+      borderRadius: "50%",
+      background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 13,
+      flexShrink: 0,
+      marginRight: 7,
+      marginTop: 2
+    }
+  }, "🌿"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: "78%",
+      padding: "9px 13px",
+      borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+      background: m.role === "user" ? "linear-gradient(135deg,#0F6E56,#1D9E75)" : "#f5fcf9",
+      color: m.role === "user" ? "white" : "#2C2C2A",
+      fontSize: 13,
+      lineHeight: 1.6,
+      fontFamily: "Georgia,serif",
+      border: m.role === "user" ? "none" : "0.5px solid #E1F5EE"
+    }
+  }, m.content))), loading && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 26,
+      height: 26,
+      borderRadius: "50%",
+      background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 13
+    }
+  }, "🌿"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "9px 14px",
+      background: "#f5fcf9",
+      borderRadius: "18px 18px 18px 4px",
+      border: "0.5px solid #E1F5EE"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 4,
+      alignItems: "center"
+    }
+  }, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      width: 6,
+      height: 6,
+      borderRadius: "50%",
+      background: "#9FE1CB",
+      animation: `bounce 1.2s ease ${i * 0.2}s infinite`
+    }
+  }))))), /*#__PURE__*/React.createElement("div", {
+    ref: bottomRef
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "10px 12px",
+      borderTop: "0.5px solid #E1F5EE",
+      display: "flex",
+      gap: 8,
+      alignItems: "flex-end"
+    }
+  }, /*#__PURE__*/React.createElement("textarea", {
+    ref: inputRef,
+    value: input,
+    onChange: e => setInput(e.target.value),
+    onKeyDown: e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
     },
-    children: [/*#__PURE__*/_jsxDEV("div", {
-      style: {
-        background: "linear-gradient(135deg,#E1F5EE,#FBEAF0 60%,#FAEEDA)",
-        padding: "14px 18px",
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        borderBottom: "0.5px solid #9FE1CB30"
-      },
-      children: [/*#__PURE__*/_jsxDEV("div", {
-        style: {
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
-          background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 18,
-          flexShrink: 0
-        },
-        children: "🌿"
-      }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-        style: {
-          flex: 1
-        },
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          style: {
-            fontSize: 14,
-            fontWeight: 700,
-            color: "#0F6E56",
-            fontFamily: "Georgia,serif"
-          },
-          children: "Your Sanctuary Companion"
-        }, void 0, false), todayMood ? /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            fontSize: 11,
-            color: "#5DCAA5",
-            fontStyle: "italic"
-          },
-          children: ["Feeling ", todayMood.label, " today ", todayMood.emoji]
-        }, void 0, true) : /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            fontSize: 11,
-            color: "#5DCAA5",
-            fontStyle: "italic"
-          },
-          children: "Here for you, always 🌱"
-        }, void 0, false)]
-      }, void 0, true), /*#__PURE__*/_jsxDEV("button", {
-        onClick: onClose,
-        style: {
-          background: "none",
-          border: "none",
-          fontSize: 18,
-          color: "#B4B2A9",
-          cursor: "pointer",
-          lineHeight: 1,
-          padding: 4
-        },
-        children: "×"
-      }, void 0, false)]
-    }, void 0, true), todayEntry && /*#__PURE__*/_jsxDEV("div", {
-      style: {
-        padding: "8px 14px",
-        background: "#f5fcf9",
-        borderBottom: "0.5px solid #E1F5EE",
-        display: "flex",
-        alignItems: "center",
-        gap: 6
-      },
-      children: [/*#__PURE__*/_jsxDEV("span", {
-        style: {
-          fontSize: 11
-        },
-        children: todayMood.emoji
-      }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-        style: {
-          fontSize: 11,
-          color: "#5DCAA5",
-          fontStyle: "italic",
-          fontFamily: "Georgia,serif"
-        },
-        children: ["Reading your ", todayMood.label.toLowerCase(), " diary entry from today"]
-      }, void 0, true)]
-    }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-      style: {
-        flex: 1,
-        overflowY: "auto",
-        padding: "14px 14px 8px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 10
-      },
-      children: [messages.map((m, i) => /*#__PURE__*/_jsxDEV("div", {
-        style: {
-          display: "flex",
-          justifyContent: m.role === "user" ? "flex-end" : "flex-start"
-        },
-        children: [m.role === "assistant" && /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 13,
-            flexShrink: 0,
-            marginRight: 7,
-            marginTop: 2
-          },
-          children: "🌿"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            maxWidth: "78%",
-            padding: "9px 13px",
-            borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-            background: m.role === "user" ? "linear-gradient(135deg,#0F6E56,#1D9E75)" : "#f5fcf9",
-            color: m.role === "user" ? "white" : "#2C2C2A",
-            fontSize: 13,
-            lineHeight: 1.6,
-            fontFamily: "Georgia,serif",
-            border: m.role === "user" ? "none" : "0.5px solid #E1F5EE"
-          },
-          children: m.content
-        }, void 0, false)]
-      }, i, true)), loading && /*#__PURE__*/_jsxDEV("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 8
-        },
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          style: {
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg,#5DCAA5,#9FE1CB)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 13
-          },
-          children: "🌿"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            padding: "9px 14px",
-            background: "#f5fcf9",
-            borderRadius: "18px 18px 18px 4px",
-            border: "0.5px solid #E1F5EE"
-          },
-          children: /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 4,
-              alignItems: "center"
-            },
-            children: [0, 1, 2].map(i => /*#__PURE__*/_jsxDEV("div", {
-              style: {
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#9FE1CB",
-                animation: `bounce 1.2s ease ${i * 0.2}s infinite`
-              }
-            }, i, false))
-          }, void 0, false)
-        }, void 0, false)]
-      }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        ref: bottomRef
-      }, void 0, false)]
-    }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-      style: {
-        padding: "10px 12px",
-        borderTop: "0.5px solid #E1F5EE",
-        display: "flex",
-        gap: 8,
-        alignItems: "flex-end"
-      },
-      children: [/*#__PURE__*/_jsxDEV("textarea", {
-        ref: inputRef,
-        value: input,
-        onChange: e => setInput(e.target.value),
-        onKeyDown: e => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-          }
-        },
-        placeholder: "Say something...",
-        rows: 1,
-        style: {
-          flex: 1,
-          padding: "9px 13px",
-          borderRadius: 14,
-          border: "1.5px solid #D3D1C760",
-          fontSize: 13,
-          fontFamily: "Georgia,serif",
-          color: "#2C2C2A",
-          resize: "none",
-          outline: "none",
-          lineHeight: 1.5,
-          maxHeight: 80,
-          overflowY: "auto",
-          background: "#fafaf8"
-        }
-      }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-        onClick: sendMessage,
-        disabled: !input.trim() || loading,
-        style: {
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
-          border: "none",
-          cursor: input.trim() && !loading ? "pointer" : "not-allowed",
-          background: input.trim() && !loading ? "linear-gradient(135deg,#0F6E56,#1D9E75)" : "#E1F5EE",
-          color: "white",
-          fontSize: 15,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          transition: "all .2s"
-        },
-        children: "➤"
-      }, void 0, false)]
-    }, void 0, true)]
-  }, void 0, true);
+    placeholder: "Say something...",
+    rows: 1,
+    style: {
+      flex: 1,
+      padding: "9px 13px",
+      borderRadius: 14,
+      border: "1.5px solid #D3D1C760",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      color: "#2C2C2A",
+      resize: "none",
+      outline: "none",
+      lineHeight: 1.5,
+      maxHeight: 80,
+      overflowY: "auto",
+      background: "#fafaf8"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: sendMessage,
+    disabled: !input.trim() || loading,
+    style: {
+      width: 36,
+      height: 36,
+      borderRadius: "50%",
+      border: "none",
+      cursor: input.trim() && !loading ? "pointer" : "not-allowed",
+      background: input.trim() && !loading ? "linear-gradient(135deg,#0F6E56,#1D9E75)" : "#E1F5EE",
+      color: "white",
+      fontSize: 15,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      transition: "all .2s"
+    }
+  }, "➤")));
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -761,15 +737,14 @@ function MindfulDiary() {
   const todayMood = todayEntry ? getMood(todayEntry.mood) : null;
 
   // ══════════════════════════════════════════════════════════
-  return /*#__PURE__*/_jsxDEV("div", {
+  return /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "Georgia,serif",
       minHeight: "100vh",
       background: "linear-gradient(160deg,#f7fdf9 0%,#fdf4f8 60%,#fffbf2 100%)",
       position: "relative"
-    },
-    children: [/*#__PURE__*/_jsxDEV("style", {
-      children: `
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `
         @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
         @keyframes floatPetal{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(6deg)}}
         @keyframes toastIn{0%{opacity:0;transform:translateX(-50%) translateY(12px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -827,1010 +802,924 @@ function MindfulDiary() {
             left: 36px !important;
           }
         }
-      `
-    }, void 0, false), [{
-      w: 160,
-      h: 160,
-      bg: "#9FE1CB",
-      t: -30,
-      r: -30,
-      d: "0s"
-    }, {
-      w: 100,
-      h: 100,
-      bg: "#FAC775",
-      b: 60,
-      l: -20,
-      d: "3s"
-    }, {
-      w: 75,
-      h: 75,
-      bg: "#F4C0D1",
-      t: "42%",
-      r: 10,
-      d: "5.5s"
-    }].map((p, i) => /*#__PURE__*/_jsxDEV("div", {
-      style: {
-        position: "fixed",
-        width: p.w,
-        height: p.h,
-        borderRadius: "50% 0 50% 0",
-        background: p.bg,
-        opacity: 0.1,
-        top: p.t,
-        right: p.r,
-        bottom: p.b,
-        left: p.l,
-        animation: `floatPetal 9s ease-in-out ${p.d} infinite`,
-        pointerEvents: "none",
-        zIndex: 0
-      }
-    }, i, false)), toastMsg && /*#__PURE__*/_jsxDEV("div", {
-      style: {
-        position: "fixed",
-        bottom: 28,
-        left: "50%",
-        transform: "translateX(-50%)",
-        background: "#0F6E56",
-        color: "white",
-        padding: "10px 22px",
-        borderRadius: 99,
-        fontSize: 13,
-        fontFamily: "Georgia,serif",
-        zIndex: 999,
-        animation: "toastIn .3s ease",
-        whiteSpace: "nowrap",
-        boxShadow: "0 4px 24px rgba(15,110,86,.25)"
+      `), [{
+    w: 160,
+    h: 160,
+    bg: "#9FE1CB",
+    t: -30,
+    r: -30,
+    d: "0s"
+  }, {
+    w: 100,
+    h: 100,
+    bg: "#FAC775",
+    b: 60,
+    l: -20,
+    d: "3s"
+  }, {
+    w: 75,
+    h: 75,
+    bg: "#F4C0D1",
+    t: "42%",
+    r: 10,
+    d: "5.5s"
+  }].map((p, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      position: "fixed",
+      width: p.w,
+      height: p.h,
+      borderRadius: "50% 0 50% 0",
+      background: p.bg,
+      opacity: 0.1,
+      top: p.t,
+      right: p.r,
+      bottom: p.b,
+      left: p.l,
+      animation: `floatPetal 9s ease-in-out ${p.d} infinite`,
+      pointerEvents: "none",
+      zIndex: 0
+    }
+  })), toastMsg && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      bottom: 28,
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "#0F6E56",
+      color: "white",
+      padding: "10px 22px",
+      borderRadius: 99,
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      zIndex: 999,
+      animation: "toastIn .3s ease",
+      whiteSpace: "nowrap",
+      boxShadow: "0 4px 24px rgba(15,110,86,.25)"
+    }
+  }, toastMsg), chatOpen && /*#__PURE__*/React.createElement(ChatPanel, {
+    entries: entries,
+    onClose: () => setChatOpen(false)
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setChatOpen(o => !o),
+    title: "Chat with your sanctuary companion",
+    style: {
+      position: "fixed",
+      bottom: 24,
+      right: 24,
+      width: 56,
+      height: 56,
+      borderRadius: "50%",
+      border: "none",
+      cursor: "pointer",
+      zIndex: 101,
+      background: chatOpen ? "#1D9E75" : "linear-gradient(135deg,#0F6E56,#1D9E75)",
+      color: "white",
+      fontSize: 24,
+      boxShadow: "0 4px 24px rgba(15,110,86,.3)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      animation: !chatOpen && todayEntry ? "chatPulse 3s ease infinite" : "none",
+      transition: "all .25s"
+    }
+  }, chatOpen ? "×" : "🌿"), !chatOpen && todayMood && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      bottom: 86,
+      right: 24,
+      background: "#0F6E56",
+      color: "white",
+      padding: "5px 12px",
+      borderRadius: 99,
+      fontSize: 11,
+      fontFamily: "Georgia,serif",
+      whiteSpace: "nowrap",
+      zIndex: 101,
+      pointerEvents: "none",
+      boxShadow: "0 2px 12px rgba(15,110,86,.2)",
+      fontStyle: "italic"
+    }
+  }, "I know you're feeling ", todayMood.label.toLowerCase(), " today ", todayMood.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg,#E1F5EE,#FBEAF0 55%,#FAEEDA)",
+      borderBottom: "0.5px solid #9FE1CB30",
+      padding: "20px 24px 0",
+      position: "relative",
+      zIndex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 780,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
+    href: "/",
+    style: {
+      textDecoration: "none"
+    }
+  }, /*#__PURE__*/React.createElement("h1", {
+    style: {
+      margin: 0,
+      fontSize: 24,
+      fontWeight: 700,
+      color: "#0F6E56",
+      letterSpacing: "-0.3px"
+    }
+  }, "🌿 My Little Sanctuary")), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "2px 0 0",
+      fontSize: 13,
+      color: "#5DCAA5",
+      fontStyle: "italic"
+    }
+  }, "A safe space, just for you")), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-nav"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "/",
+    style: {
+      textDecoration: "none"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "nav-pill",
+    style: {
+      padding: "7px 16px",
+      borderRadius: 99,
+      border: "1.5px solid #C0E0C840",
+      background: "transparent",
+      color: "#888780",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      cursor: "pointer"
+    }
+  }, "🏠 Home")), [["write", "✍️ Write"], ["analytics", "📊 Insights"]].map(([v, lbl]) => /*#__PURE__*/React.createElement("button", {
+    key: v,
+    className: "nav-pill",
+    onClick: () => setView(v),
+    style: {
+      padding: "7px 16px",
+      borderRadius: 99,
+      border: `1.5px solid ${view === v ? "#5DCAA5" : "#C0E0C840"}`,
+      background: view === v ? "rgba(93,202,165,.15)" : "transparent",
+      color: view === v ? "#0F6E56" : "#888780",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      cursor: "pointer",
+      transition: "all .2s"
+    }
+  }, lbl)), /*#__PURE__*/React.createElement("button", {
+    onClick: exportPDF,
+    style: {
+      padding: "7px 16px",
+      borderRadius: 99,
+      border: "1.5px solid #FAC77560",
+      background: "rgba(250,199,117,.12)",
+      color: "#854F0B",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      cursor: "pointer"
+    }
+  }, "📄 Export PDF"), /*#__PURE__*/React.createElement("a", {
+    href: "/profile",
+    style: {
+      textDecoration: "none"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "nav-pill",
+    style: {
+      padding: "7px 16px",
+      borderRadius: 99,
+      border: "1.5px solid #C0E0C840",
+      background: "transparent",
+      color: "#888780",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      cursor: "pointer"
+    }
+  }, "👤 Profile")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      marginTop: 14,
+      paddingBottom: 1,
+      overflowX: "auto"
+    }
+  }, last7.map(d => {
+    const e = entries[d];
+    const m = e ? getMood(e.mood) : null;
+    const isSel = d === selDate;
+    return /*#__PURE__*/React.createElement("button", {
+      key: d,
+      className: "day-chip",
+      onClick: () => {
+        setSelDate(d);
+        setView("write");
       },
-      children: toastMsg
-    }, void 0, false), chatOpen && /*#__PURE__*/_jsxDEV(ChatPanel, {
-      entries: entries,
-      onClose: () => setChatOpen(false)
-    }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-      onClick: () => setChatOpen(o => !o),
-      title: "Chat with your sanctuary companion",
       style: {
-        position: "fixed",
-        bottom: 24,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: "50%",
-        border: "none",
+        flexShrink: 0,
+        padding: "8px 12px",
+        borderRadius: 12,
+        border: `${isSel ? "2px solid #5DCAA5" : "1.5px solid #C0E0C830"}`,
+        background: isSel ? "white" : "rgba(255,255,255,.5)",
         cursor: "pointer",
-        zIndex: 101,
-        background: chatOpen ? "#1D9E75" : "linear-gradient(135deg,#0F6E56,#1D9E75)",
-        color: "white",
-        fontSize: 24,
-        boxShadow: "0 4px 24px rgba(15,110,86,.3)",
+        textAlign: "center",
+        transition: "all .2s",
+        boxShadow: isSel ? "0 2px 14px rgba(93,202,165,.18)" : "none"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 18
+      }
+    }, m ? m.emoji : "·"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: isSel ? "#0F6E56" : "#888780",
+        marginTop: 2
+      }
+    }, short(d)));
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 780,
+      margin: "0 auto",
+      padding: "24px 24px 60px",
+      position: "relative",
+      zIndex: 1
+    }
+  }, view === "write" && /*#__PURE__*/React.createElement("div", {
+    className: "page"
+  }, /*#__PURE__*/React.createElement("h2", {
+    style: {
+      margin: "0 0 4px",
+      fontSize: 19,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, fmt(selDate)), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "0 0 20px",
+      color: "#5DCAA5",
+      fontSize: 14,
+      fontStyle: "italic"
+    }
+  }, prompt), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "0 0 10px",
+      fontSize: 12,
+      color: "#888780",
+      letterSpacing: ".08em"
+    }
+  }, "HOW ARE YOU FEELING?"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      flexWrap: "wrap",
+      marginBottom: 20
+    }
+  }, MOODS.map(m => /*#__PURE__*/React.createElement("button", {
+    key: m.value,
+    className: "mood-pill",
+    onClick: () => setMood(m.value),
+    style: {
+      padding: "7px 15px",
+      borderRadius: 99,
+      cursor: "pointer",
+      border: `${mood === m.value ? `2px solid ${m.color}` : `1.5px solid ${m.border}`}`,
+      background: mood === m.value ? m.bg : "white",
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      transition: "all .2s",
+      boxShadow: mood === m.value ? `0 2px 14px ${m.color}35` : "none"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18
+    }
+  }, m.emoji), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: mood === m.value ? m.color : "#888780",
+      fontWeight: mood === m.value ? 600 : 400
+    }
+  }, m.label)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 20,
+      border: "0.5px solid #E1F5EE",
+      boxShadow: "0 4px 28px rgba(93,202,165,.07)",
+      position: "relative",
+      overflow: "hidden",
+      minHeight: 260,
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      backgroundImage: "repeating-linear-gradient(to bottom,transparent,transparent 31px,#E1F5EE50 31px,#E1F5EE50 32px)",
+      backgroundPosition: "0 48px",
+      pointerEvents: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "diary-red-line",
+    style: {
+      position: "absolute",
+      left: 52,
+      top: 0,
+      bottom: 0,
+      width: 1,
+      background: "#F4C0D160"
+    }
+  }), /*#__PURE__*/React.createElement("textarea", {
+    className: "diary-textarea",
+    value: text,
+    onChange: e => setText(e.target.value),
+    placeholder: "Begin writing here, dear friend... let your thoughts flow like water 💧",
+    style: {
+      width: "100%",
+      minHeight: 260,
+      padding: "22px 22px 28px 68px",
+      fontSize: 16,
+      lineHeight: "32px",
+      color: "#2C2C2A",
+      boxSizing: "border-box",
+      fontFamily: "Georgia,serif"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      bottom: 10,
+      right: 14,
+      fontSize: 12,
+      color: "#B4B2A9",
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, text.trim().split(/\s+/).filter(Boolean).length, " words", /*#__PURE__*/React.createElement("button", {
+    onClick: toggleVoice,
+    title: isVoiceRec ? 'Stop recording' : 'Voice input',
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: '50%',
+      border: 'none',
+      cursor: 'pointer',
+      background: isVoiceRec ? '#E74C3C' : 'linear-gradient(135deg,#EF9F27,#f0c060)',
+      color: 'white',
+      fontSize: 14,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: isVoiceRec ? '0 0 0 4px rgba(231,76,60,.2)' : '0 2px 8px rgba(239,159,39,.3)',
+      animation: isVoiceRec ? 'pulse 1.5s infinite' : 'none',
+      transition: 'all .2s'
+    }
+  }, isVoiceRec ? '⏹' : '🎙️'))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "0 0 8px",
+      fontSize: 12,
+      color: "#888780",
+      letterSpacing: ".08em"
+    }
+  }, "PHOTOS"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      alignItems: "flex-start"
+    }
+  }, photos.map((p, i) => /*#__PURE__*/React.createElement(PhotoThumb, {
+    key: i,
+    url: p.url,
+    onRemove: () => setPhotos(prev => prev.filter((_, j) => j !== i))
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => fileInputRef.current?.click(),
+    disabled: uploading,
+    style: {
+      width: 80,
+      height: 80,
+      borderRadius: 10,
+      border: "1.5px dashed #9FE1CB",
+      background: "#f5fcf9",
+      color: "#5DCAA5",
+      fontSize: 24,
+      cursor: "pointer",
+      flexShrink: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, uploading ? "⏳" : "+"), /*#__PURE__*/React.createElement("input", {
+    ref: fileInputRef,
+    type: "file",
+    accept: "image/*",
+    multiple: true,
+    onChange: handleFileChange
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "0 0 8px",
+      fontSize: 12,
+      color: "#888780",
+      letterSpacing: ".08em"
+    }
+  }, "TAGS"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      marginBottom: 8
+    }
+  }, tags.map(t => /*#__PURE__*/React.createElement(TagPill, {
+    key: t,
+    tag: t,
+    onRemove: () => setTags(prev => prev.filter(x => x !== t))
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      marginBottom: 8
+    }
+  }, SUGGESTED_TAGS.filter(t => !tags.includes(t)).slice(0, 8).map(t => /*#__PURE__*/React.createElement("button", {
+    key: t,
+    onClick: () => addTag(t),
+    style: {
+      padding: "3px 10px",
+      borderRadius: 99,
+      border: "1px dashed #9FE1CB60",
+      background: "transparent",
+      color: "#888780",
+      fontSize: 12,
+      cursor: "pointer",
+      fontFamily: "Georgia,serif"
+    }
+  }, "+", t))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: tagInput,
+    onChange: e => setTagInput(e.target.value),
+    onKeyDown: e => {
+      if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
+        e.preventDefault();
+        addTag(tagInput);
+      }
+    },
+    placeholder: "Add custom tag...",
+    style: {
+      padding: "6px 14px",
+      borderRadius: 99,
+      border: "1.5px solid #D3D1C760",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      color: "#2C2C2A",
+      width: 180,
+      outline: "none",
+      background: "white"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => addTag(tagInput),
+    style: {
+      padding: "6px 14px",
+      borderRadius: 99,
+      border: "1.5px solid #9FE1CB",
+      background: "transparent",
+      color: "#0F6E56",
+      fontSize: 13,
+      cursor: "pointer",
+      fontFamily: "Georgia,serif"
+    }
+  }, "Add"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      alignItems: "center",
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: saveEntry,
+    disabled: !text.trim() || mood === null || saving,
+    style: {
+      padding: "11px 30px",
+      borderRadius: 99,
+      border: "1.5px solid #5DCAA5",
+      background: saved ? "#5DCAA5" : "transparent",
+      color: saved ? "white" : "#0F6E56",
+      fontSize: 15,
+      fontFamily: "Georgia,serif",
+      cursor: !text.trim() || mood === null || saving ? "not-allowed" : "pointer",
+      opacity: !text.trim() || mood === null ? .5 : 1,
+      transition: "all .25s"
+    }
+  }, saving ? "Saving..." : saved ? "✓ Saved ✨" : "Save this entry 🌿"), entries[selDate] && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "#9FE1CB",
+      fontStyle: "italic"
+    }
+  }, "Entry exists for this day"), saved && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setChatOpen(true),
+    style: {
+      padding: "11px 20px",
+      borderRadius: 99,
+      border: "1.5px solid #0F6E56",
+      background: "linear-gradient(135deg,#0F6E56,#1D9E75)",
+      color: "white",
+      fontSize: 13,
+      fontFamily: "Georgia,serif",
+      cursor: "pointer",
+      animation: "fadeUp .4s ease"
+    }
+  }, "🌿 Chat about it"))), view === "analytics" && /*#__PURE__*/React.createElement("div", {
+    className: "page"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 20,
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
+    style: {
+      margin: "0 0 4px",
+      color: "#0F6E56",
+      fontSize: 19,
+      fontWeight: 600
+    }
+  }, "Your Mood Journey 🌊"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      color: "#5DCAA5",
+      fontSize: 14,
+      fontStyle: "italic"
+    }
+  }, "A gentle look at your emotional landscape")), /*#__PURE__*/React.createElement("button", {
+    onClick: exportPDF,
+    style: {
+      padding: "8px 18px",
+      borderRadius: 99,
+      border: "1.5px solid #FAC77570",
+      background: "rgba(250,199,117,.1)",
+      color: "#854F0B",
+      fontSize: 13,
+      cursor: "pointer",
+      fontFamily: "Georgia,serif"
+    }
+  }, "📄 Export Full Diary")), /*#__PURE__*/React.createElement("div", {
+    className: "stat-cards-grid"
+  }, [{
+    icon: "📖",
+    val: analytics?.total_entries ?? totalEntries,
+    lbl: "Total Entries"
+  }, {
+    icon: "🔥",
+    val: analytics?.streak ?? "—",
+    lbl: "Day Streak"
+  }, {
+    icon: "🌸",
+    val: analytics?.avg_mood ? `${analytics.avg_mood}/5` : "—",
+    lbl: "Avg Mood"
+  }].map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.lbl,
+    style: {
+      background: "white",
+      borderRadius: 16,
+      border: "0.5px solid #E1F5EE",
+      padding: "14px 18px",
+      textAlign: "center",
+      boxShadow: "0 2px 14px rgba(93,202,165,.05)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24,
+      marginBottom: 4
+    }
+  }, s.icon), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 700,
+      color: "#0F6E56"
+    }
+  }, s.val), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#888780",
+      marginTop: 2
+    }
+  }, s.lbl)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 20,
+      border: "0.5px solid #E1F5EE",
+      padding: "18px 22px",
+      marginBottom: 16,
+      boxShadow: "0 2px 14px rgba(93,202,165,.05)"
+    }
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: "0 0 14px",
+      fontSize: 14,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, "Last 7 Days"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      alignItems: "flex-end",
+      height: 120
+    }
+  }, last7.map(d => {
+    const e = entries[d];
+    const m = e ? getMood(e.mood) : null;
+    const h = m ? m.value / 5 * 100 : 0;
+    return /*#__PURE__*/React.createElement("div", {
+      key: d,
+      style: {
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 5
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        height: 22
+      }
+    }, m ? m.emoji : ""), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        background: "#F1EFE8",
+        borderRadius: 8,
+        height: 80,
+        display: "flex",
+        alignItems: "flex-end",
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        height: `${h}%`,
+        background: m ? m.color : "transparent",
+        borderRadius: 8,
+        transition: "height .5s ease",
+        opacity: .8
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: "#888780",
+        textAlign: "center"
+      }
+    }, short(d)));
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 20,
+      border: "0.5px solid #E1F5EE",
+      padding: "18px 22px",
+      marginBottom: 16,
+      boxShadow: "0 2px 14px rgba(93,202,165,.05)"
+    }
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: "0 0 14px",
+      fontSize: 14,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, "Mood Breakdown"), MOODS.map(m => {
+    const count = dist[m.value] || 0;
+    const pct = analytics?.total_entries > 0 ? Math.round(count / analytics.total_entries * 100) : 0;
+    return /*#__PURE__*/React.createElement("div", {
+      key: m.value,
+      style: {
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        animation: !chatOpen && todayEntry ? "chatPulse 3s ease infinite" : "none",
-        transition: "all .25s"
-      },
-      children: chatOpen ? "×" : "🌿"
-    }, void 0, false), !chatOpen && todayMood && /*#__PURE__*/_jsxDEV("div", {
+        gap: 10,
+        marginBottom: 9
+      }
+    }, /*#__PURE__*/React.createElement("span", {
       style: {
-        position: "fixed",
-        bottom: 86,
-        right: 24,
-        background: "#0F6E56",
-        color: "white",
-        padding: "5px 12px",
+        width: 22,
+        fontSize: 17
+      }
+    }, m.emoji), /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 58,
+        fontSize: 13,
+        color: "#5F5E5A"
+      }
+    }, m.label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        height: 9,
+        background: "#F1EFE8",
         borderRadius: 99,
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: "100%",
+        width: `${pct}%`,
+        background: m.color,
+        borderRadius: 99,
+        transition: "width .6s ease"
+      }
+    })), /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 36,
+        fontSize: 12,
+        color: "#888780",
+        textAlign: "right"
+      }
+    }, count, "×"));
+  })), analytics?.top_tags?.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 20,
+      border: "0.5px solid #E1F5EE",
+      padding: "18px 22px",
+      marginBottom: 16,
+      boxShadow: "0 2px 14px rgba(93,202,165,.05)"
+    }
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: "0 0 12px",
+      fontSize: 14,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, "Your Most-Used Tags 🏷️"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      flexWrap: "wrap"
+    }
+  }, analytics.top_tags.map(([tag, count]) => /*#__PURE__*/React.createElement("div", {
+    key: tag,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 4
+    }
+  }, /*#__PURE__*/React.createElement(TagPill, {
+    tag: tag
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      color: "#B4B2A9"
+    }
+  }, count, "×"))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg,#E1F5EE,#FBEAF0)",
+      borderRadius: 20,
+      padding: "18px 22px",
+      border: "0.5px solid #9FE1CB40",
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+      flexWrap: "wrap",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: 0,
+      fontSize: 14,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, "✨ Gentle AI Reflection"), /*#__PURE__*/React.createElement("button", {
+    onClick: analyzeWithAI,
+    disabled: aiLoading,
+    style: {
+      padding: "6px 16px",
+      borderRadius: 99,
+      border: "1.5px solid #5DCAA5",
+      background: "white",
+      color: "#0F6E56",
+      fontSize: 12,
+      fontFamily: "Georgia,serif",
+      cursor: aiLoading ? "wait" : "pointer",
+      opacity: aiLoading ? .7 : 1
+    }
+  }, aiLoading ? "Thinking... 🌿" : "Analyze my entries ✨")), aiInsight ? /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      fontSize: 14,
+      lineHeight: 1.8,
+      color: "#0F6E56",
+      fontStyle: "italic",
+      animation: "fadeUp .5s ease"
+    }
+  }, aiInsight) : /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      fontSize: 13,
+      color: "#5DCAA5",
+      fontStyle: "italic"
+    }
+  }, "Click \"Analyze my entries\" for a warm reflection on your mood journey 🌊")), totalEntries > 0 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+    style: {
+      margin: "0 0 12px",
+      fontSize: 14,
+      color: "#0F6E56",
+      fontWeight: 600
+    }
+  }, "Recent Pages 📖"), Object.values(entries).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6).map(e => {
+    const m = getMood(e.mood);
+    return /*#__PURE__*/React.createElement("div", {
+      key: e.date,
+      className: "entry-row",
+      onClick: () => {
+        setSelDate(e.date);
+        setView("write");
+      },
+      style: {
+        display: "flex",
+        gap: 12,
+        padding: "11px 14px",
+        borderRadius: 14,
+        cursor: "pointer",
+        marginBottom: 8,
+        transition: "background .2s",
+        border: "0.5px solid #E1F5EE",
+        background: "white"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 20
+      }
+    }, m.emoji), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        flexWrap: "wrap"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13,
+        color: "#0F6E56",
+        fontWeight: 600
+      }
+    }, fmt(e.date)), (e.tags || []).slice(0, 2).map(t => /*#__PURE__*/React.createElement(TagPill, {
+      key: t,
+      tag: t
+    })), (e.photos || []).length > 0 && /*#__PURE__*/React.createElement("span", {
+      style: {
         fontSize: 11,
-        fontFamily: "Georgia,serif",
-        whiteSpace: "nowrap",
-        zIndex: 101,
-        pointerEvents: "none",
-        boxShadow: "0 2px 12px rgba(15,110,86,.2)",
-        fontStyle: "italic"
-      },
-      children: ["I know you're feeling ", todayMood.label.toLowerCase(), " today ", todayMood.emoji]
-    }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
+        color: "#B4B2A9"
+      }
+    }, "📷 ", e.photos.length)), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "linear-gradient(135deg,#E1F5EE,#FBEAF0 55%,#FAEEDA)",
-        borderBottom: "0.5px solid #9FE1CB30",
-        padding: "20px 24px 0",
-        position: "relative",
-        zIndex: 1
-      },
-      children: /*#__PURE__*/_jsxDEV("div", {
-        style: {
-          maxWidth: 780,
-          margin: "0 auto"
-        },
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 10
-          },
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            children: [/*#__PURE__*/_jsxDEV("a", {
-              href: "/",
-              style: {
-                textDecoration: "none"
-              },
-              children: /*#__PURE__*/_jsxDEV("h1", {
-                style: {
-                  margin: 0,
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: "#0F6E56",
-                  letterSpacing: "-0.3px"
-                },
-                children: "🌿 My Little Sanctuary"
-              }, void 0, false)
-            }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-              style: {
-                margin: "2px 0 0",
-                fontSize: 13,
-                color: "#5DCAA5",
-                fontStyle: "italic"
-              },
-              children: "A safe space, just for you"
-            }, void 0, false)]
-          }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-            className: "topbar-nav",
-            children: [/*#__PURE__*/_jsxDEV("a", {
-              href: "/",
-              style: {
-                textDecoration: "none"
-              },
-              children: /*#__PURE__*/_jsxDEV("button", {
-                className: "nav-pill",
-                style: {
-                  padding: "7px 16px",
-                  borderRadius: 99,
-                  border: "1.5px solid #C0E0C840",
-                  background: "transparent",
-                  color: "#888780",
-                  fontSize: 13,
-                  fontFamily: "Georgia,serif",
-                  cursor: "pointer"
-                },
-                children: "🏠 Home"
-              }, void 0, false)
-            }, void 0, false), [["write", "✍️ Write"], ["analytics", "📊 Insights"]].map(([v, lbl]) => /*#__PURE__*/_jsxDEV("button", {
-              className: "nav-pill",
-              onClick: () => setView(v),
-              style: {
-                padding: "7px 16px",
-                borderRadius: 99,
-                border: `1.5px solid ${view === v ? "#5DCAA5" : "#C0E0C840"}`,
-                background: view === v ? "rgba(93,202,165,.15)" : "transparent",
-                color: view === v ? "#0F6E56" : "#888780",
-                fontSize: 13,
-                fontFamily: "Georgia,serif",
-                cursor: "pointer",
-                transition: "all .2s"
-              },
-              children: lbl
-            }, v, false)), /*#__PURE__*/_jsxDEV("button", {
-              onClick: exportPDF,
-              style: {
-                padding: "7px 16px",
-                borderRadius: 99,
-                border: "1.5px solid #FAC77560",
-                background: "rgba(250,199,117,.12)",
-                color: "#854F0B",
-                fontSize: 13,
-                fontFamily: "Georgia,serif",
-                cursor: "pointer"
-              },
-              children: "📄 Export PDF"
-            }, void 0, false), /*#__PURE__*/_jsxDEV("a", {
-              href: "/profile",
-              style: {
-                textDecoration: "none"
-              },
-              children: /*#__PURE__*/_jsxDEV("button", {
-                className: "nav-pill",
-                style: {
-                  padding: "7px 16px",
-                  borderRadius: 99,
-                  border: "1.5px solid #C0E0C840",
-                  background: "transparent",
-                  color: "#888780",
-                  fontSize: 13,
-                  fontFamily: "Georgia,serif",
-                  cursor: "pointer"
-                },
-                children: "👤 Profile"
-              }, void 0, false)
-            }, void 0, false)]
-          }, void 0, true)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "flex",
-            gap: 6,
-            marginTop: 14,
-            paddingBottom: 1,
-            overflowX: "auto"
-          },
-          children: last7.map(d => {
-            const e = entries[d];
-            const m = e ? getMood(e.mood) : null;
-            const isSel = d === selDate;
-            return /*#__PURE__*/_jsxDEV("button", {
-              className: "day-chip",
-              onClick: () => {
-                setSelDate(d);
-                setView("write");
-              },
-              style: {
-                flexShrink: 0,
-                padding: "8px 12px",
-                borderRadius: 12,
-                border: `${isSel ? "2px solid #5DCAA5" : "1.5px solid #C0E0C830"}`,
-                background: isSel ? "white" : "rgba(255,255,255,.5)",
-                cursor: "pointer",
-                textAlign: "center",
-                transition: "all .2s",
-                boxShadow: isSel ? "0 2px 14px rgba(93,202,165,.18)" : "none"
-              },
-              children: [/*#__PURE__*/_jsxDEV("div", {
-                style: {
-                  fontSize: 18
-                },
-                children: m ? m.emoji : "·"
-              }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                style: {
-                  fontSize: 11,
-                  color: isSel ? "#0F6E56" : "#888780",
-                  marginTop: 2
-                },
-                children: short(d)
-              }, void 0, false)]
-            }, d, true);
-          })
-        }, void 0, false)]
-      }, void 0, true)
-    }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
+        fontSize: 13,
+        color: "#888780",
+        marginTop: 3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap"
+      }
+    }, (e.text || "").slice(0, 90), (e.text || "").length > 90 ? "…" : "")), /*#__PURE__*/React.createElement("span", {
       style: {
-        maxWidth: 780,
-        margin: "0 auto",
-        padding: "24px 24px 60px",
-        position: "relative",
-        zIndex: 1
-      },
-      children: [view === "write" && /*#__PURE__*/_jsxDEV("div", {
-        className: "page",
-        children: [/*#__PURE__*/_jsxDEV("h2", {
-          style: {
-            margin: "0 0 4px",
-            fontSize: 19,
-            color: "#0F6E56",
-            fontWeight: 600
-          },
-          children: fmt(selDate)
-        }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-          style: {
-            margin: "0 0 20px",
-            color: "#5DCAA5",
-            fontSize: 14,
-            fontStyle: "italic"
-          },
-          children: prompt
-        }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-          style: {
-            margin: "0 0 10px",
-            fontSize: 12,
-            color: "#888780",
-            letterSpacing: ".08em"
-          },
-          children: "HOW ARE YOU FEELING?"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "flex",
-            gap: 8,
-            flexWrap: "wrap",
-            marginBottom: 20
-          },
-          children: MOODS.map(m => /*#__PURE__*/_jsxDEV("button", {
-            className: "mood-pill",
-            onClick: () => setMood(m.value),
-            style: {
-              padding: "7px 15px",
-              borderRadius: 99,
-              cursor: "pointer",
-              border: `${mood === m.value ? `2px solid ${m.color}` : `1.5px solid ${m.border}`}`,
-              background: mood === m.value ? m.bg : "white",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              transition: "all .2s",
-              boxShadow: mood === m.value ? `0 2px 14px ${m.color}35` : "none"
-            },
-            children: [/*#__PURE__*/_jsxDEV("span", {
-              style: {
-                fontSize: 18
-              },
-              children: m.emoji
-            }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-              style: {
-                fontSize: 13,
-                color: mood === m.value ? m.color : "#888780",
-                fontWeight: mood === m.value ? 600 : 400
-              },
-              children: m.label
-            }, void 0, false)]
-          }, m.value, true))
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            background: "white",
-            borderRadius: 20,
-            border: "0.5px solid #E1F5EE",
-            boxShadow: "0 4px 28px rgba(93,202,165,.07)",
-            position: "relative",
-            overflow: "hidden",
-            minHeight: 260,
-            marginBottom: 16
-          },
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            style: {
-              position: "absolute",
-              inset: 0,
-              backgroundImage: "repeating-linear-gradient(to bottom,transparent,transparent 31px,#E1F5EE50 31px,#E1F5EE50 32px)",
-              backgroundPosition: "0 48px",
-              pointerEvents: "none"
-            }
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            className: "diary-red-line",
-            style: {
-              position: "absolute",
-              left: 52,
-              top: 0,
-              bottom: 0,
-              width: 1,
-              background: "#F4C0D160"
-            }
-          }, void 0, false), /*#__PURE__*/_jsxDEV("textarea", {
-            className: "diary-textarea",
-            value: text,
-            onChange: e => setText(e.target.value),
-            placeholder: "Begin writing here, dear friend... let your thoughts flow like water 💧",
-            style: {
-              width: "100%",
-              minHeight: 260,
-              padding: "22px 22px 28px 68px",
-              fontSize: 16,
-              lineHeight: "32px",
-              color: "#2C2C2A",
-              boxSizing: "border-box",
-              fontFamily: "Georgia,serif"
-            }
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              position: "absolute",
-              bottom: 10,
-              right: 14,
-              fontSize: 12,
-              color: "#B4B2A9",
-              display: "flex",
-              alignItems: "center",
-              gap: 10
-            },
-            children: [text.trim().split(/\s+/).filter(Boolean).length, " words", /*#__PURE__*/_jsxDEV("button", {
-              onClick: toggleVoice,
-              title: isVoiceRec ? 'Stop recording' : 'Voice input',
-              style: {
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                border: 'none',
-                cursor: 'pointer',
-                background: isVoiceRec ? '#E74C3C' : 'linear-gradient(135deg,#EF9F27,#f0c060)',
-                color: 'white',
-                fontSize: 14,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: isVoiceRec ? '0 0 0 4px rgba(231,76,60,.2)' : '0 2px 8px rgba(239,159,39,.3)',
-                animation: isVoiceRec ? 'pulse 1.5s infinite' : 'none',
-                transition: 'all .2s'
-              },
-              children: isVoiceRec ? '⏹' : '🎙️'
-            }, void 0, false)]
-          }, void 0, true)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            marginBottom: 16
-          },
-          children: [/*#__PURE__*/_jsxDEV("p", {
-            style: {
-              margin: "0 0 8px",
-              fontSize: 12,
-              color: "#888780",
-              letterSpacing: ".08em"
-            },
-            children: "PHOTOS"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 10,
-              flexWrap: "wrap",
-              alignItems: "flex-start"
-            },
-            children: [photos.map((p, i) => /*#__PURE__*/_jsxDEV(PhotoThumb, {
-              url: p.url,
-              onRemove: () => setPhotos(prev => prev.filter((_, j) => j !== i))
-            }, i, false)), /*#__PURE__*/_jsxDEV("button", {
-              onClick: () => fileInputRef.current?.click(),
-              disabled: uploading,
-              style: {
-                width: 80,
-                height: 80,
-                borderRadius: 10,
-                border: "1.5px dashed #9FE1CB",
-                background: "#f5fcf9",
-                color: "#5DCAA5",
-                fontSize: 24,
-                cursor: "pointer",
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              },
-              children: uploading ? "⏳" : "+"
-            }, void 0, false), /*#__PURE__*/_jsxDEV("input", {
-              ref: fileInputRef,
-              type: "file",
-              accept: "image/*",
-              multiple: true,
-              onChange: handleFileChange
-            }, void 0, false)]
-          }, void 0, true)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            marginBottom: 20
-          },
-          children: [/*#__PURE__*/_jsxDEV("p", {
-            style: {
-              margin: "0 0 8px",
-              fontSize: 12,
-              color: "#888780",
-              letterSpacing: ".08em"
-            },
-            children: "TAGS"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 6,
-              flexWrap: "wrap",
-              marginBottom: 8
-            },
-            children: tags.map(t => /*#__PURE__*/_jsxDEV(TagPill, {
-              tag: t,
-              onRemove: () => setTags(prev => prev.filter(x => x !== t))
-            }, t, false))
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 6,
-              flexWrap: "wrap",
-              marginBottom: 8
-            },
-            children: SUGGESTED_TAGS.filter(t => !tags.includes(t)).slice(0, 8).map(t => /*#__PURE__*/_jsxDEV("button", {
-              onClick: () => addTag(t),
-              style: {
-                padding: "3px 10px",
-                borderRadius: 99,
-                border: "1px dashed #9FE1CB60",
-                background: "transparent",
-                color: "#888780",
-                fontSize: 12,
-                cursor: "pointer",
-                fontFamily: "Georgia,serif"
-              },
-              children: ["+", t]
-            }, t, true))
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 8
-            },
-            children: [/*#__PURE__*/_jsxDEV("input", {
-              value: tagInput,
-              onChange: e => setTagInput(e.target.value),
-              onKeyDown: e => {
-                if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
-                  e.preventDefault();
-                  addTag(tagInput);
-                }
-              },
-              placeholder: "Add custom tag...",
-              style: {
-                padding: "6px 14px",
-                borderRadius: 99,
-                border: "1.5px solid #D3D1C760",
-                fontSize: 13,
-                fontFamily: "Georgia,serif",
-                color: "#2C2C2A",
-                width: 180,
-                outline: "none",
-                background: "white"
-              }
-            }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-              onClick: () => addTag(tagInput),
-              style: {
-                padding: "6px 14px",
-                borderRadius: 99,
-                border: "1.5px solid #9FE1CB",
-                background: "transparent",
-                color: "#0F6E56",
-                fontSize: 13,
-                cursor: "pointer",
-                fontFamily: "Georgia,serif"
-              },
-              children: "Add"
-            }, void 0, false)]
-          }, void 0, true)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-            flexWrap: "wrap"
-          },
-          children: [/*#__PURE__*/_jsxDEV("button", {
-            onClick: saveEntry,
-            disabled: !text.trim() || mood === null || saving,
-            style: {
-              padding: "11px 30px",
-              borderRadius: 99,
-              border: "1.5px solid #5DCAA5",
-              background: saved ? "#5DCAA5" : "transparent",
-              color: saved ? "white" : "#0F6E56",
-              fontSize: 15,
-              fontFamily: "Georgia,serif",
-              cursor: !text.trim() || mood === null || saving ? "not-allowed" : "pointer",
-              opacity: !text.trim() || mood === null ? .5 : 1,
-              transition: "all .25s"
-            },
-            children: saving ? "Saving..." : saved ? "✓ Saved ✨" : "Save this entry 🌿"
-          }, void 0, false), entries[selDate] && /*#__PURE__*/_jsxDEV("span", {
-            style: {
-              fontSize: 13,
-              color: "#9FE1CB",
-              fontStyle: "italic"
-            },
-            children: "Entry exists for this day"
-          }, void 0, false), saved && /*#__PURE__*/_jsxDEV("button", {
-            onClick: () => setChatOpen(true),
-            style: {
-              padding: "11px 20px",
-              borderRadius: 99,
-              border: "1.5px solid #0F6E56",
-              background: "linear-gradient(135deg,#0F6E56,#1D9E75)",
-              color: "white",
-              fontSize: 13,
-              fontFamily: "Georgia,serif",
-              cursor: "pointer",
-              animation: "fadeUp .4s ease"
-            },
-            children: "🌿 Chat about it"
-          }, void 0, false)]
-        }, void 0, true)]
-      }, void 0, true), view === "analytics" && /*#__PURE__*/_jsxDEV("div", {
-        className: "page",
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: 20,
-            flexWrap: "wrap",
-            gap: 10
-          },
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            children: [/*#__PURE__*/_jsxDEV("h2", {
-              style: {
-                margin: "0 0 4px",
-                color: "#0F6E56",
-                fontSize: 19,
-                fontWeight: 600
-              },
-              children: "Your Mood Journey 🌊"
-            }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-              style: {
-                margin: 0,
-                color: "#5DCAA5",
-                fontSize: 14,
-                fontStyle: "italic"
-              },
-              children: "A gentle look at your emotional landscape"
-            }, void 0, false)]
-          }, void 0, true), /*#__PURE__*/_jsxDEV("button", {
-            onClick: exportPDF,
-            style: {
-              padding: "8px 18px",
-              borderRadius: 99,
-              border: "1.5px solid #FAC77570",
-              background: "rgba(250,199,117,.1)",
-              color: "#854F0B",
-              fontSize: 13,
-              cursor: "pointer",
-              fontFamily: "Georgia,serif"
-            },
-            children: "📄 Export Full Diary"
-          }, void 0, false)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          className: "stat-cards-grid",
-          children: [{
-            icon: "📖",
-            val: analytics?.total_entries ?? totalEntries,
-            lbl: "Total Entries"
-          }, {
-            icon: "🔥",
-            val: analytics?.streak ?? "—",
-            lbl: "Day Streak"
-          }, {
-            icon: "🌸",
-            val: analytics?.avg_mood ? `${analytics.avg_mood}/5` : "—",
-            lbl: "Avg Mood"
-          }].map(s => /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              background: "white",
-              borderRadius: 16,
-              border: "0.5px solid #E1F5EE",
-              padding: "14px 18px",
-              textAlign: "center",
-              boxShadow: "0 2px 14px rgba(93,202,165,.05)"
-            },
-            children: [/*#__PURE__*/_jsxDEV("div", {
-              style: {
-                fontSize: 24,
-                marginBottom: 4
-              },
-              children: s.icon
-            }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-              style: {
-                fontSize: 22,
-                fontWeight: 700,
-                color: "#0F6E56"
-              },
-              children: s.val
-            }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-              style: {
-                fontSize: 12,
-                color: "#888780",
-                marginTop: 2
-              },
-              children: s.lbl
-            }, void 0, false)]
-          }, s.lbl, true))
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            background: "white",
-            borderRadius: 20,
-            border: "0.5px solid #E1F5EE",
-            padding: "18px 22px",
-            marginBottom: 16,
-            boxShadow: "0 2px 14px rgba(93,202,165,.05)"
-          },
-          children: [/*#__PURE__*/_jsxDEV("h3", {
-            style: {
-              margin: "0 0 14px",
-              fontSize: 14,
-              color: "#0F6E56",
-              fontWeight: 600
-            },
-            children: "Last 7 Days"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 10,
-              alignItems: "flex-end",
-              height: 120
-            },
-            children: last7.map(d => {
-              const e = entries[d];
-              const m = e ? getMood(e.mood) : null;
-              const h = m ? m.value / 5 * 100 : 0;
-              return /*#__PURE__*/_jsxDEV("div", {
-                style: {
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 5
-                },
-                children: [/*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    fontSize: 16,
-                    height: 22
-                  },
-                  children: m ? m.emoji : ""
-                }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    width: "100%",
-                    background: "#F1EFE8",
-                    borderRadius: 8,
-                    height: 80,
-                    display: "flex",
-                    alignItems: "flex-end",
-                    overflow: "hidden"
-                  },
-                  children: /*#__PURE__*/_jsxDEV("div", {
-                    style: {
-                      width: "100%",
-                      height: `${h}%`,
-                      background: m ? m.color : "transparent",
-                      borderRadius: 8,
-                      transition: "height .5s ease",
-                      opacity: .8
-                    }
-                  }, void 0, false)
-                }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    fontSize: 10,
-                    color: "#888780",
-                    textAlign: "center"
-                  },
-                  children: short(d)
-                }, void 0, false)]
-              }, d, true);
-            })
-          }, void 0, false)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            background: "white",
-            borderRadius: 20,
-            border: "0.5px solid #E1F5EE",
-            padding: "18px 22px",
-            marginBottom: 16,
-            boxShadow: "0 2px 14px rgba(93,202,165,.05)"
-          },
-          children: [/*#__PURE__*/_jsxDEV("h3", {
-            style: {
-              margin: "0 0 14px",
-              fontSize: 14,
-              color: "#0F6E56",
-              fontWeight: 600
-            },
-            children: "Mood Breakdown"
-          }, void 0, false), MOODS.map(m => {
-            const count = dist[m.value] || 0;
-            const pct = analytics?.total_entries > 0 ? Math.round(count / analytics.total_entries * 100) : 0;
-            return /*#__PURE__*/_jsxDEV("div", {
-              style: {
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 9
-              },
-              children: [/*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  width: 22,
-                  fontSize: 17
-                },
-                children: m.emoji
-              }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  width: 58,
-                  fontSize: 13,
-                  color: "#5F5E5A"
-                },
-                children: m.label
-              }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                style: {
-                  flex: 1,
-                  height: 9,
-                  background: "#F1EFE8",
-                  borderRadius: 99,
-                  overflow: "hidden"
-                },
-                children: /*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    height: "100%",
-                    width: `${pct}%`,
-                    background: m.color,
-                    borderRadius: 99,
-                    transition: "width .6s ease"
-                  }
-                }, void 0, false)
-              }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  width: 36,
-                  fontSize: 12,
-                  color: "#888780",
-                  textAlign: "right"
-                },
-                children: [count, "×"]
-              }, void 0, true)]
-            }, m.value, true);
-          })]
-        }, void 0, true), analytics?.top_tags?.length > 0 && /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            background: "white",
-            borderRadius: 20,
-            border: "0.5px solid #E1F5EE",
-            padding: "18px 22px",
-            marginBottom: 16,
-            boxShadow: "0 2px 14px rgba(93,202,165,.05)"
-          },
-          children: [/*#__PURE__*/_jsxDEV("h3", {
-            style: {
-              margin: "0 0 12px",
-              fontSize: 14,
-              color: "#0F6E56",
-              fontWeight: 600
-            },
-            children: "Your Most-Used Tags 🏷️"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 8,
-              flexWrap: "wrap"
-            },
-            children: analytics.top_tags.map(([tag, count]) => /*#__PURE__*/_jsxDEV("div", {
-              style: {
-                display: "flex",
-                alignItems: "center",
-                gap: 4
-              },
-              children: [/*#__PURE__*/_jsxDEV(TagPill, {
-                tag: tag
-              }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  fontSize: 11,
-                  color: "#B4B2A9"
-                },
-                children: [count, "×"]
-              }, void 0, true)]
-            }, tag, true))
-          }, void 0, false)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            background: "linear-gradient(135deg,#E1F5EE,#FBEAF0)",
-            borderRadius: 20,
-            padding: "18px 22px",
-            border: "0.5px solid #9FE1CB40",
-            marginBottom: 16
-          },
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 10,
-              flexWrap: "wrap",
-              gap: 8
-            },
-            children: [/*#__PURE__*/_jsxDEV("h3", {
-              style: {
-                margin: 0,
-                fontSize: 14,
-                color: "#0F6E56",
-                fontWeight: 600
-              },
-              children: "✨ Gentle AI Reflection"
-            }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-              onClick: analyzeWithAI,
-              disabled: aiLoading,
-              style: {
-                padding: "6px 16px",
-                borderRadius: 99,
-                border: "1.5px solid #5DCAA5",
-                background: "white",
-                color: "#0F6E56",
-                fontSize: 12,
-                fontFamily: "Georgia,serif",
-                cursor: aiLoading ? "wait" : "pointer",
-                opacity: aiLoading ? .7 : 1
-              },
-              children: aiLoading ? "Thinking... 🌿" : "Analyze my entries ✨"
-            }, void 0, false)]
-          }, void 0, true), aiInsight ? /*#__PURE__*/_jsxDEV("p", {
-            style: {
-              margin: 0,
-              fontSize: 14,
-              lineHeight: 1.8,
-              color: "#0F6E56",
-              fontStyle: "italic",
-              animation: "fadeUp .5s ease"
-            },
-            children: aiInsight
-          }, void 0, false) : /*#__PURE__*/_jsxDEV("p", {
-            style: {
-              margin: 0,
-              fontSize: 13,
-              color: "#5DCAA5",
-              fontStyle: "italic"
-            },
-            children: "Click \"Analyze my entries\" for a warm reflection on your mood journey 🌊"
-          }, void 0, false)]
-        }, void 0, true), totalEntries > 0 && /*#__PURE__*/_jsxDEV("div", {
-          children: [/*#__PURE__*/_jsxDEV("h3", {
-            style: {
-              margin: "0 0 12px",
-              fontSize: 14,
-              color: "#0F6E56",
-              fontWeight: 600
-            },
-            children: "Recent Pages 📖"
-          }, void 0, false), Object.values(entries).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6).map(e => {
-            const m = getMood(e.mood);
-            return /*#__PURE__*/_jsxDEV("div", {
-              className: "entry-row",
-              onClick: () => {
-                setSelDate(e.date);
-                setView("write");
-              },
-              style: {
-                display: "flex",
-                gap: 12,
-                padding: "11px 14px",
-                borderRadius: 14,
-                cursor: "pointer",
-                marginBottom: 8,
-                transition: "background .2s",
-                border: "0.5px solid #E1F5EE",
-                background: "white"
-              },
-              children: [/*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  fontSize: 20
-                },
-                children: m.emoji
-              }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                style: {
-                  flex: 1,
-                  minWidth: 0
-                },
-                children: [/*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    flexWrap: "wrap"
-                  },
-                  children: [/*#__PURE__*/_jsxDEV("span", {
-                    style: {
-                      fontSize: 13,
-                      color: "#0F6E56",
-                      fontWeight: 600
-                    },
-                    children: fmt(e.date)
-                  }, void 0, false), (e.tags || []).slice(0, 2).map(t => /*#__PURE__*/_jsxDEV(TagPill, {
-                    tag: t
-                  }, t, false)), (e.photos || []).length > 0 && /*#__PURE__*/_jsxDEV("span", {
-                    style: {
-                      fontSize: 11,
-                      color: "#B4B2A9"
-                    },
-                    children: ["📷 ", e.photos.length]
-                  }, void 0, true)]
-                }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-                  style: {
-                    fontSize: 13,
-                    color: "#888780",
-                    marginTop: 3,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap"
-                  },
-                  children: [(e.text || "").slice(0, 90), (e.text || "").length > 90 ? "…" : ""]
-                }, void 0, true)]
-              }, void 0, true), /*#__PURE__*/_jsxDEV("span", {
-                style: {
-                  fontSize: 12,
-                  color: m.color,
-                  fontWeight: 600,
-                  alignSelf: "center",
-                  flexShrink: 0
-                },
-                children: m.label
-              }, void 0, false)]
-            }, e.date, true);
-          })]
-        }, void 0, true)]
-      }, void 0, true)]
-    }, void 0, true)]
-  }, void 0, true);
+        fontSize: 12,
+        color: m.color,
+        fontWeight: 600,
+        alignSelf: "center",
+        flexShrink: 0
+      }
+    }, m.label));
+  })))));
 }

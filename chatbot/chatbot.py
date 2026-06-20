@@ -25,7 +25,7 @@ REVIEW_QUEUE_PATH    = os.path.join(SCRIPT_DIR, "review_queue.json")
 # ── FIX: Was 0.70 — this caused EVERY ambiguous input (including real questions
 #    like "tell me what to do when I fight with someone") to hit the fallback.
 #    0.45 matches the train_model default of 0.35 + a small web-UI buffer.
-CONFIDENCE_THRESHOLD = 0.45
+CONFIDENCE_THRESHOLD = 0.35
 
 RETRAIN_EVERY        = 10
 

@@ -36,9 +36,13 @@ from sklearn.preprocessing import LabelEncoder
 # ── Optional NLTK ─────────────────────────────────────────────────────────────
 try:
     import nltk
-    for pkg in ["wordnet", "omw-1.4", "stopwords", "punkt",
-                "averaged_perceptron_tagger"]:
-        nltk.download(pkg, quiet=True)
+    import os
+    from pathlib import Path
+    nltk_data_dir = str(Path(__file__).parent.parent / "data" / "nltk_data")
+    os.makedirs(nltk_data_dir, exist_ok=True)
+    nltk.data.path.append(nltk_data_dir)
+    for pkg in ["wordnet", "omw-1.4", "stopwords", "punkt", "averaged_perceptron_tagger"]:
+        nltk.download(pkg, download_dir=nltk_data_dir, quiet=True)
     from nltk.stem import WordNetLemmatizer
     from nltk.corpus import stopwords as nltk_stopwords
     LEMMATIZER = WordNetLemmatizer()
@@ -50,9 +54,9 @@ try:
     }
     USE_NLTK = True
     print("  [INFO] NLTK enabled — lemmatization active")
-except ImportError:
+except Exception:
     USE_NLTK = False
-    print("  [INFO] NLTK not found — using regex preprocessing")
+    print("  [INFO] NLTK not found or error — using regex preprocessing")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 1 — CRISIS OVERRIDE

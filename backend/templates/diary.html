@@ -4,20 +4,39 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>ManoKart — My Diary</title>
-  <script src="/static/react.min.js"></script>
-  <script src="/static/react-dom.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:#f7fdf9;min-height:100vh}
     #root{min-height:100vh}
   </style>
+  <script>
+    (function() {
+      function checkAuth() {
+        fetch('/api/auth/me')
+          .then(res => {
+            if (res.status === 401) {
+              window.location.href = '/auth';
+            }
+          })
+          .catch(() => {});
+      }
+      checkAuth();
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+          window.location.reload();
+        }
+      });
+    })();
+  </script>
 </head>
 <body>
   <div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#5DCAA5;font-family:Georgia,serif">Loading your diary… 🌿</div></div>
   <script>
     const { useState, useEffect, useRef, useCallback } = React;
   </script>
-  <script src="/static/DiaryApp.js"></script>
+  <script src="/diary/app.js"></script>
   <script>
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(MindfulDiary));

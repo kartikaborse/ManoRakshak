@@ -119,6 +119,25 @@
       .card{padding:20px}
     }
   </style>
+  <script>
+    (function() {
+      function checkAuth() {
+        fetch('/api/auth/me')
+          .then(res => {
+            if (res.status === 401) {
+              window.location.href = '/auth';
+            }
+          })
+          .catch(() => {});
+      }
+      checkAuth();
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+          window.location.reload();
+        }
+      });
+    })();
+  </script>
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -133,7 +152,7 @@
       <a href="/chatbot" class="nav-btn">Chat</a>
       <a href="/music"   class="nav-btn">Music</a>
       <a href="/voice"   class="nav-btn">Voice</a>
-      <a href="games/manokart_games_hub.html"   class="nav-btn">Games</a>
+      <a href="/games"   class="nav-btn">Games</a>
       <a href="/clinical" class="nav-btn">Check-in</a>
       <a href="/therapists" class="nav-btn">Therapists</a>
       <a href="/profile" class="nav-btn active">Profile</a>

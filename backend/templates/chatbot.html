@@ -39,6 +39,25 @@
       }
     }
   </style>
+  <script>
+    (function() {
+      function checkAuth() {
+        fetch('/api/auth/me')
+          .then(res => {
+            if (res.status === 401) {
+              window.location.href = '/auth';
+            }
+          })
+          .catch(() => {});
+      }
+      checkAuth();
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+          window.location.reload();
+        }
+      });
+    })();
+  </script>
 </head>
 <body>
   <a href="/" class="back">← Back to hub</a>

@@ -93,6 +93,12 @@ def add_cors(response):
     response.headers["Access-Control-Allow-Origin"]  = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+    
+    # Disable cache for dynamic pages to prevent back-button viewing authenticated pages after logout
+    if request.endpoint and not request.endpoint.startswith("static"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
     return response
 
 @app.before_request
@@ -109,9 +115,11 @@ def handle_options():
 # ──────────────────────────────────────────────────────────────
 try:
     import nltk
-    nltk.download("wordnet",   quiet=True)
-    nltk.download("omw-1.4",  quiet=True)
-    nltk.download("stopwords", quiet=True)
+    nltk_data_dir = str(DATA_DIR / "nltk_data")
+    os.makedirs(nltk_data_dir, exist_ok=True)
+    nltk.data.path.append(nltk_data_dir)
+    for pkg in ["wordnet", "omw-1.4", "stopwords"]:
+        nltk.download(pkg, download_dir=nltk_data_dir, quiet=True)
     from nltk.stem import WordNetLemmatizer
     from nltk.corpus import stopwords as _sw
     _LEMMATIZER = WordNetLemmatizer()
@@ -224,7 +232,7 @@ def load_recommendation_models():
     if lstm_path.exists():
         try:
             import torch
-            from chatbot.recommendation_models import MoodLSTM
+            from recommendation_models import MoodLSTM
             model = MoodLSTM(input_size=1, hidden_size=16, num_layers=1, output_size=1)
             model.load_state_dict(torch.load(lstm_path, weights_only=True))
             model.eval()
@@ -781,6 +789,12 @@ def diary_page():
     return render_template_string(DIARY_SHELL)
 
 
+@app.route("/diary/app.js")
+@user_only
+def diary_app_js():
+    return send_file(ROOT / "DiaryApp.js", mimetype="application/javascript")
+
+
 @app.route("/music")
 @user_only
 def music_page():
@@ -859,7 +873,7 @@ def _get_game_recommendation_by_mood(uid):
     # Fetch database helpers
     from db import get_diary_entries, get_analytics, get_user_assessments
     from datetime import datetime
-    from chatbot.recommendation_models import format_recommendation_features
+    from recommendation_models import format_recommendation_features
 
     # Default fallback game
     default_game = {"slug": "manokart_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"}
@@ -1166,7 +1180,7 @@ def chat():
                 tag   = le.inverse_transform([idx])[0]
                 
                 # Check confidence threshold (safety lower threshold for crisis tags)
-                threshold = 0.20 if tag in ("suicidal", "self_harm") else 0.45
+                threshold = 0.20 if tag in ("suicidal", "self_harm") else 0.35
                 
                 if conf < threshold:
                     reply = "I want to make sure I understand you properly. Could you share a little more about what you're feeling or going through? 🌿"
@@ -1388,7 +1402,7 @@ def upload_photo():
 def analyze_diary():
     from db import get_analytics, get_user_assessments, get_diary_entries
     import torch
-    from chatbot.recommendation_models import normalize_mood_sequence
+    from recommendation_models import normalize_mood_sequence
     
     uid = get_current_user_id()
     
@@ -1529,7 +1543,7 @@ def analytics():
 @user_only
 def mood_forecast():
     import torch
-    from chatbot.recommendation_models import normalize_mood_sequence, denormalize_mood
+    from recommendation_models import normalize_mood_sequence, denormalize_mood
     from db import get_diary_entries
     
     uid = get_current_user_id()

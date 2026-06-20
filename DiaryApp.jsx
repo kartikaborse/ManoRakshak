@@ -84,7 +84,7 @@ function TagPill({ tag, onRemove, color = "#1D9E75", bg = "#E1F5EE" }) {
 function PhotoThumb({ url, onRemove }) {
   return (
     <div style={{ position: "relative", width: 80, height: 80, borderRadius: 10, overflow: "hidden", border: "1.5px solid #9FE1CB40", flexShrink: 0 }}>
-      <img src={url.startsWith("/api") ? `http://localhost:5000${url}` : url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       {onRemove && (
         <button onClick={onRemove} style={{ position: "absolute", top: 3, right: 3, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.55)", border: "none", color: "white", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>×</button>
       )}
