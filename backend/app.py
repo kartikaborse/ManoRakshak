@@ -82,7 +82,6 @@ app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 app.secret_key = os.environ.get("FLASK_SECRET", "manokart-dev-secret-change-in-prod")
 
-ANTHROPIC_API_KEY = ""
 ALLOWED_IMG       = {"png", "jpg", "jpeg", "gif", "webp"}
 
 # ──────────────────────────────────────────────────────────────
@@ -1768,7 +1767,6 @@ def health():
         "ml_model":      "loaded" if bundle else "not found",
         "diary_entries": len(load_diary()["entries"]),
         "games":         len(get_available_games()),
-        "anthropic_key": "set" if ANTHROPIC_API_KEY else "missing (not required)",
     })
 
 

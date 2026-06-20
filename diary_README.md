@@ -50,7 +50,7 @@ Build your React app (`npm run build`) and copy the `dist/` contents into `stati
 | DELETE | `/api/entries/:date` | Delete an entry |
 | POST | `/api/upload` | Upload a photo (multipart/form-data, field: `file`) |
 | GET | `/api/photos/:filename` | Serve an uploaded photo |
-| POST | `/api/analyze` | AI mood analysis (needs ANTHROPIC_API_KEY) |
+| POST | `/api/analyze` | AI mood analysis (offline built-in model) |
 | GET | `/api/analytics` | Mood stats, streaks, tag frequency |
 | GET | `/api/export/pdf` | Download full diary as PDF |
 
@@ -83,7 +83,7 @@ Build your React app (`npm run build`) and copy the `dist/` contents into `stati
 - 😊 5-level mood tracker with color-coded pills
 - 🏷️ Custom + suggested tags with frequency analytics
 - 📷 Photo attachments (upload + preview, up to 3 per PDF page)
-- 🤖 AI-powered gentle reflection (via Anthropic Claude)
+- 🤖 AI-powered gentle reflection (offline/built-in)
 - 📊 Mood charts, streaks, distribution, top tags
 - 📄 Full PDF export with photos and formatting
 - 💾 Server-side persistence in JSON (swap to SQLite/Postgres easily)

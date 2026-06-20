@@ -719,7 +719,7 @@ function MindfulDiary() {
       const d = await r.json();
       setAiInsight(d.insight || "No insight returned.");
     } catch {
-      setAiInsight("Couldn't reach the AI right now. Make sure ANTHROPIC_API_KEY is set on the server 🌿");
+      setAiInsight("Couldn't reach the offline reflection service right now. Please check if the backend server is running. 🌿");
     }
     setAiLoading(false);
   };
