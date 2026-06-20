@@ -80,6 +80,15 @@
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     .fade-up{animation:fadeUp .5s ease}
     footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
+    @media(max-width:768px){
+      .page{padding:0 16px 60px}
+      .topbar{flex-direction:column;align-items:flex-start;gap:12px;padding:20px 0 0}
+      .topbar > div{width:100%;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    }
+    @media(max-width:480px){
+      .recorder-card{padding:24px 16px}
+      .audio-features{grid-template-columns:1fr;gap:8px}
+    }
   </style>
 </head>
 <body>

@@ -475,6 +475,47 @@ function MindfulDiary() {
         textarea::placeholder{color:#B4B2A9}
         input[type=file]{display:none}
         ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#9FE1CB;border-radius:99px}
+        
+        .topbar-nav {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .stat-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+          .topbar-nav {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            flex-wrap: nowrap;
+            margin-left: -24px;
+            padding: 0 24px 4px;
+            scrollbar-width: none;
+          }
+          .topbar-nav::-webkit-scrollbar {
+            display: none;
+          }
+          .topbar-nav .nav-pill, .topbar-nav a {
+            flex-shrink: 0;
+          }
+          .stat-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .diary-textarea {
+            padding: 22px 22px 28px 52px !important;
+          }
+          .diary-red-line {
+            left: 36px !important;
+          }
+        }
       `}</style>
 
       {/* Ambient petals */}
@@ -537,7 +578,7 @@ function MindfulDiary() {
               </a>
               <p style={{ margin: "2px 0 0", fontSize: 13, color: "#5DCAA5", fontStyle: "italic" }}>A safe space, just for you</p>
             </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <div className="topbar-nav">
               <a href="/" style={{ textDecoration: "none" }}>
                 <button className="nav-pill" style={{
                   padding: "7px 16px", borderRadius: 99,
@@ -626,8 +667,8 @@ function MindfulDiary() {
             {/* Diary paper */}
             <div style={{ background: "white", borderRadius: 20, border: "0.5px solid #E1F5EE", boxShadow: "0 4px 28px rgba(93,202,165,.07)", position: "relative", overflow: "hidden", minHeight: 260, marginBottom: 16 }}>
               <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(to bottom,transparent,transparent 31px,#E1F5EE50 31px,#E1F5EE50 32px)", backgroundPosition: "0 48px", pointerEvents: "none" }} />
-              <div style={{ position: "absolute", left: 52, top: 0, bottom: 0, width: 1, background: "#F4C0D160" }} />
-              <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Begin writing here, dear friend... let your thoughts flow like water 💧"
+              <div className="diary-red-line" style={{ position: "absolute", left: 52, top: 0, bottom: 0, width: 1, background: "#F4C0D160" }} />
+              <textarea className="diary-textarea" value={text} onChange={e => setText(e.target.value)} placeholder="Begin writing here, dear friend... let your thoughts flow like water 💧"
                 style={{ width: "100%", minHeight: 260, padding: "22px 22px 28px 68px", fontSize: 16, lineHeight: "32px", color: "#2C2C2A", boxSizing: "border-box", fontFamily: "Georgia,serif" }} />
               <div style={{ position: "absolute", bottom: 10, right: 14, fontSize: 12, color: "#B4B2A9", display: "flex", alignItems: "center", gap: 10 }}>
                 {text.trim().split(/\s+/).filter(Boolean).length} words
@@ -712,7 +753,7 @@ function MindfulDiary() {
             </div>
 
             {/* Stat cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
+            <div className="stat-cards-grid">
               {[
                 { icon: "📖", val: analytics?.total_entries ?? totalEntries, lbl: "Total Entries" },
                 { icon: "🔥", val: analytics?.streak ?? "—", lbl: "Day Streak" },

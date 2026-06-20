@@ -786,6 +786,47 @@ function MindfulDiary() {
         textarea::placeholder{color:#B4B2A9}
         input[type=file]{display:none}
         ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#9FE1CB;border-radius:99px}
+        
+        .topbar-nav {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .stat-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+          .topbar-nav {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            flex-wrap: nowrap;
+            margin-left: -24px;
+            padding: 0 24px 4px;
+            scrollbar-width: none;
+          }
+          .topbar-nav::-webkit-scrollbar {
+            display: none;
+          }
+          .topbar-nav .nav-pill, .topbar-nav a {
+            flex-shrink: 0;
+          }
+          .stat-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .diary-textarea {
+            padding: 22px 22px 28px 52px !important;
+          }
+          .diary-red-line {
+            left: 36px !important;
+          }
+        }
       `
     }, void 0, false), [{
       w: 160,
@@ -934,12 +975,7 @@ function MindfulDiary() {
               children: "A safe space, just for you"
             }, void 0, false)]
           }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-            style: {
-              display: "flex",
-              gap: 8,
-              flexWrap: "wrap",
-              alignItems: "center"
-            },
+            className: "topbar-nav",
             children: [/*#__PURE__*/_jsxDEV("a", {
               href: "/",
               style: {
@@ -1144,6 +1180,7 @@ function MindfulDiary() {
               pointerEvents: "none"
             }
           }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
+            className: "diary-red-line",
             style: {
               position: "absolute",
               left: 52,
@@ -1153,6 +1190,7 @@ function MindfulDiary() {
               background: "#F4C0D160"
             }
           }, void 0, false), /*#__PURE__*/_jsxDEV("textarea", {
+            className: "diary-textarea",
             value: text,
             onChange: e => setText(e.target.value),
             placeholder: "Begin writing here, dear friend... let your thoughts flow like water 💧",
@@ -1422,12 +1460,7 @@ function MindfulDiary() {
             children: "📄 Export Full Diary"
           }, void 0, false)]
         }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          style: {
-            display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: 12,
-            marginBottom: 20
-          },
+          className: "stat-cards-grid",
           children: [{
             icon: "📖",
             val: analytics?.total_entries ?? totalEntries,

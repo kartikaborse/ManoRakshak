@@ -297,15 +297,42 @@
 
     @media(max-width:600px) {
       #touchCtrl {
-        display: flex
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        margin: 10px 0;
       }
-
       #mb {
-        padding: 10px
+        padding: 10px;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
       }
-
+      #sb {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
+      }
+      #sb .sp {
+        flex: 1 1 calc(50% - 8px);
+        padding: 10px;
+      }
+      /* Make start button and emotion key span full width on small screens */
+      #sb .sp:nth-child(4), #sb .sp:nth-child(5) {
+        flex: 1 1 100%;
+      }
+      .ek {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      .kh {
+        display: none;
+      }
       #bw {
-        flex-shrink: 0
+        flex-shrink: 0;
       }
     }
   </style>
@@ -318,6 +345,14 @@
   </div>
   <div id="mb">
     <div id="bw"><canvas id="board" width="200" height="400"></canvas></div>
+    <!-- Mobile touch controls -->
+    <div id="touchCtrl">
+      <button class="tc" id="tcLeft" ontouchstart="handleTouch('left')" onclick="handleTouch('left')">←</button>
+      <button class="tc" id="tcDown" ontouchstart="handleTouch('down')" onclick="handleTouch('down')">↓</button>
+      <button class="tc" id="tcRot" ontouchstart="handleTouch('rot')" onclick="handleTouch('rot')">↻</button>
+      <button class="tc" id="tcRight" ontouchstart="handleTouch('right')" onclick="handleTouch('right')">→</button>
+      <button class="tc" id="tcDrop" ontouchstart="handleTouch('drop')" onclick="handleTouch('drop')">⬇</button>
+    </div>
     <div id="sb">
       <div class="sp">
         <div class="st">Score</div>
@@ -342,15 +377,6 @@
         <div class="ek" id="ek"></div>
       </div>
     </div>
-  </div>
-
-  <!-- Mobile touch controls -->
-  <div id="touchCtrl">
-    <button class="tc" id="tcLeft" ontouchstart="handleTouch('left')" onclick="handleTouch('left')">←</button>
-    <button class="tc" id="tcDown" ontouchstart="handleTouch('down')" onclick="handleTouch('down')">↓</button>
-    <button class="tc" id="tcRot" ontouchstart="handleTouch('rot')" onclick="handleTouch('rot')">↻</button>
-    <button class="tc" id="tcRight" ontouchstart="handleTouch('right')" onclick="handleTouch('right')">→</button>
-    <button class="tc" id="tcDrop" ontouchstart="handleTouch('drop')" onclick="handleTouch('drop')">⬇</button>
   </div>
 
   <div class="wo" id="wo">

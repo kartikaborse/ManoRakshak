@@ -725,6 +725,19 @@
 .gbar a:hover{color:var(--teal)}
 .gbar .t{flex:1;font-weight:600;font-size:15px;text-align:center;color:var(--text)}
 .gbar .xb{font-size:12px;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:4px 12px;border-radius:20px}
+
+@media(max-width:480px){
+  body{padding:10px}
+  .top-bar{gap:8px;margin-bottom:14px}
+  .arena{padding:12px 10px}
+  .char-emoji{font-size:38px}
+  .fighter{min-width:70px;max-width:85px;gap:4px}
+  .char-label{font-size:10px}
+  .battle-log{font-size:11px;min-height:44px;padding:8px}
+  .arena-mid{gap:4px;padding:0 4px}
+  .moves-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+}
 </style>
 </head>
 

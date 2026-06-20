@@ -156,6 +156,22 @@
 
     footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
     footer span{color:var(--sage-light)}
+    
+    @media(max-width:768px){
+      .page{padding:0 16px 60px}
+      .topbar{flex-direction:column;align-items:flex-start;gap:16px}
+      .nav-pill{width:100%;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+      .nav-pill::-webkit-scrollbar{display:none}
+      .nav-btn{flex-shrink:0}
+      .tabs-nav{width:100%;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4.5px;scrollbar-width:none}
+      .tabs-nav::-webkit-scrollbar{display:none}
+      .tab-trigger{flex-shrink:0}
+      .disclaimer-banner{flex-direction:column;gap:8px;padding:16px}
+    }
+    @media(max-width:480px){
+      .overview-stats{grid-template-columns:1fr;gap:12px}
+      .card{padding:20px}
+    }
   </style>
 </head>
 <body>

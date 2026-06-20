@@ -105,6 +105,19 @@
     
     footer{text-align:center;padding:50px 0 20px;font-size:.8rem;color:var(--hint)}
     footer span{color:var(--sage-light)}
+    
+    @media(max-width:768px){
+      .page{padding:0 16px 60px}
+      .topbar{flex-direction:column;align-items:flex-start;gap:16px}
+      .nav-pill{width:100%;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+      .nav-pill::-webkit-scrollbar{display:none}
+      .nav-btn{flex-shrink:0}
+    }
+    @media(max-width:480px){
+      .avatar-picker-grid{grid-template-columns:repeat(4,1fr)}
+      .stats-row{grid-template-columns:1fr;gap:10px}
+      .card{padding:20px}
+    }
   </style>
 </head>
 <body>

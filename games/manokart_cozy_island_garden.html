@@ -509,6 +509,15 @@
       animation: bloomBurst .8s ease-out forwards;
       z-index: 500
     }
+    @media(max-width:480px){
+      #gm{padding:10px 8px 30px}
+      .mood-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+      .mood-grid .mt{display:none}
+      .garden-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+      .stats-row{grid-template-columns:1fr;gap:8px}
+      .plot{min-height:90px}
+      .checkin-card, .garden-card, .friends-card, .how-card{padding:12px}
+    }
   </style>
 </head>
 

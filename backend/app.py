@@ -43,7 +43,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
 
 from flask import (
     Flask, request, jsonify, session, redirect, url_for,
-    send_file, send_from_directory, render_template_string
+    send_file, send_from_directory, render_template_string, render_template
 )
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -68,6 +68,9 @@ UPLOADS_DIR  = DATA_DIR / "uploads"
 DIARY_FILE   = DATA_DIR / "diary.json"
 DIARY_JSX    = ROOT / "DiaryApp.jsx"
 TEMPLATES_DIR = BACKEND_DIR / "templates"
+
+sys.path.append(str(ROOT))
+sys.path.append(str(CHATBOT_DIR))
 
 for d in [DATA_DIR, UPLOADS_DIR, GAMES_DIR, ML_DIR]:
     d.mkdir(parents=True, exist_ok=True)
@@ -221,9 +224,7 @@ def load_recommendation_models():
     if lstm_path.exists():
         try:
             import torch
-            import sys
-            sys.path.append(str(CHATBOT_DIR))
-            from recommendation_models import MoodLSTM
+            from chatbot.recommendation_models import MoodLSTM
             model = MoodLSTM(input_size=1, hidden_size=16, num_layers=1, output_size=1)
             model.load_state_dict(torch.load(lstm_path, weights_only=True))
             model.eval()
@@ -293,458 +294,16 @@ def get_available_games() -> list:
 #  TEMPLATES
 # ══════════════════════════════════════════════════════════════
 
-HUB_TEMPLATE = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — Your Wellness Hub</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --sage:#0F6E56;--sage-mid:#1D9E75;--sage-light:#5DCAA5;
-      --sage-pale:#9FE1CB;--sage-ghost:#E1F5EE;
-      --warm-white:#f9f8f4;--ink:#2C2C2A;--muted:#5F5E5A;--hint:#B4B2A9;
-      --card-border:rgba(93,202,165,.18);
-    }
-    body{font-family:'Outfit',sans-serif;background:var(--warm-white);color:var(--ink);min-height:100vh;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 10% 0%,rgba(93,202,165,.13) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 90% 20%,rgba(253,244,248,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 50% 100%,rgba(255,251,242,.8) 0%,transparent 60%);pointer-events:none}
-    .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;animation:drift 12s ease-in-out infinite alternate}
-    .orb1{width:320px;height:320px;background:#9FE1CB;top:-80px;left:-80px;animation-delay:0s}
-    .orb2{width:240px;height:240px;background:#f4c0d1;top:30%;right:-60px;animation-delay:-4s}
-    .orb3{width:200px;height:200px;background:#fac775;bottom:10%;left:20%;animation-delay:-8s}
-    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
-    .page{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 28px 80px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0}
-    .logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--sage);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;text-decoration:none}
-    .nav-pill{display:flex;gap:8px}
-    .nav-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);text-decoration:none;display:inline-block}
-    .nav-btn:hover{background:var(--sage);color:white;border-color:var(--sage)}
-    .hero{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:52px 0 16px}
-    @media(max-width:640px){.hero{grid-template-columns:1fr}.profile-card{display:none}}
-    .greeting-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(159,225,203,.25);border:1px solid rgba(93,202,165,.3);border-radius:99px;padding:6px 16px;font-size:.8rem;color:var(--sage-mid);font-weight:500;margin-bottom:18px}
-    .greeting-tag .dot{width:7px;height:7px;background:var(--sage-light);border-radius:50%;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-    .hero h1{font-family:'DM Serif Display',serif;font-size:3.2rem;line-height:1.1;color:var(--ink);letter-spacing:-1.5px;margin-bottom:14px}
-    .hero h1 em{color:var(--sage);font-style:italic}
-    .hero-sub{font-size:1.05rem;color:var(--muted);line-height:1.65;font-weight:300;max-width:380px;margin-bottom:28px}
-    .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
-    .btn-primary{padding:14px 28px;border-radius:99px;border:none;background:var(--sage);color:white;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(15,110,86,.2);text-decoration:none;display:inline-block}
-    .btn-primary:hover{background:var(--sage-mid);transform:translateY(-1px);box-shadow:0 8px 28px rgba(15,110,86,.28)}
-    .btn-ghost{padding:14px 28px;border-radius:99px;border:1.5px solid var(--card-border);background:rgba(255,255,255,.6);color:var(--sage);font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);text-decoration:none;display:inline-block}
-    .btn-ghost:hover{border-color:var(--sage);background:var(--sage-ghost)}
-    .profile-card{background:rgba(255,255,255,.75);border:1px solid var(--card-border);border-radius:28px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 8px 40px rgba(93,202,165,.08)}
-    .profile-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;transition:opacity .15s}
-    .profile-top:hover{opacity:0.85}
-    .profile-top:hover .profile-join{color:var(--sage-mid);text-decoration:underline}
-    .avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#9FE1CB,#5DCAA5);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1.4rem;color:white;flex-shrink:0}
-    .profile-name{font-size:1.1rem;font-weight:600;color:var(--ink)}
-    .profile-join{font-size:.78rem;color:var(--hint);margin-top:3px;transition:color .15s}
-    .streak-badge{display:flex;align-items:center;gap:6px;background:rgba(255,183,77,.12);border:1px solid rgba(239,159,39,.3);border-radius:99px;padding:5px 12px;font-size:.78rem;font-weight:500;color:#854F0B;margin-top:8px;width:fit-content}
-    .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
-    .stat-box{background:var(--warm-white);border-radius:14px;padding:12px;text-align:center;border:1px solid rgba(209,208,199,.4)}
-    .stat-num{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--sage);line-height:1}
-    .stat-lbl{font-size:.72rem;color:var(--hint);margin-top:4px}
-    .mood-check{font-size:.8rem;color:var(--muted);margin-bottom:8px;font-weight:500}
-    .mood-row{display:flex;gap:8px}
-    .mood-chip{flex:1;padding:8px 6px;border-radius:12px;border:1.5px solid var(--card-border);background:white;font-size:1.1rem;cursor:pointer;text-align:center;transition:all .18s}
-    .mood-chip:hover,.mood-chip.active{border-color:var(--sage-light);background:var(--sage-ghost);transform:scale(1.08)}
-    .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:44px 0 18px}
-    .section-head h2{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--ink);letter-spacing:-.5px}
-    .see-all{font-size:.82rem;color:var(--sage-light);cursor:pointer;font-weight:500;text-decoration:none}
-    .see-all:hover{color:var(--sage)}
-    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-    @media(max-width:480px){.feature-grid{grid-template-columns:1fr}}
-    .feat-card{border-radius:24px;padding:28px 26px;position:relative;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s;text-decoration:none;display:block;color:inherit}
-    .feat-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.08)}
-    .feat-card.diary{background:linear-gradient(135deg,#e8f8f2,#d4f0e6);border:1px solid rgba(93,202,165,.2)}
-    .feat-card.chat{background:linear-gradient(135deg,#fbeaf0,#f4d4e4);border:1px solid rgba(212,83,126,.15)}
-    .feat-card.music{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:1px solid rgba(124,58,237,.15)}
-    .feat-card.voice{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid rgba(239,159,39,.2)}
-    .feat-icon{font-size:2.2rem;margin-bottom:14px}
-    .feat-card h3{font-size:1.1rem;font-weight:600;color:var(--ink);margin-bottom:6px}
-    .feat-card p{font-size:.85rem;color:var(--muted);line-height:1.55;font-weight:300}
-    .feat-card .feat-arrow{position:absolute;bottom:22px;right:22px;width:36px;height:36px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .18s}
-    .feat-card:hover .feat-arrow{transform:translate(2px,-2px)}
-    .feat-tag{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;margin-bottom:10px}
-    .feat-tag.new{background:rgba(15,110,86,.12);color:var(--sage)}
-    .feat-tag.ai{background:rgba(212,83,126,.12);color:#993556}
-    .feat-tag.music{background:rgba(124,58,237,.12);color:#7C3AED}
-    .feat-tag.voice{background:rgba(239,159,39,.12);color:#B45309}
-    .games-strip{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
-    .games-strip::-webkit-scrollbar{display:none}
-    .game-card{flex-shrink:0;width:160px;background:rgba(255,255,255,.8);border:1px solid var(--card-border);border-radius:20px;padding:20px 16px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;color:inherit;backdrop-filter:blur(6px)}
-    .game-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(93,202,165,.15);border-color:var(--sage-pale)}
-    .g-icon{font-size:1.8rem;margin-bottom:10px}
-    .game-card h4{font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:4px}
-    .game-card p{font-size:.75rem;color:var(--hint);line-height:1.4}
-    .quote-strip{background:linear-gradient(135deg,rgba(15,110,86,.06),rgba(93,202,165,.08));border:1px solid rgba(93,202,165,.15);border-radius:20px;padding:24px 28px;margin-top:20px;display:flex;align-items:center;gap:20px}
-    .quote-mark{font-family:'DM Serif Display',serif;font-size:4rem;color:var(--sage-pale);line-height:1;flex-shrink:0;margin-top:-12px}
-    .quote-text{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--sage);font-style:italic;line-height:1.6}
-    .quote-author{font-size:.78rem;color:var(--hint);margin-top:6px}
-    footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
-    footer span{color:var(--sage-light)}
-    .fade-up{opacity:0;transform:translateY(24px);animation:fadeUp .6s ease forwards}
-    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-    .d1{animation-delay:.05s}.d2{animation-delay:.13s}.d3{animation-delay:.21s}.d4{animation-delay:.3s}.d5{animation-delay:.38s}
-    .xp-nav{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid var(--card-border);border-radius:99px;padding:6px 14px;backdrop-filter:blur(8px)}
-    .xp-nav .lv{font-size:.75rem;font-weight:600;color:var(--sage);white-space:nowrap}
-    .xp-track{width:60px;height:5px;background:rgba(93,202,165,.2);border-radius:3px;overflow:hidden}
-    .xp-fill{height:100%;background:var(--sage-light);border-radius:3px;transition:width .4s}
-    .xp-nav .xp-num{font-size:.72rem;color:var(--hint);white-space:nowrap}
-  </style>
-</head>
-<body>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
 
-<div class="page">
-  <div class="topbar">
-    <a href="/" class="logo">🌿 ManoKart</a>
-    <nav class="nav-pill">
-      <div class="xp-nav" id="xp-nav" style="display:none">
-        <span class="lv" id="nav-lv">Lv 1</span>
-        <div class="xp-track"><div class="xp-fill" id="nav-xp-fill" style="width:0%"></div></div>
-        <span class="xp-num" id="nav-xp-num">0 XP</span>
-      </div>
-      <a href="/diary"   class="nav-btn">Diary</a>
-      <a href="/chatbot" class="nav-btn">Chat</a>
-      <a href="/music"   class="nav-btn">Music</a>
-      <a href="/voice"   class="nav-btn">Voice</a>
-      <a href="games/manokart_games_hub.html"   class="nav-btn">Games</a>
-      <a href="/clinical" class="nav-btn">Check-in</a>
-      <a href="/therapists" class="nav-btn">Therapists</a>
-      <a href="/profile" class="nav-btn">Profile</a>
-      <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
-    </nav>
-  </div>
+def load_template_file(filename: str) -> str:
+    path = TEMPLATES_DIR / filename
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return ""
 
-  <div class="hero">
-    <div class="hero-left fade-up d1">
-      <div class="greeting-tag"><span class="dot"></span> <span id="greeting">Good day</span>, friend</div>
-      <h1>Your <em>gentle</em><br>space to<br>feel better</h1>
-      <p class="hero-sub">Track your mood, journal your thoughts, and chat whenever you need a kind listener.</p>
-      <div class="hero-cta">
-        <a href="/diary"   class="btn-primary">Open My Diary</a>
-        <a href="/chatbot" class="btn-ghost">Talk to ManoKart</a>
-      </div>
-    </div>
-
-    <div class="profile-card fade-up d2">
-      <div class="profile-top" onclick="window.location.href='/profile'" style="cursor:pointer" title="View Profile & Stats">
-        <div class="avatar">🌿</div>
-        <div>
-          <div class="profile-name" id="profile-name">Welcome back 🌸</div>
-          <div class="profile-join">View Profile & Stats →</div>
-          <div class="streak-badge" id="streak-display">🌱 Loading...</div>
-          <div class="streak-badge" style="margin-top:4px;background:rgba(93,202,165,.12);border-color:rgba(93,202,165,.3);color:var(--sage)" id="forecast-display">🔮 Forecast: Loading...</div>
-        </div>
-      </div>
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-num" id="stat-entries">—</div>
-          <div class="stat-lbl">Entries</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num" id="stat-mood">—</div>
-          <div class="stat-lbl">Avg Mood</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num" id="stat-streak">—</div>
-          <div class="stat-lbl">Streak</div>
-        </div>
-      </div>
-      <div class="mood-check">How are you feeling right now?</div>
-      <div class="mood-row">
-        <div class="mood-chip" onclick="pickMood(this,1)" title="Struggling">😔</div>
-        <div class="mood-chip" onclick="pickMood(this,2)" title="Low">😐</div>
-        <div class="mood-chip" onclick="pickMood(this,3)" title="Okay">🙂</div>
-        <div class="mood-chip" onclick="pickMood(this,4)" title="Good">😊</div>
-        <div class="mood-chip" onclick="pickMood(this,5)" title="Great">🌟</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-head fade-up d3">
-    <h2>Your Wellness Tools</h2>
-  </div>
-  <div class="feature-grid fade-up d3">
-    <a class="feat-card diary" href="/diary">
-      <div class="feat-tag new">✦ Featured</div>
-      <div class="feat-icon">📖</div>
-      <h3>My Diary</h3>
-      <p>Write freely, track your mood journey, and receive gentle AI reflections crafted just for you.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-    <a class="feat-card chat" href="/chatbot">
-      <div class="feat-tag ai">✦ AI Powered</div>
-      <div class="feat-icon">💬</div>
-      <h3>ManoKart Chat</h3>
-      <p>Your always-available companion. Talk through anything — worries, wins, or just how your day went.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-    <a class="feat-card music" href="/music">
-      <div class="feat-tag music">✦ New</div>
-      <div class="feat-icon">🎵</div>
-      <h3>Mood Music</h3>
-      <p>Curated Spotify & YouTube playlists that match your mood — let music be your medicine.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-    <a class="feat-card voice" href="/voice">
-      <div class="feat-tag voice">✦ New</div>
-      <div class="feat-icon">🎙️</div>
-      <h3>Voice Journal</h3>
-      <p>Speak freely — we'll transcribe your words and gently detect your emotions from your voice.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-    <a class="feat-card clinical" href="/clinical" style="background:linear-gradient(135deg,#e1f5ee,#9fe1cb);border:1px solid rgba(93,202,165,.2)">
-      <div class="feat-tag new" style="background:rgba(15,110,86,.12);color:var(--sage)">✦ Screening</div>
-      <div class="feat-icon">📋</div>
-      <h3>Clinical Screening</h3>
-      <p>Evaluate your depression (PHQ-9) and anxiety (GAD-7) levels using standard clinical questionnaires.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-    <a class="feat-card therapists" href="/therapists" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);border:1px solid rgba(14,165,233,.15)">
-      <div class="feat-tag new" style="background:rgba(14,165,233,.12);color:#0369a1">✦ Directory</div>
-      <div class="feat-icon">🤝</div>
-      <h3>Therapists</h3>
-      <p>Find professional support. Browse, filter by specialty, and schedule appointments with licensed therapists.</p>
-      <div class="feat-arrow">→</div>
-    </a>
-  </div>
-
-  {% if games %}
-  <div class="section-head fade-up d4">
-    <h2>Wellness Games</h2>
-    <a class="see-all" href="games/manokart_games_hub.html">See all →</a>
-  </div>
-  <div class="games-strip fade-up d4">
-    {% for game in games %}
-    <a class="game-card" href="games/{{ game.slug }}.html">
-      <div class="g-icon">{{ game.emoji }}</div>
-      <h4>{{ game.title }}</h4>
-      <p>{{ game.desc }}</p>
-    </a>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <div class="quote-strip fade-up d5">
-    <div class="quote-mark">"</div>
-    <div>
-      <div class="quote-text" id="quote-text">Almost everything will work again if you unplug it for a few minutes — including you.</div>
-      <div class="quote-author" id="quote-author">— Anne Lamott</div>
-    </div>
-  </div>
-
-  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
-</div>
-
-<script src="/games/gameEngine.js"></script>
-<script>
-(function(){
-  const h = new Date().getHours();
-  document.getElementById('greeting').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-})();
-
-function pickMood(el, score) {
-  document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  const today = new Date().toISOString().split('T')[0];
-  fetch('/api/entries/' + today, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({mood: score})
-  }).catch(() => {});
-}
-
-fetch('/api/analytics')
-  .then(r => r.json())
-  .then(d => {
-    document.getElementById('stat-entries').textContent = d.total_entries || 0;
-    document.getElementById('stat-mood').textContent    = d.avg_mood ? d.avg_mood.toFixed(1) : '—';
-    document.getElementById('stat-streak').textContent  = d.streak || 0;
-    document.getElementById('streak-display').textContent = d.streak > 0 ? '🔥 ' + d.streak + '-day streak' : '🌱 Start your streak!';
-  })
-  .catch(() => { document.getElementById('streak-display').textContent = '🌱 Start journaling!'; });
-
-fetch('/api/mood/forecast')
-  .then(r => r.json())
-  .then(d => {
-    document.getElementById('forecast-display').textContent = '🔮 Forecast tomorrow: ' + d.emoji + ' ' + d.mood_name;
-  })
-  .catch(() => {
-    document.getElementById('forecast-display').style.display = 'none';
-  });
-
-fetch('/api/auth/me')
-  .then(r => r.json())
-  .then(d => {
-    if (d.logged_in && d.user) {
-      const first = (d.user.name || '').split(' ')[0];
-      document.getElementById('profile-name').textContent = 'Hey, ' + first + ' 🌸';
-      if (d.user.avatar) {
-        document.querySelector('.profile-card .avatar').textContent = d.user.avatar;
-      }
-    }
-  })
-  .catch(() => {});
-
-function updateXPNav() {
-  try {
-    var raw = localStorage.getItem('manokart_engine_v1');
-    if (!raw) return;
-    var data = JSON.parse(raw);
-    if (!data || !data.totalXP) return;
-    var xpPerLevel = 500;
-    var level      = data.level || 1;
-    var xpIn       = data.totalXP % xpPerLevel;
-    var pct        = Math.round(xpIn / xpPerLevel * 100);
-    document.getElementById('nav-lv').textContent       = 'Lv ' + level;
-    document.getElementById('nav-xp-fill').style.width = pct + '%';
-    document.getElementById('nav-xp-num').textContent   = data.totalXP + ' XP';
-    document.getElementById('xp-nav').style.display    = 'flex';
-  } catch(e) {}
-}
-
-updateXPNav();
-window.addEventListener('gameEngineSynced', updateXPNav);
-
-const quotes = [
-  {t:"Almost everything will work again if you unplug it for a few minutes — including you.", a:"Anne Lamott"},
-  {t:"You don't have to be positive all the time. It's perfectly okay to feel sad, angry, annoyed, frustrated, scared.", a:"Lori Deschene"},
-  {t:"In the middle of difficulty lies opportunity.", a:"Albert Einstein"},
-  {t:"Self-care is how you take your power back.", a:"Lalah Delia"},
-  {t:"Be gentle with yourself. You are a child of the universe, no less than the trees and the stars.", a:"Max Ehrmann"},
-  {t:"Every day begins with an act of courage and hope: getting out of bed.", a:"Mason Cooley"},
-  {t:"You are enough just as you are.", a:"Meghan Markle"},
-];
-const q = quotes[new Date().getDate() % quotes.length];
-document.getElementById('quote-text').textContent   = q.t;
-document.getElementById('quote-author').textContent = '— ' + q.a;
-</script>
-</body>
-</html>"""
-
-
-DIARY_SHELL = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — My Diary</title>
-  <script src="/static/react.min.js"></script>
-  <script src="/static/react-dom.min.js"></script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#f7fdf9;min-height:100vh}
-    #root{min-height:100vh}
-  </style>
-</head>
-<body>
-  <div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#5DCAA5;font-family:Georgia,serif">Loading your diary… 🌿</div></div>
-  <script>
-    const { useState, useEffect, useRef, useCallback } = React;
-  </script>
-  <script src="/static/DiaryApp.js"></script>
-  <script>
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(MindfulDiary));
-  </script>
-</body>
-</html>"""
-
-
-CHATBOT_SHELL = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — Chat</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#f7fdf9,#fdf4f8);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-    .chat-wrap{width:100%;max-width:640px;background:white;border-radius:20px;border:.5px solid #E1F5EE;box-shadow:0 4px 32px rgba(93,202,165,.08);display:flex;flex-direction:column;height:80vh}
-    .chat-header{padding:20px 24px;border-bottom:.5px solid #E1F5EE;display:flex;align-items:center;gap:12px}
-    .chat-header h1{font-size:1.1rem;color:#0F6E56}
-    .chat-header p{font-size:.8rem;color:#5DCAA5;font-style:italic}
-    .messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
-    .msg{max-width:80%;padding:12px 16px;border-radius:16px;font-size:.9rem;line-height:1.55}
-    .msg.bot{background:#E1F5EE;color:#0F6E56;border-radius:4px 16px 16px 16px;align-self:flex-start}
-    .msg.user{background:#0F6E56;color:white;border-radius:16px 4px 16px 16px;align-self:flex-end}
-    .input-row{padding:16px 20px;border-top:.5px solid #E1F5EE;display:flex;gap:10px}
-    .input-row input{flex:1;padding:10px 16px;border-radius:99px;border:1.5px solid #D3D1C7;font-size:.9rem;outline:none;font-family:inherit}
-    .input-row input:focus{border-color:#5DCAA5}
-    .input-row button{padding:10px 20px;border-radius:99px;border:none;background:#0F6E56;color:white;font-size:.9rem;cursor:pointer;font-family:inherit}
-    .input-row button:hover{background:#5DCAA5}
-    .back{display:inline-block;margin-bottom:16px;color:#5DCAA5;text-decoration:none;font-size:.9rem}
-    .back:hover{color:#0F6E56}
-    .typing{opacity:.5;font-style:italic}
-  </style>
-</head>
-<body>
-  <a href="/" class="back">← Back to hub</a>
-  <div class="chat-wrap">
-    <div class="chat-header">
-      <div style="font-size:2rem">💬</div>
-      <div>
-        <h1>ManoKart Companion</h1>
-        <p>I'm here to listen, always 🌿</p>
-      </div>
-    </div>
-    <div class="messages" id="messages">
-      <div class="msg bot">Hello 🌸 I'm your ManoKart companion. How are you feeling today?</div>
-    </div>
-    <div class="input-row">
-      <input id="inp" type="text" placeholder="Share what's on your mind..." onkeydown="if(event.key==='Enter')send()"/>
-      <button onclick="send()">Send</button>
-    </div>
-  </div>
-  <script>
-    const msgs = document.getElementById('messages');
-    const inp  = document.getElementById('inp');
-    function addMsg(text, role) {
-      const d = document.createElement('div');
-      d.className = 'msg ' + role;
-      d.textContent = text;
-      msgs.appendChild(d);
-      msgs.scrollTop = msgs.scrollHeight;
-      return d;
-    }
-    async function send() {
-      const text = inp.value.trim();
-      if (!text) return;
-      inp.value = '';
-      addMsg(text, 'user');
-      const thinking = addMsg('Thinking...', 'bot typing');
-      try {
-        const res = await fetch('/api/chat', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});
-        if (res.status === 401) {
-          thinking.textContent = 'Session expired — redirecting to login...';
-          thinking.classList.remove('typing');
-          setTimeout(() => window.location.href = '/auth', 1500);
-          return;
-        }
-        let data;
-        try { data = await res.json(); } catch { data = {}; }
-        if (data.reply) {
-          thinking.textContent = data.reply;
-        } else if (data.error) {
-          thinking.textContent = data.error + ' 🌧️';
-        } else {
-          thinking.textContent = 'Something went wrong — please try again 🌧️';
-        }
-        thinking.classList.remove('typing');
-      } catch(e) {
-        thinking.textContent = 'Could not reach the server. Is it running? 🌿';
-        thinking.classList.remove('typing');
-      }
-    }
-  </script>
-</body>
-</html>"""
+HUB_TEMPLATE = load_template_file("hub.html")
+DIARY_SHELL = load_template_file("diary.html")
+CHATBOT_SHELL = load_template_file("chatbot.html")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1300,9 +859,7 @@ def _get_game_recommendation_by_mood(uid):
     # Fetch database helpers
     from db import get_diary_entries, get_analytics, get_user_assessments
     from datetime import datetime
-    import sys
-    sys.path.append(str(CHATBOT_DIR))
-    from recommendation_models import format_recommendation_features
+    from chatbot.recommendation_models import format_recommendation_features
 
     # Default fallback game
     default_game = {"slug": "manokart_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"}
@@ -1699,7 +1256,7 @@ def voice_analyze():
             if model is not None:
                 le            = bundle["label_encoder"]
                 responses_map = bundle.get("responses_map", {})
-                processed     = _preprocess_fallback(text)
+                processed     = preprocess(text)
                 proba = model.predict_proba([processed])[0]
                 idx   = int(np.argmax(proba))
                 conf  = float(proba[idx])
@@ -1831,9 +1388,7 @@ def upload_photo():
 def analyze_diary():
     from db import get_analytics, get_user_assessments, get_diary_entries
     import torch
-    import sys
-    sys.path.append(str(CHATBOT_DIR))
-    from recommendation_models import normalize_mood_sequence
+    from chatbot.recommendation_models import normalize_mood_sequence
     
     uid = get_current_user_id()
     
@@ -1974,9 +1529,7 @@ def analytics():
 @user_only
 def mood_forecast():
     import torch
-    import sys
-    sys.path.append(str(CHATBOT_DIR))
-    from recommendation_models import normalize_mood_sequence, denormalize_mood
+    from chatbot.recommendation_models import normalize_mood_sequence, denormalize_mood
     from db import get_diary_entries
     
     uid = get_current_user_id()

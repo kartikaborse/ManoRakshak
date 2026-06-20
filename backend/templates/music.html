@@ -64,6 +64,15 @@
     .fade-up{animation:fadeUp .5s ease}
     footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--hint)}
     footer span{color:var(--sage-light)}
+    @media(max-width:768px){
+      .page{padding:0 16px 60px}
+      .topbar{flex-direction:column;align-items:flex-start;gap:12px;padding:20px 0 0}
+      .topbar > div{width:100%;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+      .mood-grid{width:100%;overflow-x:auto;white-space:nowrap;display:flex;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none}
+      .mood-grid::-webkit-scrollbar{display:none}
+      .mood-btn{flex-shrink:0}
+      .playlist-grid{grid-template-columns:1fr;gap:12px}
+    }
   </style>
 </head>
 <body>
