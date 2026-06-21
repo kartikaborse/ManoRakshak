@@ -147,10 +147,24 @@
      Firebase Firestore later — nothing else changes.
   ───────────────────────────────────────────── */
 
+  function getCookie(name) {
+    if (typeof document === 'undefined') return null;
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  }
+
+  function getStorageKey() {
+    var userId = getCookie('manokart_user_id');
+    return userId ? 'manokart_engine_v1_' + userId : 'manokart_engine_v1_guest';
+  }
+
   var _storage = {
     get: function () {
       try {
-        var raw = localStorage.getItem(STORAGE_KEY);
+        var key = getStorageKey();
+        var raw = localStorage.getItem(key);
         return raw ? JSON.parse(raw) : null;
       } catch (e) {
         console.warn('[GameEngine] Storage read error:', e);
@@ -159,7 +173,8 @@
     },
     set: function (data) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        var key = getStorageKey();
+        localStorage.setItem(key, JSON.stringify(data));
         return true;
       } catch (e) {
         console.warn('[GameEngine] Storage write error:', e);
@@ -272,6 +287,10 @@
               // Server has less XP, upload local
               _syncWithServer(local);
             }
+          } else {
+            // New user with no progress on server. Save/sync default state.
+            var local = _loadPlayer();
+            _syncWithServer(local);
           }
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('gameEngineSynced'));

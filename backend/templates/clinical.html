@@ -545,15 +545,42 @@
     }
   }
 
+  function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  }
+
+  function getStorageKey() {
+    var userId = getCookie('manokart_user_id');
+    return userId ? 'manokart_engine_v1_' + userId : 'manokart_engine_v1_guest';
+  }
+
   // Award XP to gamified engine
   function awardXP(amount) {
     try {
-      var raw = localStorage.getItem('manokart_engine_v1');
+      var key = getStorageKey();
+      var raw = localStorage.getItem(key);
       var data = raw ? JSON.parse(raw) : { totalXP: 0, level: 1 };
       data.totalXP = (data.totalXP || 0) + amount;
       data.level = Math.floor(data.totalXP / 500) + 1;
-      localStorage.setItem('manokart_engine_v1', JSON.stringify(data));
+      localStorage.setItem(key, JSON.stringify(data));
       updateXPNav();
+      
+      // Also notify gameEngine if loaded to sync with server
+      if (typeof GameEngine !== 'undefined' && GameEngine.getPlayer) {
+        var player = GameEngine.getPlayer();
+        player.totalXP = data.totalXP;
+        player.level = data.level;
+        // This will save and trigger sync with server
+        if (typeof _savePlayer === 'function') {
+          _savePlayer(player);
+        } else if (GameEngine.importData) {
+          // If we can't call internal functions, import updated JSON
+          GameEngine.importData(JSON.stringify(player));
+        }
+      }
     } catch(e) {
       console.error(e);
     }
@@ -561,8 +588,11 @@
 
   function updateXPNav() {
     try {
-      var raw = localStorage.getItem('manokart_engine_v1');
-      if (!raw) return;
+      var raw = localStorage.getItem(getStorageKey());
+      if (!raw) {
+        document.getElementById('xp-nav').style.display = 'none';
+        return;
+      }
       var data = JSON.parse(raw);
       if (!data || data.totalXP === undefined) return;
       var xpPerLevel = 500;

@@ -397,7 +397,9 @@ def signup():
         session["user_id"]   = user["id"]
         session["user_name"] = user["full_name"] or user["username"]
         session["role"]      = user.get("role", "user")
-        return jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
+        response = jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
+        response.set_cookie("manokart_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+        return response
     except Exception as e:
         app.logger.error(f"Signup error: {e}")
         return jsonify({"error": "Could not create account. Username or email may be taken."}), 500
@@ -420,13 +422,17 @@ def login():
     session["user_id"]   = user["id"]
     session["user_name"] = user["full_name"] or user["username"]
     session["role"]      = user.get("role", "user")
-    return jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
+    response = jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
+    response.set_cookie("manokart_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+    return response
 
 
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
     session.clear()
-    return jsonify({"ok": True})
+    response = jsonify({"ok": True})
+    response.delete_cookie("manokart_user_id")
+    return response
 
 
 @app.route("/api/auth/me")
@@ -454,7 +460,7 @@ def auth_me():
                 "phone": t_profile["contact_phone"]
             }
             
-    return jsonify({
+    response = jsonify({
         "logged_in": True,
         "user": {
             "id":     user["id"],
@@ -468,6 +474,8 @@ def auth_me():
             **therapist_data
         }
     })
+    response.set_cookie("manokart_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+    return response
 
 
 # In-memory dictionary for development password reset tokens
