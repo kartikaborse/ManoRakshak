@@ -397,10 +397,37 @@
       }
       .send-btn {
         padding: 12px 20px;
-      }
       .suggestions-row {
         padding: 0 16px 8px 16px;
       }
+    }
+
+    /* Voice controls styling */
+    .header-control-btn:hover {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: var(--primary-green) !important;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(15, 110, 86, 0.08);
+    }
+    .mic-recording {
+      animation: mic-pulse 1.5s infinite;
+      color: #E74C3C !important;
+    }
+    @keyframes mic-pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+    }
+    .voice-active-indicator {
+      background: var(--primary-green) !important;
+      color: white !important;
+      border-color: var(--primary-green) !important;
+    }
+    .modal-overlay {
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
   </style>
   <script>
@@ -440,6 +467,30 @@
         <h1>ManoKart Companion</h1>
         <p>A safe, local space to reflect, pause, and talk.</p>
       </div>
+      
+      <!-- Voice controls inside header -->
+      <div class="header-controls" style="margin-left: auto; display: flex; gap: 8px; align-items: center; position: relative; z-index: 15; flex-wrap: wrap;">
+        <select id="voiceSelect" class="voice-select" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 99px; border: 1px solid var(--glass-border); background: white; outline: none; cursor: pointer; color: var(--primary-green); font-weight: 500; transition: all 0.2s ease;">
+          <option value="">Neutral voice</option>
+        </select>
+        <button onclick="openEnroll()" title="Add voice" style="background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; color: var(--muted); transition: all 0.2s ease;">
+          <span style="font-size: 1.25rem; font-weight: 600; line-height: 1;">+</span>
+        </button>
+        <button id="voice-toggle-btn" onclick="toggleVoiceMode()" title="Toggle Voice Response" style="background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; color: var(--muted); transition: all 0.2s ease;">
+          <svg id="voice-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Speaker off (muted) icon -->
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+        <button onclick="openVoiceSettings()" title="Voice Settings" style="background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; color: var(--muted); transition: all 0.2s ease;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <div class="messages-area" id="msg-area">
@@ -454,8 +505,16 @@
     </div>
 
     <footer class="input-area">
-      <div class="input-wrapper">
-        <input id="input-field" type="text" placeholder="Share what's on your mind..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <div class="input-wrapper" style="position: relative; display: flex; align-items: center;">
+        <input id="input-field" type="text" placeholder="Share what's on your mind..." onkeydown="if(event.key==='Enter')sendMessage()" style="padding-right: 50px;"/>
+        <button id="mic-btn" onclick="toggleVoiceRecording()" title="Voice Input" style="position: absolute; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s ease; z-index: 10;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
       </div>
       <button class="send-btn" onclick="sendMessage()">
         Send
@@ -464,9 +523,121 @@
     </footer>
   </main>
 
+  <!-- Voice Settings Modal -->
+  <div id="voice-settings-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 110, 86, 0.25); backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal-content" style="background: white; border: 1.5px solid var(--glass-border); max-width: 480px; width: 100%; border-radius: 28px; box-shadow: 0 16px 48px rgba(15, 110, 86, 0.15); overflow: hidden; display: flex; flex-direction: column;">
+      <header style="padding: 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: var(--ghost-green);">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;">🎙️ Voice Settings</h2>
+        <button onclick="closeVoiceSettings()" style="background: transparent; border: none; cursor: pointer; color: var(--muted); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </header>
+      
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; max-height: 70vh;">
+        <!-- Voice Mode Select -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">Voice Output Mode</label>
+          <select id="voice-type-select" onchange="onVoiceTypeChange()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--glass-border); background: var(--warm-white); outline: none; font-family: inherit; font-size: 0.95rem; color: var(--ink);">
+            <option value="system">Default System Voice (Offline Browser)</option>
+            <option value="cloned">Cloned Loved One's Voice (Backend DSP)</option>
+          </select>
+        </div>
+
+        <!-- System Voice Settings (SpeechSynthesis) -->
+        <div id="system-voice-settings" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-weight: 500; font-size: 0.9rem; color: var(--muted);">Select Browser Voice</label>
+            <select id="browser-voice-select" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); font-family: inherit; font-size: 0.9rem;"></select>
+          </div>
+        </div>
+
+        <!-- Cloned Voice Settings (Backend) -->
+        <div id="cloned-voice-settings" style="display: none; flex-direction: column; gap: 16px;">
+          <!-- Voice Recorder / Uploader -->
+          <div style="border: 1.5px dashed var(--glass-border); border-radius: 16px; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; background: rgba(93, 202, 165, 0.04);">
+            <div id="clone-status-lbl" style="font-size: 0.85rem; font-weight: 500; color: var(--muted);">No loved one's voice uploaded yet.</div>
+            
+            <div style="display: flex; gap: 10px; width: 100%; justify-content: center; flex-wrap: wrap;">
+              <button id="record-clone-btn" onclick="toggleCloneRecording()" class="suggestion-chip" style="background: white; border: 1px solid var(--glass-border); color: var(--primary-green); font-weight: 600; cursor: pointer; padding: 10px 18px; border-radius: 99px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;">
+                🔴 Record Sample
+              </button>
+              <label class="suggestion-chip" style="background: white; border: 1px solid var(--glass-border); color: var(--primary-green); font-weight: 600; cursor: pointer; padding: 10px 18px; border-radius: 99px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                📁 Upload Audio
+                <input type="file" id="clone-file-input" accept="audio/*" onchange="uploadVoiceFile(event)" style="display: none;"/>
+              </label>
+            </div>
+            
+            <div id="clone-rec-timer" style="display: none; font-size: 1.25rem; font-weight: 600; color: #E74C3C; font-family: monospace;">0:00</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Provide a 5-10 second recording of your loved one speaking clearly.</div>
+          </div>
+
+          <!-- DSP Tuning Sliders -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <label style="font-weight: 500; color: var(--muted);">Manual Pitch Shift</label>
+                <span id="pitch-val-lbl" style="font-weight: 600; color: var(--primary-green);">0 semitones</span>
+              </div>
+              <input type="range" id="pitch-slider" min="-12" max="12" step="1" value="0" oninput="updateSliders()" style="width: 100%; accent-color: var(--primary-green); cursor: pointer;"/>
+              <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted);">
+                <span>Lower / Deeper</span>
+                <span>Higher / Thinner</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <label style="font-weight: 500; color: var(--muted);">Speaking Speed</label>
+                <span id="speed-val-lbl" style="font-weight: 600; color: var(--primary-green);">1.0x</span>
+              </div>
+              <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSliders()" style="width: 100%; accent-color: var(--primary-green); cursor: pointer;"/>
+              <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted);">
+                <span>Slower</span>
+                <span>Faster</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Preview Voice -->
+        <button id="test-voice-btn" onclick="testVoice()" class="send-btn" style="width: 100%; justify-content: center; padding: 12px; border-radius: 12px; margin-top: 8px;">
+          🔊 Preview Voice
+        </button>
+      </div>
+      
+      <footer style="padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; gap: 12px; justify-content: flex-end; background: var(--warm-white);">
+        <button onclick="closeVoiceSettings()" style="background: transparent; border: 1.5px solid var(--glass-border); color: var(--primary-green); font-weight: 600; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Cancel</button>
+        <button onclick="saveVoiceSettings()" style="background: var(--primary-green); border: none; color: white; font-weight: 600; padding: 10px 20px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(15,110,86,0.1);">Save Settings</button>
+      </footer>
+    </div>
+  </div>
+
   <script>
     const msgArea = document.getElementById('msg-area');
     const inputField = document.getElementById('input-field');
+
+    // ── Voice System State ──
+    let voiceModeEnabled = false;
+    let voiceConfig = {
+      enabled: false,
+      voice_type: 'system',
+      base_pitch_hz: 150.0,
+      pitch_shift_semitones: 0.0,
+      speed_factor: 1.0,
+      configured: false,
+      browser_voice: ''
+    };
+
+    let currentAudio = null;
+    let recognition = null;
+    let isSpeechInputActive = false;
+
+    let cloneMediaRecorder = null;
+    let cloneAudioChunks = [];
+    let cloneTimerInterval = null;
+    let cloneSeconds = 0;
+    let cloneStream = null;
+
+    // Load initial settings on load
+    loadVoiceSettings();
 
     function createBubble(text, role) {
       const bubble = document.createElement('div');
@@ -560,6 +731,11 @@
         const data = await response.json();
         if (data.reply) {
           createBubble(data.reply, 'bot');
+          
+          if (voiceModeEnabled) {
+            speakText(data.reply);
+          }
+
           if (data.recommendation) {
             createGameCard(data.recommendation);
           }
@@ -573,6 +749,661 @@
         createBubble('Could not reach the server. Is it running? 🌿', 'bot');
       }
     }
+
+    // ── Voice System JavaScript Logic ──
+
+    async function loadVoiceSettings() {
+      try {
+        const res = await fetch('/api/voice/clone/settings');
+        const data = await res.json();
+        if (data.ok && data.settings) {
+          voiceConfig = data.settings;
+          voiceModeEnabled = voiceConfig.enabled;
+          updateVoiceToggleUI();
+          
+          document.getElementById('voice-type-select').value = voiceConfig.voice_type;
+          document.getElementById('pitch-slider').value = voiceConfig.pitch_shift_semitones;
+          document.getElementById('speed-slider').value = voiceConfig.speed_factor;
+          
+          updateSliders();
+          onVoiceTypeChange();
+          populateBrowserVoices();
+          
+          if (voiceConfig.configured) {
+            document.getElementById('clone-status-lbl').innerHTML = `✅ Configured (Pitch: <strong>${Math.round(voiceConfig.base_pitch_hz)} Hz</strong>)`;
+          } else {
+            document.getElementById('clone-status-lbl').textContent = 'No loved one\'s voice uploaded yet.';
+          }
+        }
+      } catch (e) {
+        console.warn('Error loading voice settings:', e);
+      }
+    }
+
+    async function saveVoiceSettings() {
+      voiceConfig.enabled = voiceModeEnabled;
+      voiceConfig.voice_type = document.getElementById('voice-type-select').value;
+      voiceConfig.pitch_shift_semitones = parseFloat(document.getElementById('pitch-slider').value);
+      voiceConfig.speed_factor = parseFloat(document.getElementById('speed-slider').value);
+      voiceConfig.browser_voice = document.getElementById('browser-voice-select').value;
+      
+      try {
+        const res = await fetch('/api/voice/clone/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(voiceConfig)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          closeVoiceSettings();
+          // Visual notification
+          const bubble = createBubble('Voice settings saved successfully! 🌿', 'bot');
+          setTimeout(() => bubble.remove(), 3000);
+        }
+      } catch (e) {
+        alert('Failed to save settings: ' + e.message);
+      }
+    }
+
+    function toggleVoiceMode() {
+      voiceModeEnabled = !voiceModeEnabled;
+      
+      // Cancel active voice playback if turned off
+      if (!voiceModeEnabled) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+        window.speechSynthesis.cancel();
+      }
+
+      updateVoiceToggleUI();
+      
+      // Save enabled state directly to backend
+      fetch('/api/voice/clone/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: voiceModeEnabled })
+      }).catch(err => console.warn(err));
+    }
+
+    function updateVoiceToggleUI() {
+      const btn = document.getElementById('voice-toggle-btn');
+      const icon = document.getElementById('voice-toggle-icon');
+      
+      if (voiceModeEnabled) {
+        btn.classList.add('voice-active-indicator');
+        btn.title = "Disable Voice Response";
+        icon.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        `;
+      } else {
+        btn.classList.remove('voice-active-indicator');
+        btn.title = "Enable Voice Response";
+        icon.innerHTML = `
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        `;
+      }
+    }
+
+    function openVoiceSettings() {
+      document.getElementById('voice-settings-modal').style.display = 'flex';
+      populateBrowserVoices();
+    }
+
+    function closeVoiceSettings() {
+      document.getElementById('voice-settings-modal').style.display = 'none';
+      if (cloneMediaRecorder && cloneMediaRecorder.state === 'recording') {
+        toggleCloneRecording();
+      }
+    }
+
+    function updateSliders() {
+      const pVal = document.getElementById('pitch-slider').value;
+      const sVal = document.getElementById('speed-slider').value;
+      
+      document.getElementById('pitch-val-lbl').textContent = (pVal > 0 ? '+' : '') + pVal + ' semitones';
+      document.getElementById('speed-val-lbl').textContent = sVal + 'x';
+    }
+
+    function onVoiceTypeChange() {
+      const type = document.getElementById('voice-type-select').value;
+      const systemSet = document.getElementById('system-voice-settings');
+      const clonedSet = document.getElementById('cloned-voice-settings');
+      
+      if (type === 'cloned') {
+        systemSet.style.display = 'none';
+        clonedSet.style.display = 'flex';
+      } else {
+        systemSet.style.display = 'flex';
+        clonedSet.style.display = 'none';
+      }
+    }
+
+    function populateBrowserVoices() {
+      const select = document.getElementById('browser-voice-select');
+      if (!select) return;
+      
+      const prevVal = select.value || voiceConfig.browser_voice;
+      select.innerHTML = '';
+      const voices = window.speechSynthesis.getVoices();
+      
+      // Filter primarily to English voices, fallback to all if empty
+      let filtered = voices.filter(v => v.lang.startsWith('en'));
+      if (filtered.length === 0) filtered = voices;
+      
+      filtered.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.name === prevVal || (!prevVal && voice.default)) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = populateBrowserVoices;
+    }
+
+    // ── Speech-to-Text (Voice Input) ──
+    function toggleSpeechInput() {
+      const micBtn = document.getElementById('mic-btn');
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+        return;
+      }
+      
+      if (isSpeechInputActive) {
+        if (recognition) recognition.stop();
+        return;
+      }
+      
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      recognition.onstart = () => {
+        isSpeechInputActive = true;
+        micBtn.classList.add('mic-recording');
+        inputField.placeholder = "Listening...";
+      };
+      
+      recognition.onresult = (e) => {
+        let result = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          result += e.results[i][0].transcript;
+        }
+        inputField.value = result;
+      };
+      
+      recognition.onend = () => {
+        isSpeechInputActive = false;
+        micBtn.classList.remove('mic-recording');
+        inputField.placeholder = "Share what's on your mind...";
+        
+        if (inputField.value.trim()) {
+          sendMessage();
+        }
+      };
+      
+      recognition.onerror = (e) => {
+        console.error('Speech recognition error:', e.error);
+        isSpeechInputActive = false;
+        micBtn.classList.remove('mic-recording');
+        inputField.placeholder = "Share what's on your mind...";
+      };
+      
+      recognition.start();
+    }
+
+    // ── Voice Cloning Live Recording & Client-Side Formatting ──
+
+    async function toggleCloneRecording() {
+      const btn = document.getElementById('record-clone-btn');
+      if (cloneMediaRecorder && cloneMediaRecorder.state === 'recording') {
+        cloneMediaRecorder.stop();
+        btn.innerHTML = '🔴 Record Sample';
+        document.getElementById('clone-rec-timer').style.display = 'none';
+        clearInterval(cloneTimerInterval);
+        if (cloneStream) {
+          cloneStream.getTracks().forEach(t => t.stop());
+        }
+      } else {
+        try {
+          cloneStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            }
+          });
+          cloneAudioChunks = [];
+          cloneMediaRecorder = new MediaRecorder(cloneStream);
+          cloneMediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) cloneAudioChunks.push(e.data);
+          };
+          cloneMediaRecorder.onstop = async () => {
+            const rawBlob = new Blob(cloneAudioChunks, { type: cloneMediaRecorder.mimeType });
+            await processAndUploadAudio(rawBlob);
+          };
+          
+          cloneSeconds = 0;
+          const timerEl = document.getElementById('clone-rec-timer');
+          timerEl.style.display = 'block';
+          timerEl.textContent = '0:00';
+          cloneTimerInterval = setInterval(() => {
+            cloneSeconds++;
+            const m = Math.floor(cloneSeconds / 60);
+            const s = cloneSeconds % 60;
+            timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+            if (cloneSeconds >= 10) {
+              toggleCloneRecording();
+            }
+          }, 1000);
+          
+          cloneMediaRecorder.start(250);
+          btn.innerHTML = '⏹️ Stop Recording';
+        } catch (e) {
+          alert('Error accessing microphone: ' + e.message);
+        }
+      }
+    }
+
+    async function processAndUploadAudio(blob) {
+      document.getElementById('clone-status-lbl').textContent = 'Processing audio sample...';
+      try {
+        const arrayBuffer = await blob.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        
+        // Downsample to 16kHz mono using OfflineAudioContext for DSP compatibility
+        const offlineCtx = new OfflineAudioContext(1, 16000 * audioBuffer.duration, 16000);
+        const bufferSource = offlineCtx.createBufferSource();
+        bufferSource.buffer = audioBuffer;
+        bufferSource.connect(offlineCtx.destination);
+        bufferSource.start();
+        
+        const downsampledBuffer = await offlineCtx.startRendering();
+        const wavBlob = bufferToWav(downsampledBuffer);
+        
+        const formData = new FormData();
+        formData.append('file', wavBlob, 'ref_voice.wav');
+        
+        const res = await fetch('/api/voice/clone/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById('clone-status-lbl').innerHTML = `✅ Configured (Pitch: <strong>${Math.round(data.base_pitch_hz)} Hz</strong>)`;
+          voiceConfig.configured = true;
+          voiceConfig.voice_type = 'cloned';
+          voiceConfig.base_pitch_hz = data.base_pitch_hz;
+          document.getElementById('voice-type-select').value = 'cloned';
+          onVoiceTypeChange();
+        } else {
+          document.getElementById('clone-status-lbl').textContent = 'Error: ' + data.error;
+        }
+      } catch (e) {
+        document.getElementById('clone-status-lbl').textContent = 'Failed to process audio: ' + e.message;
+      }
+    }
+
+    async function uploadVoiceFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      document.getElementById('clone-status-lbl').textContent = 'Reading uploaded audio...';
+      await processAndUploadAudio(file);
+    }
+
+    // Client-side raw float32 PCM AudioBuffer to 16-bit WAV Converter
+    function bufferToWav(buffer) {
+      let numOfChan = buffer.numberOfChannels,
+          btwLength = buffer.length * numOfChan * 2 + 44,
+          btwBuffer = new ArrayBuffer(btwLength),
+          btwView = new DataView(btwBuffer),
+          btwChannels = [], i, sample,
+          btwOffset = 0,
+          btwPos = 0;
+
+      // RIFF header
+      setUint32(0x46464952); // "RIFF"
+      setUint32(btwLength - 8);
+      setUint32(0x45564157); // "WAVE"
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16);
+      setUint16(1);
+      setUint16(numOfChan);
+      setUint32(buffer.sampleRate);
+      setUint32(buffer.sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+      setUint32(0x61746164); // "data"
+      setUint32(btwLength - btwPos - 4);
+
+      for(i=0; i<numOfChan; i++)
+        btwChannels.push(buffer.getChannelData(i));
+
+      while(btwOffset < buffer.length) {
+        for(i=0; i<numOfChan; i++) {
+          sample = btwChannels[i][btwOffset];
+          sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          btwView.setInt16(btwPos, sample, true);
+          btwPos += 2;
+        }
+        btwOffset++;
+      }
+
+      return new Blob([btwBuffer], {type: "audio/wav"});
+
+      function setUint16(data) {
+        btwView.setUint16(btwPos, data, true);
+        btwPos += 2;
+      }
+      function setUint32(data) {
+        btwView.setUint32(btwPos, data, true);
+        btwPos += 4;
+      }
+    }
+
+    // ── Text-to-Speech playback ──
+
+    function speakText(text) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      window.speechSynthesis.cancel();
+
+      let cleanText = text.replace(/<[^>]*>/g, '');
+      cleanText = cleanText.replace(/\*\*([^*]+)\*\*/g, '$1');
+      cleanText = cleanText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
+      cleanText = cleanText.replace(/[⚠️🌟😊🙂😔😐🌧️😰🔥😤🌿🌸🌙🌑🙏🌈🚨💔😞]/g, '');
+
+      const type = document.getElementById('voice-type-select').value;
+
+      if (type === 'cloned') {
+        if (!voiceConfig.configured) {
+          speakSystemVoice(cleanText);
+          return;
+        }
+        
+        // Play backend cloned voice SAPI5 stream
+        fetch('/api/voice/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: cleanText })
+        })
+        .then(res => {
+          if (res.ok) return res.blob();
+          throw new Error('TTS synthesis failed');
+        })
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          currentAudio = new Audio(url);
+          currentAudio.play();
+        })
+        .catch(err => {
+          console.warn('Backend TTS error, using browser fallback:', err);
+          speakSystemVoice(cleanText);
+        });
+      } else {
+        speakSystemVoice(cleanText);
+      }
+    }
+
+    function speakSystemVoice(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      const voiceSelect = document.getElementById('browser-voice-select');
+      if (voiceSelect && voiceSelect.value) {
+        const voices = window.speechSynthesis.getVoices();
+        const selectedVoice = voices.find(v => v.name === voiceSelect.value);
+        if (selectedVoice) utterance.voice = selectedVoice;
+      }
+      
+      const speed = parseFloat(document.getElementById('speed-slider').value);
+      const pitchShift = parseFloat(document.getElementById('pitch-slider').value);
+      
+      utterance.rate = speed;
+      const pitchFactor = 2 ** (pitchShift / 12.0);
+      utterance.pitch = Math.max(0.5, Math.min(2.0, pitchFactor));
+      
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function testVoice() {
+      speakText("Hello! I am ready to talk with you in this voice. Let's start chatting!");
+    }
+
+    // ── Voice Recording & Enrollment Logic ──
+    
+    // Inject styles
+    const customStyle = document.createElement('style');
+    customStyle.textContent = `
+      .msg-bubble.bot.crisis {
+        background: #FFE8E8 !important;
+        color: #9B2C2C !important;
+        border: 1px solid #F5B5B5 !important;
+      }
+      .msg-bubble audio {
+        display: block;
+        margin-top: 10px;
+        width: 100%;
+        max-width: 240px;
+        height: 36px;
+      }
+    `;
+    document.head.appendChild(customStyle);
+
+    let voiceRecorder = null;
+    let voiceAudioChunks = [];
+    let isRecordingVoice = false;
+
+    async function toggleVoiceRecording() {
+      const micBtn = document.getElementById('mic-btn');
+      if (!isRecordingVoice) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          voiceRecorder = new MediaRecorder(stream);
+          voiceAudioChunks = [];
+          voiceRecorder.ondataavailable = e => voiceAudioChunks.push(e.data);
+          voiceRecorder.onstop = sendVoiceMessage;
+          voiceRecorder.start();
+          isRecordingVoice = true;
+          micBtn.classList.add('mic-recording');
+          document.getElementById('input-field').placeholder = "Listening... tap mic again to stop";
+        } catch (e) {
+          alert('Microphone access denied or unavailable: ' + e.message);
+        }
+      } else {
+        voiceRecorder.stop();
+        voiceRecorder.stream.getTracks().forEach(t => t.stop());
+        isRecordingVoice = false;
+        micBtn.classList.remove('mic-recording');
+        document.getElementById('input-field').placeholder = "Share what's on your mind...";
+      }
+    }
+
+    async function sendVoiceMessage() {
+      const blob = new Blob(voiceAudioChunks, { type: 'audio/webm' });
+      const placeholder = createBubble('🎤 (voice message)', 'user');
+      const indicator = showTypingIndicator();
+
+      const form = new FormData();
+      form.append('audio', blob, 'input.webm');
+      
+      const voiceId = document.getElementById('voiceSelect').value;
+      if (voiceId) {
+        form.append('voice_id', voiceId);
+      }
+
+      try {
+        const res = await fetch('/api/voice-chat', { method: 'POST', body: form });
+        indicator.remove();
+        
+        const data = await res.json();
+        if (data.error) {
+          createBubble(data.error, 'bot');
+          return;
+        }
+
+        placeholder.innerHTML = `🎤 <em>"${escapeHtml(data.transcribed_text)}"</em>`;
+
+        const bubble = createBubble(data.reply, 'bot');
+        if (data.crisis) {
+          bubble.classList.add('crisis');
+        }
+        
+        if (data.audio_url) {
+          const aud = document.createElement('audio');
+          aud.src = data.audio_url;
+          aud.controls = true;
+          aud.autoplay = true;
+          bubble.appendChild(aud);
+        }
+        
+        if (data.recommendation) {
+          createGameCard(data.recommendation);
+        }
+
+      } catch (e) {
+        if (indicator) indicator.remove();
+        createBubble('Could not reach the server.', 'bot');
+      }
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // ── Voice Enrollment ──
+    const consentCheck = document.getElementById('consentCheck');
+    const enrollSubmit = document.getElementById('enrollSubmit');
+
+    if (consentCheck) {
+      consentCheck.addEventListener('change', () => { 
+        enrollSubmit.disabled = !consentCheck.checked;
+        enrollSubmit.style.opacity = consentCheck.checked ? "1" : "0.5";
+      });
+    }
+
+    function openEnroll() {
+      document.getElementById('enroll-voice-modal').style.display = 'flex';
+    }
+
+    function closeEnroll() {
+      document.getElementById('enroll-voice-modal').style.display = 'none';
+      document.getElementById('enrollName').value = '';
+      document.getElementById('enrollRelationship').value = '';
+      document.getElementById('enrollFile').value = '';
+      consentCheck.checked = false;
+      enrollSubmit.disabled = true;
+      enrollSubmit.style.opacity = "0.5";
+    }
+
+    async function submitEnroll() {
+      const name = document.getElementById('enrollName').value.trim();
+      const file = document.getElementById('enrollFile').files[0];
+      if (!name || !file || !consentCheck.checked) return;
+
+      const form = new FormData();
+      form.append('display_name', name);
+      form.append('relationship', document.getElementById('enrollRelationship').value.trim());
+      form.append('consent_confirmed', 'true');
+      form.append('audio', file);
+
+      enrollSubmit.disabled = true;
+      enrollSubmit.textContent = 'Adding...';
+      try {
+        const res = await fetch('/api/enroll-voice', { method: 'POST', body: form });
+        const data = await res.json();
+        if (data.voice_id) {
+          const opt = document.createElement('option');
+          opt.value = data.voice_id;
+          opt.textContent = data.display_name;
+          document.getElementById('voiceSelect').appendChild(opt);
+          document.getElementById('voiceSelect').value = data.voice_id;
+          closeEnroll();
+        } else {
+          alert(data.error || 'Could not add voice.');
+        }
+      } catch (e) {
+        alert('Could not reach the server.');
+      }
+      enrollSubmit.textContent = 'Add Voice';
+      enrollSubmit.disabled = false;
+    }
+
+    // ── Load enrolled voices on page load ──
+    (async function loadEnrolledVoices() {
+      try {
+        const res = await fetch('/api/voices');
+        const data = await res.json();
+        const select = document.getElementById('voiceSelect');
+        Object.entries(data).forEach(([id, v]) => {
+          const opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = v.display_name;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn("Could not load enrolled voices:", e);
+      }
+    })();
   </script>
+
+  <!-- Enroll Voice Modal -->
+  <div id="enroll-voice-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 110, 86, 0.25); backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal-content" style="background: white; border: 1.5px solid var(--glass-border); max-width: 480px; width: 100%; border-radius: 28px; box-shadow: 0 16px 48px rgba(15, 110, 86, 0.15); overflow: hidden; display: flex; flex-direction: column;">
+      <header style="padding: 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: var(--ghost-green);">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;">🎙️ Add Cloned Voice</h2>
+        <button onclick="closeEnroll()" style="background: transparent; border: none; cursor: pointer; color: var(--muted); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </header>
+      
+      <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 70vh;">
+        <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.5;">
+          Upload 10–30 seconds of clean speech. The bot will use this voice's tone for its responses. It will never claim to be this person.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">Whose voice is this?</label>
+          <input type="text" id="enrollName" placeholder="e.g. Mom, Alex" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); font-family: inherit; font-size: 0.9rem; outline: none;"/>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">Relationship (optional)</label>
+          <input type="text" id="enrollRelationship" placeholder="e.g. mother, partner, friend" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); font-family: inherit; font-size: 0.9rem; outline: none;"/>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">Audio Sample</label>
+          <input type="file" id="enrollFile" accept="audio/*" style="width: 100%; font-size: 0.85rem; color: var(--muted);"/>
+        </div>
+
+        <div class="consent-box" style="background: #FFF8E1; border: 1px solid #F0DDA0; border-radius: 12px; padding: 12px; font-size: 0.78rem; line-height: 1.5; color: #5C4A1A;">
+          <strong>Before you continue:</strong>
+          <label style="display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; cursor: pointer;">
+            <input type="checkbox" id="consentCheck" style="margin-top: 3px;"/>
+            <span>I confirm I have the right to use this recording, and I understand this bot will use the voice's tone for its own responses — it will not claim to be this person or generate things they didn't say.</span>
+          </label>
+        </div>
+      </div>
+      
+      <footer style="padding: 16px 24px; border-top: 1px solid var(--glass-border); display: flex; gap: 12px; justify-content: flex-end; background: var(--warm-white);">
+        <button onclick="closeEnroll()" style="background: transparent; border: 1.5px solid var(--glass-border); color: var(--primary-green); font-weight: 600; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Cancel</button>
+        <button id="enrollSubmit" onclick="submitEnroll()" disabled style="background: var(--primary-green); border: none; color: white; font-weight: 600; padding: 10px 20px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(15,110,86,0.1); opacity: 0.5;">Add Voice</button>
+      </footer>
+    </div>
+  </div>
 </body>
 </html>

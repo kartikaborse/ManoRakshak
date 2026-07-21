@@ -942,20 +942,10 @@ def _get_game_recommendation_by_mood(uid):
         
     return default_game
 
-@app.route("/api/chat", methods=["POST"])
-@user_only
-def chat():
+def _process_chat_message(user_msg, uid, session_id="default"):
     import random
     import re
     from datetime import datetime, date
-
-    body       = request.get_json(force=True)
-    user_msg   = body.get("message", "").strip()
-    session_id = body.get("session_id", "default")
-    uid        = get_current_user_id()
-
-    if not user_msg:
-        return jsonify({"reply": "I didn't catch that — could you say it again? 🌿"})
 
     # ── DB: try to persist chat, but don't crash if MySQL is down ──
     session_pk = None
@@ -1003,7 +993,7 @@ def chat():
             "Are you safe right now? Please consider contacting a trusted loved one or checking in with emergency services."
         )
         _try_save_reply(reply)
-        return jsonify({"reply": reply, "source": "crisis_override", "tag": "suicidal", "crisis": True})
+        return {"reply": reply, "source": "crisis_override", "tag": "suicidal", "crisis": True}, 200
 
     # ── Step 2: Greeting Guard & Proactive Diary Check ──
     _GREETING_PATTERN = re.compile(
@@ -1042,7 +1032,7 @@ def chat():
 
         reply = random.choice(_GREETING_REPLIES) + proactive_text
         _try_save_reply(reply)
-        return jsonify({"reply": reply, "source": "greeting_guard", "tag": "greeting"})
+        return {"reply": reply, "source": "greeting_guard", "tag": "greeting"}, 200
 
     # ── Step 3: "I'm fine" Positive State Guard ──
     _IM_FINE_PATTERN = re.compile(
@@ -1063,7 +1053,7 @@ def chat():
     if _IM_FINE_PATTERN.match(user_msg):
         reply = random.choice(_IM_FINE_REPLIES)
         _try_save_reply(reply)
-        return jsonify({"reply": reply, "source": "im_fine_guard", "tag": "positive_state"})
+        return {"reply": reply, "source": "im_fine_guard", "tag": "positive_state"}, 200
 
     # ── Step 4: Negation Guard ──
     _NEGATION_EMOTION_PATTERN = re.compile(
@@ -1089,7 +1079,7 @@ def chat():
     if _NEGATION_EMOTION_PATTERN.search(user_msg):
         reply = random.choice(_NEGATION_REPLIES)
         _try_save_reply(reply)
-        return jsonify({"reply": reply, "source": "negation_guard", "tag": "negation_override"})
+        return {"reply": reply, "source": "negation_guard", "tag": "negation_override"}, 200
 
     # ── Step 4: Game & Activity Recommendations Request ──
     if re.search(r"\b(game|play|activity|activities|recommend\s+a\s+game|suggest\s+a\s+game|what\s+should\s+i\s+play|something\s+to\s+play)\b", user_msg.lower()):
@@ -1100,12 +1090,12 @@ def chat():
             f"It's a wonderful, mindful way to take a break and ground yourself. I've placed a quick link below to play it! 🌿"
         )
         _try_save_reply(reply)
-        return jsonify({
+        return {
             "reply": reply,
             "source": "game_recommendation",
             "tag": "coping_strategies",
             "recommendation": rec
-        })
+        }, 200
 
     # ── Step 5: Mood & Assessment History Lookup Request ──
     if re.search(r"\b(how\s+is\s+my\s+mood|mood\s+history|mood\s+logs?|average\s+mood|my\s+mood\s+lately|how\s+am\s+i\s+doing)\b", user_msg.lower()):
@@ -1136,7 +1126,7 @@ def chat():
                 
             reply += "\nHow are you feeling right now compared to these wellness trends?"
             _try_save_reply(reply)
-            return jsonify({"reply": reply, "source": "mood_history_lookup"})
+            return {"reply": reply, "source": "mood_history_lookup"}, 200
         except Exception as e:
             app.logger.warning(f"Mood lookup error: {e}")
 
@@ -1166,9 +1156,26 @@ def chat():
             else:
                 reply = "It looks like you haven't written any diary entries yet. 📖 You can write one on the Diary tab!"
             _try_save_reply(reply)
-            return jsonify({"reply": reply, "source": "diary_lookup"})
+            return {"reply": reply, "source": "diary_lookup"}, 200
         except Exception as e:
             app.logger.warning(f"Diary lookup error: {e}")
+
+    # ── Step 6.5: Offline RAG + LLM (Llama 3.2 1B via Ollama) ──
+    try:
+        from backend.offline_llm_engine import generate_offline_counselor_response, is_ollama_running
+        if is_ollama_running():
+            res_dict = generate_offline_counselor_response(user_msg)
+            if res_dict and res_dict.get("response"):
+                reply = res_dict["response"]
+                _try_save_reply(reply)
+                return {
+                    "reply": reply,
+                    "source": "offline_rag_llm",
+                    "model": res_dict.get("model", "llama3.2:1b"),
+                    "rag_used": res_dict.get("context_used", False)
+                }, 200
+    except Exception as e:
+        app.logger.warning(f"Offline RAG LLM error, falling back to ML: {e}")
 
     # ── Step 7: Fall back to ML model prediction ──
     bundle = load_ml_model()
@@ -1220,22 +1227,22 @@ def chat():
                 resp_json = {"reply": reply, "source": "ml_model", "tag": tag, "confidence": round(conf, 4)}
                 if rec_game:
                     resp_json["recommendation"] = rec_game
-                return jsonify(resp_json)
+                return resp_json, 200
 
             elif "model" in bundle and bundle.get("vectorizer"):
                 vec   = bundle["vectorizer"].transform([user_msg])
                 label = bundle["model"].predict(vec)[0]
                 reply = _ml_label_to_reply(label, user_msg)
                 _try_save_reply(reply)
-                return jsonify({"reply": reply, "source": "ml_model"})
+                return {"reply": reply, "source": "ml_model"}, 200
 
         except Exception as e:
             app.logger.warning(f"ML model inference error: {e}")
 
-    # ── Fallback reply — chat always works ──
+    # ── Fallback reply ──
     reply = _ml_label_to_reply("neutral", user_msg)
     _try_save_reply(reply)
-    return jsonify({"reply": reply, "source": "fallback"})
+    return {"reply": reply, "source": "fallback"}, 200
 
 
 def _ml_label_to_reply(label: str, original_msg: str) -> str:
@@ -1250,6 +1257,133 @@ def _ml_label_to_reply(label: str, original_msg: str) -> str:
         "calm":     "I'm glad you're feeling calm 🌊 That peaceful feeling is something to cherish. Is there anything I can help you with today?",
     }
     return replies.get(label, "Thank you for sharing that with me 🌿 I hear you. Can you tell me a little more about how you're feeling?")
+
+
+@app.route("/api/chat", methods=["POST"])
+@user_only
+def chat():
+    body       = request.get_json(force=True)
+    user_msg   = body.get("message", "").strip()
+    session_id = body.get("session_id", "default")
+    uid        = get_current_user_id()
+
+    if not user_msg:
+        return jsonify({"reply": "I didn't catch that — could you say it again? 🌿"})
+
+    resp_data, status_code = _process_chat_message(user_msg, uid, session_id)
+    return jsonify(resp_data), status_code
+
+
+# ──────────────────────────────────────────────────────────────
+#  VOICE CLONING & OFFLINE TTS/STT ENDPOINTS
+# ──────────────────────────────────────────────────────────────
+import voice_engine
+
+UPLOAD_DIR = ROOT / "static" / "uploads"
+AUDIO_OUT_DIR = ROOT / "static" / "audio_out"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+AUDIO_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+@app.route("/api/enroll-voice", methods=["POST"])
+@user_only
+def enroll_voice():
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio file provided."}), 400
+
+    consent = request.form.get("consent_confirmed", "false").lower() == "true"
+    if not consent:
+        return jsonify({
+            "error": "Consent confirmation is required before a voice can be enrolled."
+        }), 400
+
+    display_name = request.form.get("display_name", "Loved one").strip()
+    relationship = request.form.get("relationship", "").strip()
+
+    tmp_path = UPLOAD_DIR / f"enroll_{uuid.uuid4().hex}.wav"
+    request.files["audio"].save(tmp_path)
+
+    try:
+        result = voice_engine.enroll_voice(
+            user_id=str(get_current_user_id()),
+            display_name=display_name,
+            audio_path=str(tmp_path),
+            consent_confirmed=True,
+            relationship=relationship,
+        )
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
+
+    return jsonify(result)
+
+@app.route("/api/voices", methods=["GET"])
+@user_only
+def list_voices():
+    return jsonify(voice_engine.list_voices(str(get_current_user_id())))
+
+@app.route("/api/voices/<voice_id>", methods=["DELETE"])
+@user_only
+def delete_voice(voice_id):
+    voice_engine.delete_voice(str(get_current_user_id()), voice_id)
+    return jsonify({"deleted": voice_id})
+
+@app.route("/api/voice-chat", methods=["POST"])
+@user_only
+def voice_chat():
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio file provided."}), 400
+
+    voice_id = request.form.get("voice_id") or None
+    uid = get_current_user_id()
+    session_id = request.form.get("session_id") or "default"
+
+    in_path = UPLOAD_DIR / f"in_{uuid.uuid4().hex}.wav"
+    request.files["audio"].save(in_path)
+
+    try:
+        user_text = voice_engine.transcribe(str(in_path))
+    finally:
+        if in_path.exists():
+            in_path.unlink()
+
+    if not user_text:
+        return jsonify({"error": "Could not understand the audio. Please try again."}), 200
+
+    # Process chatbot reply with full logic
+    resp_data, _ = _process_chat_message(user_text, uid, session_id)
+    reply_text = resp_data.get("reply", "")
+    tag = resp_data.get("tag", "neutral")
+    conf = resp_data.get("confidence", 1.0)
+    is_crisis = resp_data.get("crisis", False)
+
+    out_name = f"reply_{uuid.uuid4().hex}.wav"
+    out_path = AUDIO_OUT_DIR / out_name
+
+    voice_engine.synthesize(
+        text=reply_text,
+        out_path=str(out_path),
+        user_id=str(uid),
+        voice_id=voice_id,
+        response_tag=tag,
+    )
+
+    resp_json = {
+        "transcribed_text": user_text,
+        "reply": reply_text,
+        "tag": tag,
+        "confidence": conf,
+        "crisis": is_crisis,
+        "used_neutral_voice": is_crisis or voice_id is None,
+        "audio_url": f"/static/audio_out/{out_name}",
+    }
+    if "recommendation" in resp_data:
+        resp_json["recommendation"] = resp_data["recommendation"]
+
+    return jsonify(resp_json)
+
+@app.route("/static/audio_out/<path:filename>")
+def serve_audio(filename):
+    return send_from_directory(AUDIO_OUT_DIR, filename)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1773,6 +1907,282 @@ def update_appointment_status_api(app_id):
         return jsonify({"error": "Failed to update appointment status."}), 500
         
     return jsonify({"ok": True, "msg": f"Appointment request has been {status.lower()}."})
+
+
+# ══════════════════════════════════════════════════════════════
+#  CHATBOT VOICE CLONING & TTS
+# ══════════════════════════════════════════════════════════════
+
+def estimate_pitch(filepath):
+    import numpy as np
+    from scipy.io import wavfile
+    try:
+        fs, data = wavfile.read(filepath)
+        if len(data.shape) > 1:
+            data = data[:, 0]
+        data = data.astype(float)
+        
+        # Normalize to [-1.0, 1.0] for consistent volume thresholding
+        max_val = np.max(np.abs(data))
+        if max_val < 1e-4:
+            return 120.0  # Quiet fallback
+        data = data / max_val
+        
+        # Frame size of 40ms, hop of 20ms to capture lower frequencies (40Hz period is 25ms)
+        frame_len = int(fs * 0.04)
+        hop_len = int(fs * 0.02)
+        pitches = []
+        for i in range(0, len(data) - frame_len, hop_len):
+            frame = data[i:i+frame_len]
+            # Center the frame
+            frame = frame - np.mean(frame)
+            if np.std(frame) < 0.01:  # Noise gate threshold on normalized audio
+                continue
+            
+            # Autocorrelation
+            corr = np.correlate(frame, frame, mode='full')
+            corr = corr[len(corr)//2:]
+            
+            # Search lags corresponding to 40Hz to 500Hz
+            min_lag = int(fs / 500)
+            max_lag = int(fs / 40)
+            if max_lag >= len(corr):
+                max_lag = len(corr) - 1
+            if min_lag >= max_lag:
+                continue
+                
+            peak_lag = min_lag + np.argmax(corr[min_lag:max_lag])
+            pitch = fs / peak_lag
+            if 40 <= pitch <= 500:
+                pitches.append(pitch)
+                
+        if not pitches:
+            return 120.0  # Male-like default fallback
+        return float(np.median(pitches))
+    except Exception as e:
+        app.logger.warning(f"Error estimating pitch of {filepath}: {e}")
+        return 120.0
+
+
+def time_stretch(data, factor, nfft=1024, hop=256):
+    import numpy as np
+    import scipy.signal as signal
+    f, t, spec = signal.stft(data, fs=1.0, nperseg=nfft, noverlap=nfft-hop)
+    num_frames = spec.shape[1]
+    new_num_frames = int(num_frames / factor)
+    if new_num_frames <= 0:
+        return data
+    phase_adv = 2 * np.pi * hop * f
+    phase = np.angle(spec[:, 0])
+    new_spec = np.zeros((spec.shape[0], new_num_frames), dtype=complex)
+    time_indices = np.linspace(0, num_frames - 1, new_num_frames)
+    for i, t_idx in enumerate(time_indices):
+        idx1 = int(np.floor(t_idx))
+        idx2 = min(idx1 + 1, num_frames - 1)
+        alpha = t_idx - idx1
+        mag = (1 - alpha) * np.abs(spec[:, idx1]) + alpha * np.abs(spec[:, idx2])
+        new_spec[:, i] = mag * np.exp(1j * phase)
+        if idx1 < num_frames - 1:
+            dp = np.angle(spec[:, idx2]) - np.angle(spec[:, idx1]) - phase_adv
+            dp = dp - 2 * np.pi * np.round(dp / (2 * np.pi))
+            phase += phase_adv + dp
+    _, stretched = signal.istft(new_spec, fs=1.0, nperseg=nfft, noverlap=nfft-hop)
+    return stretched
+
+def pitch_shift(data, fs, semitones):
+    import numpy as np
+    import scipy.signal as signal
+    if semitones == 0:
+        return data
+    factor = 2 ** (semitones / 12.0)
+    new_len = int(len(data) / factor)
+    if new_len <= 0:
+        return data
+    resampled = signal.resample(data, new_len)
+    shifted = time_stretch(resampled, 1.0 / factor)
+    return shifted
+
+def get_voice_profile_dir(uid):
+    p = DATA_DIR / "voice_profiles" / str(uid)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+def load_voice_config(uid):
+    p = get_voice_profile_dir(uid) / "voice_config.json"
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {
+        "enabled": False,
+        "voice_type": "system",
+        "base_pitch_hz": 150.0,
+        "pitch_shift_semitones": 0.0,
+        "speed_factor": 1.0,
+        "configured": False,
+        "browser_voice": ""
+    }
+
+def save_voice_config(uid, config):
+    p = get_voice_profile_dir(uid) / "voice_config.json"
+    p.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+@app.route("/api/voice/clone/upload", methods=["POST"])
+@user_only
+def upload_voice_clone():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files["file"]
+    if not file.filename:
+        return jsonify({"error": "No selected file"}), 400
+    
+    uid = get_current_user_id()
+    p_dir = get_voice_profile_dir(uid)
+    ref_path = p_dir / "voice_ref.wav"
+    file.save(ref_path)
+    
+    # Estimate pitch
+    pitch_hz = estimate_pitch(ref_path)
+    
+    config = load_voice_config(uid)
+    config["base_pitch_hz"] = pitch_hz
+    config["configured"] = True
+    config["voice_type"] = "cloned"
+    config["enabled"] = True
+    save_voice_config(uid, config)
+    
+    return jsonify({
+        "ok": True,
+        "base_pitch_hz": round(pitch_hz, 1),
+        "msg": f"Voice profile saved and analyzed successfully. Estimated pitch: {pitch_hz:.1f}Hz"
+    })
+
+@app.route("/api/voice/clone/settings", methods=["GET", "POST"])
+@user_only
+def voice_clone_settings():
+    uid = get_current_user_id()
+    config = load_voice_config(uid)
+    
+    if request.method == "POST":
+        body = request.get_json(force=True)
+        config["enabled"] = bool(body.get("enabled", config.get("enabled")))
+        config["voice_type"] = body.get("voice_type", config.get("voice_type"))
+        config["pitch_shift_semitones"] = float(body.get("pitch_shift_semitones", config.get("pitch_shift_semitones", 0.0)))
+        config["speed_factor"] = float(body.get("speed_factor", config.get("speed_factor", 1.0)))
+        config["browser_voice"] = body.get("browser_voice", config.get("browser_voice", ""))
+        save_voice_config(uid, config)
+        return jsonify({"ok": True, "settings": config})
+        
+    return jsonify({"ok": True, "settings": config})
+
+@app.route("/api/voice/tts", methods=["POST"])
+@user_only
+def voice_tts():
+    import win32com.client
+    import pythoncom
+    import tempfile
+    import os
+    import math
+    from scipy.io import wavfile
+    import numpy as np
+
+    uid = get_current_user_id()
+    body = request.get_json(force=True)
+    text = body.get("text", "").strip()
+    
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+        
+    config = load_voice_config(uid)
+    
+    # ── Step 1: Synthesize base TTS WAV with SAPI5 ──
+    temp_dir = tempfile.gettempdir()
+    base_wav_path = os.path.join(temp_dir, f"sapi_{uid}_{uuid.uuid4().hex}.wav")
+    
+    # SAPI requires CoInitialize if in thread context (Flask runs multithreaded)
+    pythoncom.CoInitialize()
+    try:
+        voice = win32com.client.Dispatch("SAPI.SpVoice")
+        filestream = win32com.client.Dispatch("SAPI.SpFileStream")
+        
+        # Format 18 is SAFT16kHz16BitMono (standard PCM WAV)
+        filestream.Format.Type = 18
+        filestream.Open(base_wav_path, 3, False)
+        voice.AudioOutputStream = filestream
+        
+        speed_factor = config.get("speed_factor", 1.0)
+        sapi_rate = int(10 * math.log(speed_factor) / math.log(1.5)) if speed_factor > 0 else 0
+        sapi_rate = max(-10, min(10, sapi_rate))
+        voice.Rate = sapi_rate
+        
+        voice.Speak(text)
+        filestream.Close()
+    except Exception as e:
+        app.logger.error(f"SAPI synthesis failed: {e}")
+        pythoncom.CoUninitialize()
+        return jsonify({"error": "Failed to synthesize speech"}), 500
+    finally:
+        pythoncom.CoUninitialize()
+        
+    # ── Step 2: Apply DSP if cloned mode is active and configured ──
+    output_wav_path = base_wav_path
+    
+    if config.get("voice_type") == "cloned" and config.get("configured"):
+        ref_path = get_voice_profile_dir(uid) / "voice_ref.wav"
+        if ref_path.exists():
+            try:
+                # Estimate baseline pitch of SAPI voice dynamically
+                sapi_pitch = estimate_pitch(base_wav_path)
+                target_pitch = config.get("base_pitch_hz", 150.0)
+                
+                # Manual pitch adjustment semitones
+                user_semitones = config.get("pitch_shift_semitones", 0.0)
+                
+                # Auto pitch conversion semitones
+                auto_semitones = 12 * math.log2(target_pitch / sapi_pitch) if sapi_pitch > 0 else 0
+                total_semitones = auto_semitones + user_semitones
+                
+                # Cap the pitch shifting to prevent extreme audio distortion
+                total_semitones = max(-12.0, min(12.0, total_semitones))
+                
+                # Load synthesized audio
+                fs, audio_data = wavfile.read(base_wav_path)
+                if len(audio_data.shape) > 1:
+                    audio_data = audio_data[:, 0]
+                audio_float = audio_data.astype(float) / 32768.0
+                
+                # Shift pitch
+                shifted = pitch_shift(audio_float, fs, total_semitones)
+                
+                # Save processed audio
+                processed_path = os.path.join(temp_dir, f"processed_{uid}_{uuid.uuid4().hex}.wav")
+                wavfile.write(processed_path, fs, (shifted * 32767).astype(np.int16))
+                
+                # Clean up SAPI base file
+                try:
+                    os.remove(base_wav_path)
+                except Exception:
+                    pass
+                
+                output_wav_path = processed_path
+            except Exception as dsp_err:
+                app.logger.error(f"DSP Pitch shifting failed: {dsp_err}")
+                
+    # ── Step 3: Send file ──
+    try:
+        with open(output_wav_path, "rb") as f:
+            audio_bytes = f.read()
+        try:
+            os.remove(output_wav_path)
+        except Exception:
+            pass
+        buf = io.BytesIO(audio_bytes)
+        buf.seek(0)
+        return send_file(buf, mimetype="audio/wav")
+    except Exception as io_err:
+        app.logger.error(f"Error reading synthesized audio file: {io_err}")
+        return jsonify({"error": "Failed to stream audio file"}), 500
 
 
 @app.route("/api/health")

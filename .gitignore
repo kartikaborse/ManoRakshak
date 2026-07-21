@@ -1,0 +1,35 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Local databases and vector stores
+data/vector_db/
+data/voice_profiles/
+data/diary.json
+*.db
+*.sqlite
+
+# Uploads, voice samples, and generated audio
+static/uploads/
+static/audio_out/
+voices/
+*.wav
+*.mp3
+
+# IDE, OS, and scratch files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+backend/scratch/
+
