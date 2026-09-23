@@ -1,5 +1,5 @@
 """
-ManoKart — Offline RAG Engine via Ollama Embeddings
+ManoRakshak.AI — Offline RAG Engine via Ollama Embeddings
 ===================================================
 Uses ChromaDB and Ollama's local embedding endpoint (nomic-embed-text)
 to store and retrieve clinical knowledge, CBT guides, and assessment info
@@ -25,13 +25,36 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 DB_PATH = os.path.join(DATA_DIR, "vector_db")
 
+
+
+def check_ollama_model(model_name: str) -> bool:
+    """Check if a specific model is pulled/downloaded in Ollama."""
+    try:
+        ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
+        r = requests.get(f"{ollama_host}/api/tags", timeout=2)
+        if r.status_code != 200:
+            return False
+        models = r.json().get("models", [])
+        downloaded = []
+        for m in models:
+            name = m.get("name", "")
+            downloaded.append(name)
+            if ":" in name:
+                downloaded.append(name.split(":")[0])
+        query_normalized = model_name
+        query_base = model_name.split(":")[0] if ":" in model_name else model_name
+        return (query_normalized in downloaded) or (query_base in downloaded)
+    except Exception:
+        return False
+
 from chromadb import EmbeddingFunction
 
 class OllamaEmbeddingFunction(EmbeddingFunction):
     """Custom embedding generator utilizing local Ollama API."""
-    def __init__(self, model_name="nomic-embed-text"):
-        self.model_name = model_name
-        self.url = "http://localhost:11434/api/embeddings"
+    def __init__(self, model_name=None):
+        self.model_name = model_name or os.environ.get("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+        ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
+        self.url = f"{ollama_host}/api/embeddings"
 
     def __call__(self, input):
         # input can be a string or list of strings
@@ -64,7 +87,8 @@ class OllamaEmbeddingFunction(EmbeddingFunction):
 
     @staticmethod
     def build_from_config(config: dict):
-        return OllamaEmbeddingFunction(model_name=config.get("model_name", "nomic-embed-text"))
+        model_name = config.get("model_name") or os.environ.get("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+        return OllamaEmbeddingFunction(model_name=model_name)
 
 _collection = None
 
@@ -74,7 +98,8 @@ def get_rag_collection():
         return _collection
     try:
         import chromadb
-        emb_fn = OllamaEmbeddingFunction(model_name="nomic-embed-text")
+        model_name = os.environ.get("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+        emb_fn = OllamaEmbeddingFunction(model_name=model_name)
         chroma_client = chromadb.PersistentClient(path=DB_PATH)
         _collection = chroma_client.get_or_create_collection(
             name="mindcare_offline_kb",

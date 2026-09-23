@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — Clinical Screening</title>
+  <title>ManoRakshak.AI — Clinical Screening</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -192,6 +192,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -201,7 +213,7 @@
 <div class="page">
   <!-- Top Navbar -->
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoKart</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <nav class="nav-pill">
       <div class="xp-nav" id="xp-nav" style="display:none">
         <span class="lv" id="nav-lv">Lv 1</span>
@@ -222,7 +234,7 @@
 
   <!-- Non-negotiable Disclaimer and Helpline Banner -->
   <div class="disclaimer-banner">
-    <div class="icon">⚠️</div>
+    <div class="icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️</div>
     <div class="content">
       <strong>Disclaimer:</strong> This is a mental health self-check tool, not a clinical medical diagnosis. If you are feeling overwhelmed, please consult a qualified mental health professional.
       <br>
@@ -249,7 +261,7 @@
       <!-- PHQ-9 Card -->
       <div class="card" style="display:flex; flex-direction:column; justify-content:space-between">
         <div>
-          <div class="card-title">📝 Depression Self-Check (PHQ-9)</div>
+          <div class="card-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Depression Self-Check (PHQ-9)</div>
           <p class="card-desc">The Patient Health Questionnaire-9 is a standard 9-question clinical tool used worldwide by doctors and psychologists to screen for depressive symptoms and monitor progress over time.</p>
           <div class="overview-stats">
             <div class="stat-box">
@@ -268,7 +280,7 @@
       <!-- GAD-7 Card -->
       <div class="card" style="display:flex; flex-direction:column; justify-content:space-between">
         <div>
-          <div class="card-title">📉 Anxiety Self-Check (GAD-7)</div>
+          <div class="card-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg> Anxiety Self-Check (GAD-7)</div>
           <p class="card-desc">The Generalized Anxiety Disorder-7 is a standard 7-question clinical tool designed to measure anxiety levels, including symptoms like nervous tension, worry, and irritability.</p>
           <div class="overview-stats">
             <div class="stat-box">
@@ -287,7 +299,7 @@
 
     <!-- Quick Info Box -->
     <div class="card">
-      <div class="card-title">💡 Why track clinical scores?</div>
+      <div class="card-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Why track clinical scores?</div>
       <p class="card-desc" style="margin-bottom:0">Self-checks help identify trends in your mental health. Taking these screenings every 1-2 weeks provides a clearer picture of how your symptoms respond to coping mechanisms, games, or professional therapy. <strong>Always discuss scores with a medical professional.</strong></p>
     </div>
   </div>
@@ -345,7 +357,7 @@
   <!-- 4. RESULTS SECTION (POPULATED DYNAMICALLY AFTER SUBMISSION) -->
   <div class="tab-pane" id="pane-results">
     <div class="card">
-      <div class="card-title">📊 Assessment Result</div>
+      <div class="card-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Assessment Result</div>
       
       <div class="results-grid">
         <div class="score-circle-wrap">
@@ -358,7 +370,7 @@
         </div>
 
         <div class="rec-box">
-          <h3>🌿 Dynamic Recommendations</h3>
+          <h3><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Dynamic Recommendations</h3>
           <div class="rec-list" id="result-recommendations">
             <!-- Recommendation items injected here -->
           </div>
@@ -377,7 +389,7 @@
     <!-- Chart Card -->
     <div class="card">
       <div class="history-selector-row">
-        <div class="card-title" style="margin-bottom:0">📈 Score Progress Chart</div>
+        <div class="card-title" style="margin-bottom:0"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> Score Progress Chart</div>
         <select class="select-dropdown" id="chart-filter" onchange="updateHistoryView()">
           <option value="PHQ9">Depression (PHQ-9)</option>
           <option value="GAD7">Anxiety (GAD-7)</option>
@@ -393,7 +405,7 @@
 
     <!-- History Log Table -->
     <div class="card">
-      <div class="card-title">📋 Detailed Screening History Log</div>
+      <div class="card-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/></svg> Detailed Screening History Log</div>
       <div class="history-table-wrap">
         <table class="history-table">
           <thead>
@@ -413,12 +425,12 @@
     </div>
   </div>
 
-  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <!-- Toast element -->
 <div class="toast" id="toast">
-  <span>✨</span> <span id="toast-text">Assessment completed successfully! +50 XP</span>
+  <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></span> <span id="toast-text">Assessment completed successfully! +50 XP</span>
 </div>
 
 <script>
@@ -553,8 +565,8 @@
   }
 
   function getStorageKey() {
-    var userId = getCookie('manokart_user_id');
-    return userId ? 'manokart_engine_v1_' + userId : 'manokart_engine_v1_guest';
+    var userId = (getCookie('manorakshak_user_id') || getCookie('manokart_user_id'));
+    return userId ? 'manorakshak_engine_v1_' + userId : 'manorakshak_engine_v1_guest';
   }
 
   // Award XP to gamified engine

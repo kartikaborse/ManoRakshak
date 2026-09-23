@@ -1,5 +1,5 @@
 """
-ManoKart — MySQL Database Helpers
+ManoRakshak.AI — MySQL Database Helpers
 ─────────────────────────────────
 Connects to XAMPP's MariaDB (manokart_db) and provides
 clean helper functions for all CRUD operations.
@@ -38,7 +38,97 @@ def get_pool():
             pool_reset_session=True,
             **DB_CONFIG,
         )
+        ensure_victim_tables()
     return _pool
+
+
+def ensure_victim_tables():
+    """Ensure all Version 2 Victim Protection & Distress System tables exist."""
+    try:
+        conn = get_pool().get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_profiles (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL UNIQUE,
+            case_number VARCHAR(100) NOT NULL UNIQUE,
+            category VARCHAR(150) NOT NULL,
+            judicial_stage VARCHAR(100) DEFAULT 'Investigation',
+            counselor_id INT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (counselor_id) REFERENCES therapists(id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_distress_scores (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            score FLOAT NOT NULL,
+            sentiment_score FLOAT DEFAULT NULL,
+            vocal_stress FLOAT DEFAULT NULL,
+            assessment_score INT DEFAULT NULL,
+            details_json TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_alerts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            score FLOAT NOT NULL,
+            reason TEXT NOT NULL,
+            status VARCHAR(50) DEFAULT 'Active',
+            resolution_notes TEXT DEFAULT NULL,
+            resolved_by INT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            resolved_at DATETIME NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_vault_incidents (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            incident_type VARCHAR(100) NOT NULL,
+            description TEXT NOT NULL,
+            evidence_file_path VARCHAR(255) DEFAULT NULL,
+            threat_severity VARCHAR(20) NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_sos_alerts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            latitude VARCHAR(50) NOT NULL,
+            longitude VARCHAR(50) NOT NULL,
+            status VARCHAR(50) DEFAULT 'Active',
+            dispatched_officer VARCHAR(150) DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS victim_compensation_claims (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            case_number VARCHAR(100) NOT NULL,
+            amount_entitled FLOAT NOT NULL,
+            stage VARCHAR(100) NOT NULL,
+            status VARCHAR(50) DEFAULT 'Pending Officer Review',
+            petition_text TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """)
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Warning: ensure_victim_tables encountered error: {e}")
 
 
 def get_conn():
@@ -580,6 +670,372 @@ def get_user_assessments(user_id: int) -> list:
         if r.get("taken_at"):
             r["taken_at"] = r["taken_at"].isoformat()
     return rows
+
+
+# ══════════════════════════════════════════════════════════════
+#  VERSION 2 — VICTIM MONITORING & DISTRESS SYSTEM CRUD
+# ══════════════════════════════════════════════════════════════
+
+def get_victim_profile(user_id: int) -> dict | None:
+    """Fetch the victim case profile for a user."""
+    return query(
+        "SELECT * FROM victim_profiles WHERE user_id = %s",
+        (user_id,), fetchone=True
+    )
+
+
+def create_victim_profile(user_id: int, case_number: str, category: str, judicial_stage: str = 'Investigation', counselor_id: int = None) -> dict | None:
+    """Create a new victim case profile."""
+    query(
+        """INSERT INTO victim_profiles (user_id, case_number, category, judicial_stage, counselor_id)
+           VALUES (%s, %s, %s, %s, %s)
+           ON DUPLICATE KEY UPDATE case_number=%s, category=%s, judicial_stage=%s, counselor_id=%s""",
+        (user_id, case_number, category, judicial_stage, counselor_id, case_number, category, judicial_stage, counselor_id)
+    )
+    return get_victim_profile(user_id)
+
+
+def update_victim_profile_stage(user_id: int, judicial_stage: str):
+    """Update a victim's current judicial/rehabilitation stage."""
+    query(
+        "UPDATE victim_profiles SET judicial_stage = %s WHERE user_id = %s",
+        (judicial_stage, user_id)
+    )
+
+
+def save_victim_distress_score(user_id: int, score: float, sentiment_score: float = None, vocal_stress: float = None, assessment_score: int = None, details_json: str = None) -> int:
+    """Save a computed Dynamic Distress Score (DDS)."""
+    return query(
+        """INSERT INTO victim_distress_scores (user_id, score, sentiment_score, vocal_stress, assessment_score, details_json)
+           VALUES (%s, %s, %s, %s, %s, %s)""",
+        (user_id, score, sentiment_score, vocal_stress, assessment_score, details_json)
+    )
+
+
+def get_victim_distress_history(user_id: int) -> list:
+    """Fetch longitudinal distress scores for a victim."""
+    rows = query(
+        """SELECT id, score, sentiment_score, vocal_stress, assessment_score, details_json, created_at
+           FROM victim_distress_scores
+           WHERE user_id = %s
+           ORDER BY created_at ASC""",
+        (user_id,), fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def trigger_victim_alert(user_id: int, score: float, reason: str) -> int:
+    """Insert an active critical distress/crisis alert for a user."""
+    # Check if there is already an active alert for this user with similar score to avoid redundancy
+    existing = query(
+        "SELECT id FROM victim_alerts WHERE user_id = %s AND status = 'Active'",
+        (user_id,), fetchone=True
+    )
+    if existing:
+        return existing["id"]
+        
+    return query(
+        """INSERT INTO victim_alerts (user_id, score, reason, status)
+           VALUES (%s, %s, %s, 'Active')""",
+        (user_id, score, reason)
+    )
+
+
+def get_active_alerts() -> list:
+    """Fetch all active alerts joined with victim and counselor details."""
+    rows = query(
+        """SELECT va.id, va.user_id, va.score, va.reason, va.status, va.created_at,
+                  u.full_name as victim_name, u.email as victim_email,
+                  vp.case_number, vp.category, vp.judicial_stage, vp.counselor_id,
+                  t.name as counselor_name
+           FROM victim_alerts va
+           JOIN users u ON va.user_id = u.id
+           JOIN victim_profiles vp ON u.id = vp.user_id
+           LEFT JOIN therapists t ON vp.counselor_id = t.id
+           WHERE va.status = 'Active'
+           ORDER BY va.created_at DESC""",
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def resolve_alert(alert_id: int, resolved_by_user_id: int, notes: str) -> bool:
+    """Resolve an active alert."""
+    query(
+        """UPDATE victim_alerts
+           SET status = 'Resolved', resolution_notes = %s, resolved_by = %s,
+               resolved_at = NOW()
+           WHERE id = %s""",
+        (notes, resolved_by_user_id, alert_id)
+    )
+    return True
+
+
+def get_supervised_victims(counselor_user_id: int) -> list:
+    """Fetch all victims assigned to a counselor (therapist user)."""
+    therapist = get_therapist_by_user_id(counselor_user_id)
+    if not therapist:
+        return []
+        
+    rows = query(
+        """SELECT vp.id, vp.user_id, vp.case_number, vp.category, vp.judicial_stage, vp.created_at,
+                  u.full_name as victim_name, u.email as victim_email, u.username as victim_username
+           FROM victim_profiles vp
+           JOIN users u ON vp.user_id = u.id
+           WHERE vp.counselor_id = %s
+           ORDER BY u.full_name ASC""",
+        (therapist["id"],), fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def get_all_victims_for_admin() -> list:
+    """Fetch all victims for state/district admin monitoring."""
+    rows = query(
+        """SELECT vp.id, vp.user_id, vp.case_number, vp.category, vp.judicial_stage, vp.created_at,
+                  u.full_name as victim_name, u.email as victim_email, u.username as victim_username,
+                  t.name as counselor_name
+           FROM victim_profiles vp
+           JOIN users u ON vp.user_id = u.id
+           LEFT JOIN therapists t ON vp.counselor_id = t.id
+           ORDER BY vp.created_at DESC""",
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def log_vault_incident(user_id: int, incident_type: str, description: str, evidence_file_path: str, threat_severity: str) -> int:
+    """Log an incident of threat or intimidation in the witness protection vault."""
+    return query(
+        """INSERT INTO victim_vault_incidents (user_id, incident_type, description, evidence_file_path, threat_severity)
+           VALUES (%s, %s, %s, %s, %s)""",
+        (user_id, incident_type, description, evidence_file_path, threat_severity)
+    )
+
+
+def get_vault_incidents(user_id: int) -> list:
+    """Retrieve all logged vault incidents for a specific victim."""
+    rows = query(
+        """SELECT id, incident_type, description, evidence_file_path, threat_severity, created_at
+           FROM victim_vault_incidents
+           WHERE user_id = %s
+           ORDER BY created_at DESC""",
+        (user_id,),
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def log_sos_alert(user_id: int, latitude: str, longitude: str) -> int:
+    """Log a new active SOS alert with Geolocation coordinates."""
+    return query(
+        """INSERT INTO victim_sos_alerts (user_id, latitude, longitude)
+           VALUES (%s, %s, %s)""",
+        (user_id, latitude, longitude)
+    )
+
+
+def get_active_sos_alerts() -> list:
+    """Fetch all active SOS signals with victim names and details."""
+    rows = query(
+        """SELECT vsa.id, vsa.user_id, vsa.latitude, vsa.longitude, vsa.status, vsa.dispatched_officer, vsa.created_at,
+                  u.full_name as victim_name, u.username as victim_username
+           FROM victim_sos_alerts vsa
+           JOIN users u ON vsa.user_id = u.id
+           WHERE vsa.status = 'Active'
+           ORDER BY vsa.created_at DESC""",
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def dispatch_officer_to_sos(sos_id: int, officer_name: str) -> int:
+    """Update SOS alert status and record dispatched officer."""
+    return query(
+        """UPDATE victim_sos_alerts
+           SET status = 'Dispatched', dispatched_officer = %s
+           WHERE id = %s""",
+        (officer_name, sos_id)
+    )
+
+
+def submit_compensation_claim(user_id: int, case_number: str, amount_entitled: float, stage: str, petition_text: str) -> int:
+    """Submit a statutory compensation relief claim petition."""
+    return query(
+        """INSERT INTO victim_compensation_claims (user_id, case_number, amount_entitled, stage, petition_text)
+           VALUES (%s, %s, %s, %s, %s)""",
+        (user_id, case_number, amount_entitled, stage, petition_text)
+    )
+
+
+def get_victim_claims(user_id: int) -> list:
+    """Retrieve all claims submitted by a specific victim."""
+    rows = query(
+        """SELECT id, case_number, amount_entitled, stage, status, petition_text, created_at
+           FROM victim_compensation_claims
+           WHERE user_id = %s
+           ORDER BY created_at DESC""",
+        (user_id,),
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def get_all_pending_claims() -> list:
+    """Fetch all pending relief claims for counselor/admin review."""
+    rows = query(
+        """SELECT cc.id, cc.user_id, cc.case_number, cc.amount_entitled, cc.stage, cc.status, cc.petition_text, cc.created_at,
+                  u.full_name as victim_name
+           FROM victim_compensation_claims cc
+           JOIN users u ON cc.user_id = u.id
+           ORDER BY cc.created_at DESC""",
+        fetchall=True
+    )
+    for r in rows:
+        if r.get("created_at"):
+            r["created_at"] = r["created_at"].isoformat()
+    return rows
+
+
+def update_claim_status(claim_id: int, status: str) -> int:
+    """Approve, reject, or disburse a compensation claim."""
+    return query(
+        """UPDATE victim_compensation_claims
+           SET status = %s
+           WHERE id = %s""",
+        (status, claim_id)
+    )
+
+
+def get_silent_period_victims(hours: int = 48) -> list:
+    """Fetch victims who have been silent / non-responsive for over specified hours."""
+    rows = query(
+        """SELECT vp.user_id, vp.case_number, vp.category, vp.judicial_stage,
+                  u.full_name as victim_name, u.email as victim_email,
+                  MAX(vds.created_at) as last_checkin
+           FROM victim_profiles vp
+           JOIN users u ON vp.user_id = u.id
+           LEFT JOIN victim_distress_scores vds ON vp.user_id = vds.user_id
+           GROUP BY vp.user_id, vp.case_number, vp.category, vp.judicial_stage, u.full_name, u.email
+           HAVING last_checkin IS NULL OR TIMESTAMPDIFF(HOUR, last_checkin, NOW()) >= %s
+           ORDER BY last_checkin ASC""",
+        (hours,), fetchall=True
+    )
+    for r in rows:
+        if r.get("last_checkin"):
+            r["last_checkin"] = r["last_checkin"].isoformat()
+        else:
+            r["last_checkin"] = "Never Checked In"
+    return rows
+
+
+def get_xai_explanation(score_id: int, user_id: int = None) -> dict | None:
+    """
+    Generate Explainable AI (XAI / SHAP style) feature importance breakdown
+    for a specific Dynamic Distress Score (DDS) entry.
+    """
+    if score_id <= 0 and user_id:
+        row = query(
+            """SELECT vds.*, u.full_name as victim_name, vp.case_number, vp.judicial_stage, vp.category
+               FROM victim_distress_scores vds
+               JOIN users u ON vds.user_id = u.id
+               LEFT JOIN victim_profiles vp ON vds.user_id = vp.user_id
+               WHERE vds.user_id = %s
+               ORDER BY vds.created_at DESC LIMIT 1""",
+            (user_id,), fetchone=True
+        )
+    else:
+        row = query(
+            """SELECT vds.*, u.full_name as victim_name, vp.case_number, vp.judicial_stage, vp.category
+               FROM victim_distress_scores vds
+               JOIN users u ON vds.user_id = u.id
+               LEFT JOIN victim_profiles vp ON vds.user_id = vp.user_id
+               WHERE vds.id = %s""",
+            (score_id,), fetchone=True
+        )
+    if not row:
+        return None
+
+    import json
+    details = {}
+    if row.get("details_json"):
+        try:
+            details = json.loads(row["details_json"])
+        except Exception:
+            pass
+
+    score = float(row["score"])
+    sentiment_distress = float(row.get("sentiment_score") or 0.40)
+    vocal_stress = float(row.get("vocal_stress") or 0.0)
+    assessment_score = row.get("assessment_score")
+    stage = row.get("judicial_stage", "Investigation")
+
+    text_weight = sentiment_distress * 40.0
+    vocal_weight = vocal_stress * 40.0
+    clinical_weight = ((assessment_score / 21.0) * 20.0) if assessment_score is not None else 10.0
+    delay_weight = 10.0 if stage in ("Trial", "Investigation") else 5.0
+
+    total_raw = max(1.0, text_weight + vocal_weight + clinical_weight + delay_weight)
+
+    feature_contributions = [
+        {
+            "feature": "NLP Text Sentiment Distress",
+            "weight_pct": round((text_weight / total_raw) * 100, 1),
+            "score_impact": round(text_weight, 1),
+            "description": f"Sentiment tag '{details.get('text_sentiment_tag', 'neutral')}' with distress score {round(sentiment_distress*100)}%"
+        },
+        {
+            "feature": "Voice Acoustic Stress (VSA)",
+            "weight_pct": round((vocal_weight / total_raw) * 100, 1),
+            "score_impact": round(vocal_weight, 1),
+            "description": f"Acoustic pitch tremor & speaking rate stress level {round(vocal_stress*100)}%"
+        },
+        {
+            "feature": "Clinical Self-Assessment (GAD-7/PHQ-9)",
+            "weight_pct": round((clinical_weight / total_raw) * 100, 1),
+            "score_impact": round(clinical_weight, 1),
+            "description": f"Clinical assessment score: {assessment_score if assessment_score is not None else 'N/A'}"
+        },
+        {
+            "feature": "Judicial Trial Delay Vulnerability",
+            "weight_pct": round((delay_weight / total_raw) * 100, 1),
+            "score_impact": round(delay_weight, 1),
+            "description": f"Vulnerability weight associated with stage '{stage}'"
+        }
+    ]
+
+    return {
+        "score_id": score_id,
+        "overall_dds": score,
+        "victim_name": row["victim_name"],
+        "case_number": row.get("case_number"),
+        "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
+        "feature_contributions": feature_contributions,
+        "details": details
+    }
+
+
 
 
 

@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — Therapist Dashboard</title>
+  <title>ManoRakshak.AI — Therapist Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -127,6 +129,249 @@
       .booking-header{flex-direction:column;align-items:flex-start;gap:8px}
       .action-buttons{flex-direction:column;gap:8px}
     }
+    
+    /* Version 2 Victim Console Styles */
+    .v2-toggle-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .v2-toggle-btn {
+      padding: 10px 22px;
+      border-radius: 99px;
+      border: 1.5px solid var(--card-border);
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .v2-toggle-btn.active {
+      background: var(--sage);
+      color: white;
+      border-color: var(--sage);
+      box-shadow: 0 4px 12px rgba(15,110,86,.15);
+    }
+    .v2-toggle-btn:hover:not(.active) {
+      background: var(--sage-ghost);
+      border-color: var(--sage-light);
+      color: var(--sage);
+    }
+    
+    /* Victim Case Card */
+    .victim-card {
+      background: rgba(255,255,255,.6);
+      border: 1.5px solid rgba(93,202,165,.12);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .victim-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(15,110,86,.04);
+      border-color: var(--sage-pale);
+    }
+    .victim-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .victim-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .victim-name {
+      font-weight: 700;
+      font-size: 1.08rem;
+      color: var(--ink);
+    }
+    .victim-details-text {
+      font-size: .78rem;
+      color: var(--hint);
+    }
+    
+    /* Distress score tag */
+    .distress-tag {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: .75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .distress-high {
+      color: #b91c1c;
+      background: #fee2e2;
+      border: 1px solid rgba(185,28,28,.18);
+    }
+    .distress-medium {
+      color: #b45309;
+      background: #fef3c7;
+      border: 1px solid rgba(239,159,39,.18);
+    }
+    .distress-low {
+      color: #15803d;
+      background: #dcfce7;
+      border: 1px solid rgba(21,128,61,.18);
+    }
+    
+    /* Red Alert Card for active alerts */
+    .alerts-hub {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .critical-alert-card {
+      background: linear-gradient(135deg,#fee2e2,#fecaca);
+      border: 1.5px solid rgba(185,28,28,.2);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: alertPulse 2s infinite alternate;
+    }
+    @keyframes alertPulse {
+      0% { border-color: rgba(185,28,28,.2); box-shadow: 0 2px 10px rgba(185,28,28,.05); }
+      100% { border-color: rgba(185,28,28,.5); box-shadow: 0 2px 18px rgba(185,28,28,.2); }
+    }
+    .alert-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .alert-title-text {
+      font-weight: 700;
+      color: #991b1b;
+      font-size: .95rem;
+    }
+    .alert-desc-text {
+      font-size: .8rem;
+      color: #7f1d1d;
+      line-height: 1.4;
+    }
+    
+    /* Resolve Action Button */
+    .btn-resolve {
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: none;
+      background: #b91c1c;
+      color: white;
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-resolve:hover {
+      background: #991b1b;
+      transform: scale(1.03);
+    }
+    
+    /* SVG Chart */
+    .v2-chart-box {
+      background: rgba(255,255,255,.5);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+    .v2-chart-svg {
+      width: 100%;
+      height: 150px;
+      overflow: visible;
+    }
+    
+    /* XAI weights table */
+    .xai-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .8rem;
+      margin-top: 8px;
+    }
+    .xai-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 6px 8px;
+      border-bottom: 1.5px solid rgba(93,202,165,.15);
+      text-transform: uppercase;
+      font-size: .7rem;
+      letter-spacing: .05em;
+    }
+    .xai-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(0,0,0,.03);
+    }
+    .xai-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: #E1DED8;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .xai-bar-fill {
+      height: 100%;
+      background: var(--sage);
+      border-radius: 3px;
+    }
+    
+    /* Resolution Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(44,44,42,.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: white;
+      border-radius: 28px;
+      padding: 32px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0,0,0,.15);
+      transform: translateY(20px);
+      transition: transform .25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .modal-backdrop.show .modal-card {
+      transform: translateY(0);
+    }
+    .modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--sage);
+    }
   </style>
   <script>
     (function() {
@@ -147,6 +392,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -155,8 +412,9 @@
 
 <div class="page">
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoKart</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <nav class="nav-pill">
+      <a href="/admin/dashboard" class="nav-btn" style="border-color:rgba(99,102,241,0.3);color:#6366f1">MoSJE Command Center</a>
       <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
     </nav>
   </div>
@@ -166,10 +424,18 @@
       <h1>Welcome back, <em id="welcome-name">Doctor</em></h1>
       <p>Manage your consulting details and incoming patient bookings below.</p>
     </div>
-    <div class="profile-badge">🤝 Professional Therapist</div>
+    <div class="profile-badge"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Professional Therapist</div>
   </div>
 
-  <div class="dashboard-grid">
+  <!-- Switcher for Version 1 and Version 2 dashboards -->
+  <div class="v2-toggle-bar">
+    <button class="v2-toggle-btn active" id="btn-tab-bookings" onclick="switchDashboardTab('bookings')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Bookings Manager</button>
+    <button class="v2-toggle-btn" id="btn-tab-victim-hub" onclick="switchDashboardTab('victim-hub')" style="border-color: rgba(15,110,86,0.3); color: var(--sage)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Victim Supervision Hub (V2)</button>
+    <button class="v2-toggle-btn" id="btn-tab-control-room" onclick="switchDashboardTab('control-room')" style="border-color: rgba(239,68,68,0.3); color: #b91c1c"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>️ Emergency SOS & Claims Control Room</button>
+    <button class="v2-toggle-btn" id="btn-tab-admin-portal" onclick="switchDashboardTab('admin-portal')" style="border-color: rgba(93,202,165,0.3); color: var(--sage)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20M4 18v-8M8 18v-8M12 18v-8M16 18v-8M20 18v-8M12 2L2 7h20L12 2z"/></svg>️ National & State Analytics Portal</button>
+  </div>
+
+  <div class="dashboard-grid" id="bookings-view-container">
     <!-- Left Column: Bookings -->
     <div class="card">
       <div class="section-title-row">
@@ -290,17 +556,227 @@
     </div>
   </div>
 
-  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <!-- Version 2: Victim Distress Supervision Console -->
+  <div class="dashboard-grid" id="victim-view-container" style="display:none">
+    <!-- Left Column: Supervised Victims & Active Alerts -->
+    <div style="display:flex; flex-direction:column; gap:24px">
+      <!-- Active Alerts Card -->
+      <div class="card" style="border-color: rgba(185,28,28,0.25)">
+        <div class="section-title-row">
+          <h2 class="section-title" style="color:#b91c1c"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Active Critical Alerts</h2>
+        </div>
+        <div class="alerts-hub" id="active-alerts-list">
+          <div style="text-align:center; padding: 12px; color: var(--hint); font-size: .85rem">No active mental health crisis alerts.</div>
+        </div>
+      </div>
+
+      <!-- Silent Period Non-Response Queue Card -->
+      <div class="card" style="border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.02)">
+        <div class="section-title-row">
+          <h2 class="section-title" style="color:#d97706"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Silent Period / Non-Response Queue (>48h)</h2>
+        </div>
+        <p style="font-size: .78rem; color: var(--muted); margin-top: -10px; margin-bottom: 10px">Victims silently withholding check-ins due to intimidation or trial fatigue. Proactive check-ins recommended.</p>
+        <div id="counselor-silent-list" style="display:flex; flex-direction:column; gap:8px">
+          <div style="text-align:center; padding: 10px; color: var(--hint); font-size: .8rem">Scanning silent period logs...</div>
+        </div>
+      </div>
+
+      <!-- Supervised Case List Card -->
+      <div class="card">
+        <div class="section-title-row">
+          <h2 class="section-title">Case Supervision List</h2>
+          <div class="filter-tabs">
+            <button class="tab-btn active" id="btn-scope-my" onclick="setSupervisionScope('my')">My Cases</button>
+            <button class="tab-btn" id="btn-scope-all" onclick="setSupervisionScope('all')">District Overview</button>
+          </div>
+        </div>
+        <div class="appointments-container" id="supervised-victims-list" style="display:flex; flex-direction:column; gap:14px">
+          <div style="text-align:center; padding: 40px; color: var(--hint)">Loading supervised cases...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Longitudinal analysis & Explainable AI details -->
+    <div style="display:flex; flex-direction:column; gap:32px">
+      <!-- Longitudinal Trend Graph Card -->
+      <div class="card" id="detail-trend-card" style="display:none">
+        <div class="section-title-row">
+          <h2 class="section-title">Case Distress Trajectory</h2>
+        </div>
+        <div style="font-size: .85rem; font-weight:600; color: var(--ink)" id="detail-victim-name">Select a victim to view details</div>
+        <div class="v2-chart-box">
+          <svg class="v2-chart-svg" id="victim-detail-svg"></svg>
+        </div>
+        
+        <!-- Explainable AI (XAI) breakdown -->
+        <div style="margin-top: 10px">
+          <div style="font-size: .78rem; font-weight:700; color: var(--muted); text-transform:uppercase; letter-spacing:.05em">Explainable AI (XAI) Risk Breakdown</div>
+          <table class="xai-table">
+            <thead>
+              <tr>
+                <th>Factor</th>
+                <th>Contribution %</th>
+                <th>Indicator State</th>
+              </tr>
+            </thead>
+            <tbody id="xai-metrics-tbody">
+              <tr>
+                <td colspan="3" style="text-align:center; color: var(--hint)">Select a data point or victim to inspect.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Logged Threats Vault Card (Shown when a victim is selected) -->
+      <div class="card" id="detail-vault-card" style="display:none">
+        <div class="section-title-row" style="margin-bottom:0">
+          <h2 class="section-title" style="color:#ef4444"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Logged Witness Vault Incidents</h2>
+        </div>
+        <p style="font-size: .8rem; color: var(--hint); margin-top: -10px">Secure log history uploaded to the Witness Protection Vault by this complainant.</p>
+        <div id="detail-vault-list" style="display:flex; flex-direction:column; gap:12px; max-height:280px; overflow-y:auto; padding-right:4px">
+          <div style="text-align:center; color:var(--hint); font-size:.85rem">No threat reports logged.</div>
+        </div>
+      </div>
+      
+      <!-- Placeholder card when no victim is selected -->
+      <div class="card" id="detail-trend-placeholder" style="text-align:center; padding: 60px; color: var(--hint)">
+        <span style="font-size: 2.2rem; display:block; margin-bottom: 12px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️</span>
+        Select a victim case from the supervision list to analyze their distress trajectory, acoustic stress parameters, and Explainable AI risk factors.
+      </div>
+    </div>
+  </div>
+
+  <!-- Version 2: Emergency SOS & Claims Control Room View -->
+  <div class="dashboard-grid" id="control-room-view-container" style="display:none; grid-template-columns: 1.25fr 1fr; margin-top: 24px">
+    <!-- Left Column: SOS Map & Active Geolocation Alerts -->
+    <div class="card" style="border-color: rgba(239,68,68,0.25); display:flex; flex-direction:column; gap:16px">
+      <div class="section-title-row" style="margin-bottom:0">
+        <h2 class="section-title" style="color:#ef4444"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>️ Emergency SOS Signals (Real-Time GPS Map)</h2>
+      </div>
+      <p style="font-size: .82rem; color: var(--hint); margin-top: -10px">Live tracking markers showing direct GPS coordinate pins locked from complainants' browser SOS clicks.</p>
+      
+      <!-- Leaflet Map Container -->
+      <div id="sos-map" style="height: 380px; border-radius: 20px; border: 1.5px solid var(--card-border); z-index: 1"></div>
+      
+      <div style="font-size:.85rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:10px">Active SOS Logs</div>
+      <div id="active-sos-logs-list" style="display:flex; flex-direction:column; gap:12px; max-height: 220px; overflow-y:auto">
+        <div style="text-align:center; color:var(--hint); padding:20px; font-size:.85rem">No active SOS signals recorded.</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Statutory Relief Claims Auditor -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title" style="color:var(--sage)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Relief Claims Disbursements Auditor</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Review generated legal compensation claim petitions submitted by SC/ST atrocity victims and approve payouts.</p>
+      
+      <div id="pending-claims-logs-list" style="display:flex; flex-direction:column; gap:14px; max-height:600px; overflow-y:auto; padding-right:4px">
+        <div style="text-align:center; color:var(--hint); padding:40px; font-size:.85rem">No pending relief petitions require review.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Version 2: National & State Administrative Analytics Portal -->
+  <div class="dashboard-grid" id="admin-portal-view-container" style="display:none; grid-template-columns: 1fr; margin-top: 24px">
+    <!-- Top Stats Row -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px; width: 100%">
+      
+      <!-- KPI Case count -->
+      <div class="card" style="border-left: 5px solid var(--sage); display:flex; flex-direction:column; justify-content:center">
+        <div style="font-size: .8rem; color: var(--hint); text-transform: uppercase; font-weight:700">Total Monitored Cases</div>
+        <div style="font-size: 2.2rem; font-weight:700; color: var(--sage); margin-top: 6px" id="admin-total-cases">--</div>
+        <div style="font-size: .7rem; color: var(--muted); margin-top: 6px">Across all mapped Indian states & Union Territories</div>
+      </div>
+      
+      <!-- KPI Active Intimidations -->
+      <div class="card" style="border-left: 5px solid #ef4444; display:flex; flex-direction:column; justify-content:center">
+        <div style="font-size: .8rem; color: var(--hint); text-transform: uppercase; font-weight:700">Active Distress Alerts</div>
+        <div style="font-size: 2.2rem; font-weight:700; color: #ef4444; margin-top: 6px" id="admin-active-alerts">--</div>
+        <div style="font-size: .7rem; color: var(--muted); margin-top: 6px">DDS risk warning thresholds crossed</div>
+      </div>
+      
+      <!-- KPI Active SOS -->
+      <div class="card" style="border-left: 5px solid #f97316; display:flex; flex-direction:column; justify-content:center">
+        <div style="font-size: .8rem; color: var(--hint); text-transform: uppercase; font-weight:700">Active Geolocation SOS</div>
+        <div style="font-size: 2.2rem; font-weight:700; color: #f97316; margin-top: 6px" id="admin-active-sos">--</div>
+        <div style="font-size: .7rem; color: var(--muted); margin-top: 6px">Direct coordinate locks from emergency triggers</div>
+      </div>
+      
+      <!-- KPI Payouts -->
+      <div class="card" style="border-left: 5px solid #10b981; display:flex; flex-direction:column; justify-content:center">
+        <div style="font-size: .8rem; color: var(--hint); text-transform: uppercase; font-weight:700">Disbursed Atrocity Relief</div>
+        <div style="font-size: 1.6rem; font-weight:700; color: #10b981; margin-top: 6px" id="admin-disbursed-funds">₹0.00 Lakhs</div>
+        <div style="font-size: .7rem; color: var(--muted); margin-top: 6px" id="admin-allocated-funds">Approved: ₹0.00L</div>
+      </div>
+    </div>
+
+    <!-- Aggregate Regional Distribution Matrix -->
+    <div class="card" style="margin-top: 24px">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20M4 18v-8M8 18v-8M12 18v-8M16 18v-8M20 18v-8M12 2L2 7h20L12 2z"/></svg>️ National & State Welfare Distribution Matrix</h2>
+        <div class="filter-tabs" id="admin-state-tabs" style="display:flex; gap:8px">
+          <button class="tab-btn active" onclick="filterAdminMatrix(this, 'all')">All States</button>
+          <button class="tab-btn" onclick="filterAdminMatrix(this, 'Maharashtra')">Maharashtra</button>
+          <button class="tab-btn" onclick="filterAdminMatrix(this, 'Uttar Pradesh')">Uttar Pradesh</button>
+          <button class="tab-btn" onclick="filterAdminMatrix(this, 'Madhya Pradesh')">Madhya Pradesh</button>
+          <button class="tab-btn" onclick="filterAdminMatrix(this, 'Tamil Nadu')">Tamil Nadu</button>
+        </div>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Aggregated stats by District Court Jurisdiction and State Vigilance Committees to allocate rehabilitation support.</p>
+      
+      <div class="table-wrap" style="margin-top:14px; overflow-x:auto">
+        <table class="table" style="width:100%; border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="text-align:left; padding:10px">State Jurisdiction</th>
+              <th style="text-align:left; padding:10px">Assigned Nodal District Court</th>
+              <th style="text-align:center; padding:10px">Active Monitored Cases</th>
+              <th style="text-align:center; padding:10px">Active Intimidations / Alerts</th>
+              <th style="text-align:right; padding:10px">Total Disbursed Relief</th>
+              <th style="text-align:center; padding:10px">Nodal Inter-Agency Support</th>
+            </tr>
+          </thead>
+          <tbody id="admin-matrix-tbody">
+            <tr>
+              <td colspan="6" style="text-align:center; color:var(--hint); padding:30px">Loading national analytics feed...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolution Modal -->
+  <div class="modal-backdrop" id="resolution-modal">
+    <div class="modal-card">
+      <h3 class="modal-title">Resolve Critical Alert</h3>
+      <p style="font-size:.85rem; color:var(--muted); line-height:1.4">Briefly document the rehabilitation actions taken (e.g. counselled victim, filed DLSA legal petition, triggered witness protection police check).</p>
+      
+      <div class="form-group" style="display:flex; flex-direction:column; gap:6px">
+        <label for="resolution-notes" style="font-size:.75rem; font-weight:600; color:var(--muted); text-transform:uppercase">Action Notes</label>
+        <textarea id="resolution-notes" class="form-control" rows="4" placeholder="Type case notes here..."></textarea>
+      </div>
+      
+      <div style="display:flex; gap:12px; margin-top:8px">
+        <button class="btn-submit" id="btn-submit-resolution" onclick="submitResolution()" style="align-self:stretch; flex:1">Resolve Alert</button>
+        <button class="nav-btn" onclick="closeResolutionModal()" style="align-self:stretch; flex:1">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <div class="toast" id="toast">Profile updated successfully!</div>
 
 <script>
   let currentUser = {};
-  let selectedEmoji = '🌿';
+  let selectedEmoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
   let appointments = [];
   let currentFilter = 'all';
-  const EMOJIS = ['🌿', '🌸', '🧘', '🌊', '🌻', '☀️', '🍃', '🦋', '🌈', '🕯️', '🥑', '🐾'];
+  const EMOJIS = ['<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 11 6-2 6 2"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>️', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M8 8a4 4 0 1 0 0 8M16 8a4 4 0 1 1 0 8"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17a10 10 0 0 0-20 0"/><path d="M6 17a6 6 0 0 1 12 0"/><path d="M10 17a2 2 0 0 1 4 0"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 12v10M9 22h6"/></svg>️', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="6" cy="9" r="2"/><path d="M12 13a4 4 0 0 0-4 4v3h8v-3a4 4 0 0 0-4-4z"/></svg>'];
 
   // ── Show Toast ──
   let toastTimeout;
@@ -314,18 +790,21 @@
 
   // ── Init Avatar Grid ──
   const grid = document.getElementById('avatar-grid');
-  EMOJIS.forEach(emoji => {
-    const opt = document.createElement('div');
-    opt.className = 'avatar-option';
-    opt.textContent = emoji;
-    opt.onclick = () => selectAvatar(emoji);
-    grid.appendChild(opt);
-  });
+  if (grid) {
+    grid.innerHTML = '';
+    EMOJIS.forEach(emoji => {
+      const opt = document.createElement('div');
+      opt.className = 'avatar-option';
+      opt.innerHTML = emoji;
+      opt.onclick = () => selectAvatar(emoji);
+      grid.appendChild(opt);
+    });
+  }
 
   function selectAvatar(emoji) {
     selectedEmoji = emoji;
     document.querySelectorAll('.avatar-option').forEach(el => {
-      el.classList.toggle('active', el.textContent === emoji);
+      el.classList.toggle('active', el.innerHTML.trim() === emoji.trim());
     });
   }
 
@@ -347,7 +826,7 @@
           
           document.getElementById('p-name').value = currentUser.name || '';
           document.getElementById('p-username').value = currentUser.username || '';
-          selectAvatar(currentUser.avatar || '🌿');
+          selectAvatar(currentUser.avatar || '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
 
           document.getElementById('p-title').value = currentUser.title || '';
           document.getElementById('p-specialization').value = currentUser.specialization || '';
@@ -435,8 +914,8 @@
           <span class="status-badge ${badgeClass}">${app.status}</span>
         </div>
         <div class="booking-details">
-          <span>📅 ${dateFriendly}</span>
-          <span>🕒 ${app.appointment_time}</span>
+          <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${dateFriendly}</span>
+          <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${app.appointment_time}</span>
         </div>
         ${notesHtml}
         ${actionsHtml}
@@ -464,7 +943,7 @@
     .then(r => r.json().then(data => ({ ok: r.ok, data })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast(`Appointment ${newStatus.toLowerCase()} successfully! 🌿`);
+        showToast(`Appointment ${newStatus.toLowerCase()} successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`);
         loadAppointments();
       } else {
         showToast(data.error || 'Failed to update status.');
@@ -509,7 +988,7 @@
     .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast('Dashboard details updated successfully! 🌿');
+        showToast('Dashboard details updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
         loadDashboard();
       } else {
         showToast(data.error || 'Failed to update details');
@@ -584,7 +1063,7 @@
     .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast('Password updated successfully! 🔐');
+        showToast('Password updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>');
         document.getElementById('p-current-pass').value = '';
         document.getElementById('p-new-pass').value = '';
         document.getElementById('p-confirm-pass').value = '';
@@ -600,7 +1079,677 @@
     });
   }
 
+  // ── VERSION 2: VICTIM MONITORING HUB LOGIC ──
+  let activeScope = 'my';
+  let selectedAlertId = null;
+  let activeVictims = [];
+  
+  let sosMapInstance = null;
+  let sosMarkers = {};
+
+  function initSOSMap() {
+    if (sosMapInstance) return;
+    
+    // Default focus center: Mumbai court precinct (coordinates: 18.9281, 72.8331)
+    sosMapInstance = L.map('sos-map').setView([18.9281, 72.8331], 11);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(sosMapInstance);
+  }
+
+  function switchDashboardTab(tab) {
+    const btnBookings = document.getElementById('btn-tab-bookings');
+    const btnVictimHub = document.getElementById('btn-tab-victim-hub');
+    const btnControlRoom = document.getElementById('btn-tab-control-room');
+    const btnAdminPortal = document.getElementById('btn-tab-admin-portal');
+    
+    const bookingsView = document.getElementById('bookings-view-container');
+    const victimView = document.getElementById('victim-view-container');
+    const controlRoomView = document.getElementById('control-room-view-container');
+    const adminPortalView = document.getElementById('admin-portal-view-container');
+    
+    if (btnBookings) btnBookings.classList.toggle('active', tab === 'bookings');
+    if (btnVictimHub) btnVictimHub.classList.toggle('active', tab === 'victim-hub');
+    if (btnControlRoom) btnControlRoom.classList.toggle('active', tab === 'control-room');
+    if (btnAdminPortal) btnAdminPortal.classList.toggle('active', tab === 'admin-portal');
+    
+    if (bookingsView) bookingsView.style.display = tab === 'bookings' ? 'grid' : 'none';
+    if (victimView) victimView.style.display = tab === 'victim-hub' ? 'grid' : 'none';
+    if (controlRoomView) controlRoomView.style.display = tab === 'control-room' ? 'grid' : 'none';
+    if (adminPortalView) adminPortalView.style.display = tab === 'admin-portal' ? 'grid' : 'none';
+    
+    if (tab === 'victim-hub') {
+      loadActiveAlerts();
+      loadVictimSupervision();
+    } else if (tab === 'control-room') {
+      loadControlRoomData();
+      if (sosMapInstance) {
+        setTimeout(() => sosMapInstance.invalidateSize(), 150);
+      }
+    } else if (tab === 'admin-portal') {
+      loadAdminPortalData();
+    }
+  }
+
+  function loadControlRoomData() {
+    initSOSMap();
+    loadSOSSignals();
+    loadOfficerClaims();
+  }
+
+  function loadSOSSignals() {
+    const list = document.getElementById('active-sos-logs-list');
+    fetch('/api/victim/sos')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.alerts && data.alerts.length > 0) {
+          list.innerHTML = '';
+          
+          // Clear old markers from map
+          Object.values(sosMarkers).forEach(m => m.remove());
+          sosMarkers = {};
+          
+          let coordinatesList = [];
+          
+          data.alerts.forEach(a => {
+            const lat = parseFloat(a.latitude);
+            const lng = parseFloat(a.longitude);
+            coordinatesList.push([lat, lng]);
+            
+            const dateStr = new Date(a.created_at).toLocaleString();
+            
+            // Add red pulsing circle marker on leaflet map
+            const marker = L.circle([lat, lng], {
+              color: '#ef4444',
+              fillColor: '#f87171',
+              fillOpacity: 0.5,
+              radius: 500
+            }).addTo(sosMapInstance);
+            
+            marker.bindPopup(`
+              <div style="font-family:inherit; font-size:.8rem; color:#2c2c2a">
+                <strong style="color:#ef4444"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ACTIVE SOS SIGNAL</strong><br/>
+                <strong>Victim:</strong> ${a.victim_name}<br/>
+                <strong>Time:</strong> ${dateStr}<br/>
+                <button onclick="dispatchGuard(${a.id}, '${a.victim_name}')" style="margin-top:8px; padding:6px 12px; border-radius:8px; border:none; background:#ef4444; color:white; font-size:.7rem; cursor:pointer; font-weight:700">Dispatch Patrol Guard</button>
+              </div>
+            `);
+            
+            sosMarkers[a.id] = marker;
+            
+            // Add list item
+            const div = document.createElement('div');
+            div.style.cssText = 'background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.25); border-radius:14px; padding:14px; display:flex; justify-content:space-between; align-items:center; font-size:.8rem; margin-bottom:10px';
+            div.innerHTML = `
+              <div>
+                <strong style="color:#ef4444"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SOS Triggered by ${a.victim_name}</strong>
+                <div style="font-size:.75rem; color:var(--hint); margin-top:2px">Location Lock: ${lat}, ${lng}</div>
+                <div style="font-size:.7rem; color:var(--hint)">Triggered: ${dateStr}</div>
+              </div>
+              <button onclick="dispatchGuard(${a.id}, '${a.victim_name}')" class="btn-resolve" style="padding:6px 14px; font-size:.72rem; align-self:center">Dispatch</button>
+            `;
+            list.appendChild(div);
+          });
+          
+          // Fit map boundaries to contain all markers
+          if (coordinatesList.length > 0) {
+            sosMapInstance.fitBounds(coordinatesList);
+          }
+        } else {
+          list.innerHTML = '<div style="text-align:center; color:var(--hint); padding:20px; font-size:.85rem">No active SOS signals recorded.</div>';
+          // Reset map view
+          if (sosMapInstance) sosMapInstance.setView([18.9281, 72.8331], 11);
+        }
+      });
+  }
+
+  function dispatchGuard(sosId, name) {
+    const officer = prompt(`Enter Nodal Guard or Escort Police unit name for ${name}'s location:`, "District Patrol Guard Block 4");
+    if (!officer) return;
+    
+    fetch(`/api/victim/sos/${sosId}/dispatch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ officer_name: officer })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          alert(`Success: ${officer} has been dispatched to coordinate lock!`);
+          loadSOSSignals();
+        } else {
+          alert('Failed to dispatch officer.');
+        }
+      });
+  }
+
+  function loadOfficerClaims() {
+    const list = document.getElementById('pending-claims-logs-list');
+    fetch('/api/victim/claims')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.claims && data.claims.length > 0) {
+          list.innerHTML = '';
+          data.claims.forEach(c => {
+            const dateStr = new Date(c.created_at).toLocaleDateString();
+            const div = document.createElement('div');
+            
+            let statusColor = '#eab308';
+            let actionBtn = `<button onclick="auditClaim(${c.id}, 'Approved')" class="btn-resolve" style="background:#10b981; margin-right:8px; padding:6px 14px; font-size:.72rem">Approve Claim</button>
+                             <button onclick="auditClaim(${c.id}, 'Rejected')" class="btn-resolve" style="background:#ef4444; padding:6px 14px; font-size:.72rem">Reject</button>`;
+            
+            if (c.status === 'Approved') {
+              statusColor = '#10b981';
+              actionBtn = `<button onclick="auditClaim(${c.id}, 'Disbursed')" class="btn-resolve" style="background:#059669; padding:6px 14px; font-size:.72rem">Mark Disbursed (Pay Out)</button>`;
+            } else if (c.status === 'Disbursed') {
+              statusColor = '#10b981';
+              actionBtn = `<span style="color:#10b981; font-weight:700"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Funds Disbursed</span>`;
+            } else if (c.status === 'Rejected') {
+              statusColor = '#ef4444';
+              actionBtn = `<span style="color:#ef4444; font-weight:700"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Claim Rejected</span>`;
+            }
+            
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:18px; padding:18px; display:flex; flex-direction:column; gap:10px; font-size:.8rem; margin-bottom:12px';
+            div.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center">
+                <span style="font-weight:700; color:var(--sage-light); font-size:.9rem">${c.stage} Stage Claim - ₹${(c.amount_entitled/100000).toFixed(2)}L</span>
+                <span style="padding:2px 8px; border-radius:8px; font-size:.65rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}30; background:${statusColor}10">${c.status}</span>
+              </div>
+              <div style="font-size:.75rem; color:var(--hint); margin-top:-6px">Complainant: <strong>${c.victim_name}</strong> | Case Number: ${c.case_number}</div>
+              
+              <div style="background:rgba(0,0,0,0.15); font-family:monospace; font-size:.7rem; padding:12px; border-radius:12px; max-height:140px; overflow-y:auto; white-space:pre-wrap; border:1px solid rgba(255,255,255,0.05); color:#e2e8f0">
+                ${c.petition_text}
+              </div>
+              
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.05); padding-top:10px; margin-top:4px">
+                <span style="color:var(--hint); font-size:.75rem"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Filed: ${dateStr}</span>
+                <div>${actionBtn}</div>
+              </div>
+            `;
+            list.appendChild(div);
+          });
+        } else {
+          list.innerHTML = '<div style="text-align:center; color:var(--hint); padding:40px; font-size:.85rem">No pending relief petitions require review.</div>';
+        }
+      });
+  }
+
+  function auditClaim(claimId, status) {
+    if (!confirm(`Are you sure you want to set the claim status to: '${status}'?`)) return;
+    
+    fetch(`/api/victim/claims/${claimId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: status })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          alert('Claim audited successfully.');
+          loadOfficerClaims();
+        } else {
+          alert('Failed to update claim status.');
+        }
+      });
+  }
+
+  function setSupervisionScope(scope) {
+    document.getElementById('btn-scope-my').classList.toggle('active', scope === 'my');
+    document.getElementById('btn-scope-all').classList.toggle('active', scope === 'all');
+    activeScope = scope;
+    loadVictimSupervision();
+  }
+
+  function loadActiveAlerts() {
+    const list = document.getElementById('active-alerts-list');
+    fetch('/api/victim/alerts')
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.alerts && data.alerts.length > 0) {
+          list.innerHTML = '';
+          data.alerts.forEach(alert => {
+            const item = document.createElement('div');
+            item.className = 'critical-alert-card';
+            item.innerHTML = `
+              <div class="alert-info-col">
+                <div class="alert-title-text"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Severe Distress Alert: ${alert.victim_name} (${Math.round(alert.score)}%)</div>
+                <div class="alert-desc-text"><strong>Case #${alert.case_number}</strong> (${alert.category}) &bull; Stage: ${alert.judicial_stage}</div>
+                <div class="alert-desc-text" style="font-style:italic; margin-top:4px">Reason: "${alert.reason}"</div>
+              </div>
+              <button class="btn-resolve" onclick="openResolutionModal(${alert.id})">Take Action</button>
+            `;
+            list.appendChild(item);
+          });
+        } else {
+          list.innerHTML = '<div style="text-align:center; padding: 12px; color: var(--hint); font-size: .85rem">No active mental health crisis alerts.</div>';
+        }
+      });
+  }
+
+  function loadVictimSupervision() {
+    const container = document.getElementById('supervised-victims-list');
+    fetch(`/api/victim/supervised-list?scope=${activeScope}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.victims) {
+          activeVictims = data.victims;
+          renderSupervisedVictims();
+        } else {
+          container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--hint)">Failed to load victim cases.</div>';
+        }
+      })
+      .catch(() => {
+        container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--hint)">Network error.</div>';
+      });
+  }
+
+  function renderSupervisedVictims() {
+    const container = document.getElementById('supervised-victims-list');
+    container.innerHTML = '';
+
+    if (activeVictims.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--hint)">No supervised cases registered under this scope.</div>`;
+      return;
+    }
+
+    activeVictims.forEach(v => {
+      const score = Math.round(v.latest_distress_score);
+      let badgeClass = 'distress-low';
+      if (score > 75) badgeClass = 'distress-high';
+      else if (score > 40) badgeClass = 'distress-medium';
+      
+      const item = document.createElement('div');
+      item.className = 'victim-card';
+      item.onclick = () => viewVictimDetails(v.user_id, v.victim_name);
+      
+      item.innerHTML = `
+        <div class="victim-card-header">
+          <div class="victim-meta">
+            <span class="victim-name">${v.victim_name}</span>
+            <span class="victim-details-text">Case: #${v.case_number} &bull; Category: ${v.category}</span>
+          </div>
+          <span class="distress-tag ${badgeClass}">Distress: ${score}%</span>
+        </div>
+        <div class="booking-details">
+          <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>️ Stage: <strong>${v.judicial_stage}</strong></span>
+          ${v.counselor_name ? `<span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Counselor: ${v.counselor_name}</span>` : ''}
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function viewVictimDetails(userId, name) {
+    document.getElementById('detail-trend-placeholder').style.display = 'none';
+    const card = document.getElementById('detail-trend-card');
+    card.style.display = 'flex';
+    document.getElementById('detail-victim-name').textContent = `Supervising: ${name}`;
+    
+    fetch(`/api/victim/distress-history?user_id=${userId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.history) {
+          drawVictimChart(data.history);
+          if (data.history.length > 0) {
+            const latest = data.history[data.history.length - 1];
+            showXAI(latest.details_json);
+          } else {
+            document.getElementById('xai-metrics-tbody').innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--hint)">No check-in details available.</td></tr>`;
+          }
+        }
+      });
+
+    // Show and fetch Witness Vault logged incidents
+    document.getElementById('detail-vault-card').style.display = 'flex';
+    const vaultList = document.getElementById('detail-vault-list');
+    vaultList.innerHTML = '<div style="text-align:center; color:var(--hint); font-size:.85rem">Loading logged threat reports...</div>';
+    
+    fetch(`/api/victim/vault?user_id=${userId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.incidents && data.incidents.length > 0) {
+          vaultList.innerHTML = '';
+          data.incidents.forEach(inc => {
+            const dateObj = new Date(inc.created_at);
+            const dateStr = dateObj.toLocaleDateString();
+            
+            const div = document.createElement('div');
+            div.style.cssText = 'background:rgba(0,0,0,0.02); border:1px solid rgba(239,68,68,0.15); border-radius:12px; padding:12px; font-size:.8rem; margin-bottom:8px';
+            div.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700">
+                <span style="color:#ef4444"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️ ${inc.incident_type.replace('_', ' ').toUpperCase()}</span>
+                <span style="color:var(--hint)">${dateStr}</span>
+              </div>
+              <p style="color:var(--muted); line-height:1.4; margin-top:4px">"${inc.description}"</p>
+              ${inc.evidence_file_path ? `<div style="margin-top:6px; border-top:1px dashed rgba(0,0,0,0.03); padding-top:6px"><a href="/data/uploads/${inc.evidence_file_path.split('\\').pop().split('/').pop()}" target="_blank" style="color:var(--sage); text-decoration:none; font-weight:600"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg> View Threat Evidence File</a></div>` : ''}
+            `;
+            vaultList.appendChild(div);
+          });
+        } else {
+          vaultList.innerHTML = '<div style="text-align:center; color:var(--hint); font-size:.85rem">No logged threat reports found.</div>';
+        }
+      })
+      .catch(() => {
+        vaultList.innerHTML = '<div style="text-align:center; color:#ef4444; font-size:.85rem">Failed to load threats list.</div>';
+      });
+  }
+
+  function drawVictimChart(history) {
+    const svg = document.getElementById('victim-detail-svg');
+    svg.innerHTML = '';
+    
+    if (history.length === 0) {
+      svg.innerHTML = `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="var(--hint)">No check-in history.</text>`;
+      return;
+    }
+    
+    const width = svg.clientWidth || svg.getBoundingClientRect().width || 350;
+    const height = 150;
+    
+    for (let i = 0; i <= 2; i++) {
+      const yVal = 20 + i * (height - 40) / 2;
+      const val = 100 - i * 50;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', '35');
+      line.setAttribute('y1', yVal);
+      line.setAttribute('x2', width - 10);
+      line.setAttribute('y2', yVal);
+      line.setAttribute('stroke', '#E1DED8');
+      line.setAttribute('stroke-dasharray', '4,4');
+      svg.appendChild(line);
+      
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      lbl.setAttribute('x', '8');
+      lbl.setAttribute('y', yVal + 4);
+      lbl.setAttribute('font-size', '9px');
+      lbl.setAttribute('fill', 'var(--hint)');
+      lbl.textContent = val + '%';
+      svg.appendChild(lbl);
+    }
+    
+    const pts = history.length;
+    const step = pts > 1 ? (width - 60) / (pts - 1) : width - 60;
+    let pathD = '';
+    let circles = [];
+    
+    history.forEach((h, idx) => {
+      const x = 45 + idx * step;
+      const y = 20 + (1 - h.score / 100) * (height - 40);
+      
+      if (idx === 0) pathD = `M ${x} ${y}`;
+      else pathD += ` L ${x} ${y}`;
+      
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', x);
+      c.setAttribute('cy', y);
+      c.setAttribute('r', '4');
+      
+      let color = 'var(--sage)';
+      if (h.score > 75) color = '#b91c1c';
+      else if (h.score > 40) color = '#d97706';
+      
+      c.setAttribute('fill', color);
+      c.setAttribute('stroke', 'white');
+      c.setAttribute('stroke-width', '1.5');
+      c.setAttribute('style', 'cursor:pointer');
+      
+      c.onclick = () => showXAI(h.details_json);
+      circles.push(c);
+    });
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathD);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'var(--sage-light)');
+    path.setAttribute('stroke-width', '2.5');
+    
+    svg.appendChild(path);
+    circles.forEach(c => svg.appendChild(c));
+  }
+
+  function showXAI(details_json) {
+    const tbody = document.getElementById('xai-metrics-tbody');
+    tbody.innerHTML = '';
+    
+    if (!details_json) {
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--hint)">No XAI metrics generated.</td></tr>`;
+      return;
+    }
+    
+    try {
+      const details = JSON.parse(details_json);
+      const textSentiment = details.text_sentiment_distress || 0.5;
+      const vsa = details.vocal_stress_metrics || {};
+      const vocalStress = vsa.stress_score || 0.0;
+      const clinical = details.latest_clinical_assessment ? details.latest_clinical_assessment.score : 0;
+      const clinicalType = details.latest_clinical_assessment ? details.latest_clinical_assessment.type : 'GAD-7';
+      const cMax = clinicalType === 'PHQ-9' ? 27 : 21;
+      const clinicalNorm = clinical / cMax;
+      
+      const txtContr = Math.round(textSentiment * 40);
+      const vocContr = Math.round(vocalStress * 40);
+      const clinContr = details.latest_clinical_assessment ? Math.round(clinicalNorm * 20) : 0;
+      const sumContr = txtContr + vocContr + clinContr;
+      
+      const txtPct = sumContr > 0 ? Math.round((txtContr / sumContr) * 100) : 40;
+      const vocPct = sumContr > 0 ? Math.round((vocContr / sumContr) * 100) : 40;
+      const clinPct = sumContr > 0 ? Math.round((clinContr / sumContr) * 100) : 20;
+
+      const factors = [
+        { name: "Text Sentiment", weight: txtPct, state: `${details.text_sentiment_tag || 'neutral'} (${Math.round(textSentiment*100)}%)` },
+        { name: "Acoustic Voice Stress (VSA)", weight: vocPct, state: vocalStress > 0 ? `Jitter: ${vsa.vocal_jitter || 0} (${Math.round(vocalStress*100)}%)` : 'No voice data' },
+        { name: `Clinical Assessment (${clinicalType})`, weight: clinPct, state: details.latest_clinical_assessment ? `Score: ${clinical}/${cMax}` : 'No assessment data' }
+      ];
+      
+      factors.forEach(f => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${f.name}</strong></td>
+          <td>
+            <div>${f.weight}%</div>
+            <div class="xai-bar-wrap"><div class="xai-bar-fill" style="width:${f.weight}%; background:${f.weight > 40 ? '#b91c1c' : 'var(--sage)'}"></div></div>
+          </td>
+          <td>${f.state}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch(e) {
+      console.error(e);
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--hint)">Error parsing XAI logs.</td></tr>`;
+    }
+  }
+
+  function openResolutionModal(alertId) {
+    selectedAlertId = alertId;
+    document.getElementById('resolution-notes').value = '';
+    const modal = document.getElementById('resolution-modal');
+    modal.classList.add('show');
+  }
+
+  function closeResolutionModal() {
+    document.getElementById('resolution-modal').classList.remove('show');
+    selectedAlertId = null;
+  }
+
+  function submitResolution() {
+    const notes = document.getElementById('resolution-notes').value.trim();
+    if (!notes) {
+      showToast('Please type action logs to resolve this alert.');
+      return;
+    }
+    
+    fetch(`/api/victim/alerts/${selectedAlertId}/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes: notes })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          showToast('Alert resolved successfully! Case marked as stabilized. <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
+          closeResolutionModal();
+          loadActiveAlerts();
+          loadVictimSupervision();
+        } else {
+          showToast('Failed to resolve alert.');
+        }
+      });
+  }
+
+  let adminDistributionData = [];
+
+  function loadAdminPortalData() {
+    const totalCasesEl = document.getElementById('admin-total-cases');
+    const activeAlertsEl = document.getElementById('admin-active-alerts');
+    const activeSosEl = document.getElementById('admin-active-sos');
+    const disbursedFundsEl = document.getElementById('admin-disbursed-funds');
+    const allocatedFundsEl = document.getElementById('admin-allocated-funds');
+    
+    if (!totalCasesEl) return;
+    
+    fetch('/api/admin/analytics')
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          totalCasesEl.textContent = data.total_cases;
+          activeAlertsEl.textContent = data.active_alerts;
+          activeSosEl.textContent = data.active_sos;
+          
+          let disbursedLakhs = (data.financials.disbursed / 100000).toFixed(2);
+          let allocatedLakhs = (data.financials.allocated / 100000).toFixed(2);
+          disbursedFundsEl.textContent = `₹${disbursedLakhs} Lakhs`;
+          allocatedFundsEl.textContent = `Approved: ₹${allocatedLakhs}L`;
+          
+          adminDistributionData = data.regional_distribution;
+          renderAdminMatrix('all');
+        }
+      });
+  }
+
+  function renderAdminMatrix(filterState) {
+    const tbody = document.getElementById('admin-matrix-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    const filtered = filterState === 'all' 
+      ? adminDistributionData 
+      : adminDistributionData.filter(item => item.state === filterState);
+      
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--hint)">No regional cases logged.</td></tr>`;
+      return;
+    }
+    
+    filtered.forEach(item => {
+      const tr = document.createElement('tr');
+      
+      let alertStyle = item.active_alerts > 0 
+        ? 'color:#ef4444; font-weight:700; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.1); padding:2px 8px; border-radius:8px' 
+        : 'color:var(--muted)';
+        
+      let alertContent = item.active_alerts > 0 
+        ? `<span style="${alertStyle}"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${item.active_alerts} High-Risk Alert(s)</span>`
+        : `<span style="${alertStyle}">None</span>`;
+        
+      let isupport = '';
+      if (item.state === 'Maharashtra') {
+        isupport = '<div style="font-size:.75rem"><strong>Police Nodal:</strong> Sp. Cell (022-22620111)<br/><strong>DLSA:</strong> City Court Hall 4</div>';
+      } else if (item.state === 'Uttar Pradesh') {
+        isupport = '<div style="font-size:.75rem"><strong>Police Nodal:</strong> Atrocity Desk (0522-2200234)<br/><strong>DLSA:</strong> District Court complex</div>';
+      } else {
+        isupport = '<div style="font-size:.75rem"><strong>Police Nodal:</strong> District HQ Desk<br/><strong>DLSA:</strong> District Complex Room 12</div>';
+      }
+      
+      tr.innerHTML = `
+        <td style="padding:12px; font-weight:600">${item.state}</td>
+        <td style="padding:12px">${item.district}</td>
+        <td style="text-align:center; padding:12px; font-weight:600">${item.active_cases}</td>
+        <td style="text-align:center; padding:12px">${alertContent}</td>
+        <td style="text-align:right; padding:12px; font-weight:700; color:#10b981">₹${(item.payouts_completed || 0).toLocaleString()}</td>
+        <td style="text-align:left; padding:12px; line-height:1.4">${isupport}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function filterAdminMatrix(btn, filterState) {
+    const buttons = document.querySelectorAll('#admin-state-tabs .tab-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    
+    renderAdminMatrix(filterState);
+  }
+
+  function loadCounselorSilentQueue() {
+    fetch('/api/victim/non-response-check?hours=24')
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById('counselor-silent-list');
+        if (!container) return;
+        container.innerHTML = '';
+        if (data.ok && data.victims && data.victims.length > 0) {
+          data.victims.forEach(v => {
+            const div = document.createElement('div');
+            div.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid rgba(245,158,11,0.2); border-radius:10px; padding:10px; font-size:.8rem; display:flex; justify-content:space-between; align-items:center';
+            div.innerHTML = `
+              <div>
+                <div style="font-weight:700; color:#d97706">${v.victim_name}</div>
+                <div style="font-size:.7rem; color:var(--muted)">Case: ${v.case_number || 'N/A'} | ${v.category || 'Atrocity Relief'}</div>
+                <div style="font-size:.65rem; color:var(--hint)">Last Activity: ${v.last_checkin}</div>
+              </div>
+              <button class="btn-action" style="padding:4px 10px; font-size:.7rem; background:#d97706" onclick="alert('Initiating proactive welfare outreach call to ${v.victim_name}')">Outreach Call</button>
+            `;
+            container.appendChild(div);
+          });
+        } else {
+          container.innerHTML = '<div style="text-align:center; padding:10px; color:var(--hint); font-size:.8rem">All assigned victims actively logging check-ins.</div>';
+        }
+      });
+  }
+
   // Load dashboard on start
+  function loadDashboard() {
+    fetch('/api/auth/me')
+      .then(r => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then(d => {
+        if (d.logged_in && d.user) {
+          currentUser = d.user;
+          if (currentUser.role !== 'therapist') {
+            window.location.href = '/';
+            return;
+          }
+          document.getElementById('welcome-name').textContent = currentUser.name;
+          
+          document.getElementById('p-name').value = currentUser.name || '';
+          document.getElementById('p-username').value = currentUser.username || '';
+          selectAvatar(currentUser.avatar || '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
+
+          document.getElementById('p-title').value = currentUser.title || '';
+          document.getElementById('p-specialization').value = currentUser.specialization || '';
+          document.getElementById('p-experience').value = currentUser.experience || '';
+          document.getElementById('p-fees').value = currentUser.fees || '';
+          document.getElementById('p-phone').value = currentUser.phone || '';
+          document.getElementById('p-availability').value = currentUser.availability || '';
+          document.getElementById('p-location').value = currentUser.location || '';
+          document.getElementById('p-bio').value = currentUser.bio || '';
+        } else {
+          window.location.href = '/auth';
+        }
+      })
+      .catch(() => {
+        window.location.href = '/auth';
+      });
+
+    loadAppointments();
+    loadCounselorSilentQueue();
+  }
+  
   window.onload = loadDashboard;
 </script>
 </body>

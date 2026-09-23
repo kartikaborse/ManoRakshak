@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManoRakshak.AI — MoSJE State & National Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(23, 32, 51, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-gold: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-indigo: #6366f1;
+      --accent-rose: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --hint: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 32px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #6366f1, #10b981);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 1.3rem;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    }
+    .brand-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: white;
+      letter-spacing: 0.02em;
+    }
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex; gap: 12px; align-items: center;
+    }
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-nav:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Stats Banner */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .stat-title {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: white;
+    }
+    .stat-subtext {
+      font-size: 0.75rem;
+      color: var(--hint);
+    }
+
+    /* Main Dashboard Grid */
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 26px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* Table Styles */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+    .data-table td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-gold { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* Action Buttons */
+    .btn-action {
+      background: var(--accent-indigo);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .silent-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div class="brand-text">
+          <h1>ManoRakshak.AI</h1>
+          <p>Ministry of Social Justice & Empowerment (MoSJE) — National Command Center</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="/victim/dashboard" class="btn-nav">Protection Hub</a>
+        <a href="/therapist/dashboard" class="btn-nav">Counselor Console</a>
+        <a href="/" class="btn-nav">Main Portal</a>
+      </div>
+    </header>
+
+    <!-- Top Key Metrics Banner -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-title">Total Registered Atrocity Cases</span>
+        <span class="stat-value" id="stat-cases">0</span>
+        <span class="stat-subtext">Monitored across 4 State Portals</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Active High-Distress Escalations</span>
+        <span class="stat-value" style="color: var(--accent-rose)" id="stat-alerts">0</span>
+        <span class="stat-subtext">Requires priority counselor outreach</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Active Geolocation SOS Signals</span>
+        <span class="stat-value" style="color: var(--accent-gold)" id="stat-sos">0</span>
+        <span class="stat-subtext">Live Nodal Police Guards Dispatched</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Statutory Relief DBT Disbursed</span>
+        <span class="stat-value" style="color: var(--accent-emerald)" id="stat-disbursed">₹0.00L</span>
+        <span class="stat-subtext">SC/ST Act Rule 12(4) Direct Payouts</span>
+      </div>
+    </div>
+
+    <!-- Main Grid Content -->
+    <div class="grid-layout">
+      <!-- Left Column: Regional Atrocity Monitoring & Statutory Claims -->
+      <div style="display:flex; flex-direction:column; gap:28px">
+        <!-- State-Wise Monitoring -->
+        <div class="card">
+          <div class="card-title">
+            <span>🗺️ State & District Atrocity Monitoring Matrix</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>State Jurisdiction</th>
+                <th>Primary District</th>
+                <th>Active Cases</th>
+                <th>Critical Alerts</th>
+                <th>Statutory Payouts</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="state-matrix-body">
+              <tr><td colspan="6" style="text-align:center; color: var(--hint)">Loading state distribution telemetry...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Multi-Agency Coordination Network -->
+        <div class="card">
+          <div class="card-title">
+            <span>🤝 Multi-Agency Emergency Response Network</span>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px">
+            <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.2); padding:16px; border-radius:16px">
+              <h4 style="font-size:.85rem; color:#818cf8; margin-bottom:6px">District Legal Services (DLSA)</h4>
+              <p style="font-size:.75rem; color:var(--muted)">100% Free Legal Representation auto-routed under SC/ST Act Sec 15A.</p>
+            </div>
+            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); padding:16px; border-radius:16px">
+              <h4 style="font-size:.85rem; color:#34d399; margin-bottom:6px">District Police Nodal Officers</h4>
+              <p style="font-size:.75rem; color:var(--muted)">Live GPS dispatch integration with DySP Atrocity Protection Cells.</p>
+            </div>
+            <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); padding:16px; border-radius:16px">
+              <h4 style="font-size:.85rem; color:#fbbf24; margin-bottom:6px">NHAA 14566 IVRS Helpline</h4>
+              <p style="font-size:.75rem; color:var(--muted)">Indic Regional Dialect IVRS call speech analytics & SMS fallbacks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Silent Period Warnings & SOS Signals -->
+      <div style="display:flex; flex-direction:column; gap:28px">
+        <!-- Silent Period Non-Response Tracking -->
+        <div class="card">
+          <div class="card-title">
+            <span>⌛ Silent Period Non-Response Queue</span>
+          </div>
+          <p style="font-size:.78rem; color:var(--hint); margin-top:-10px; margin-bottom:14px">Detecting silent periods (>48h non-interaction) to prevent victim dropouts or covert intimidation.</p>
+          <div id="silent-period-list">
+            <div style="text-align:center; padding:20px; color:var(--hint)">Scanning silent period logs...</div>
+          </div>
+        </div>
+
+        <!-- Live SOS Alerts Console -->
+        <div class="card">
+          <div class="card-title">
+            <span>🚨 Active SOS Signals</span>
+          </div>
+          <div id="sos-alerts-list">
+            <div style="text-align:center; padding:20px; color:var(--hint)">No active emergency SOS signals.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadAdminDashboard() {
+      fetch('/api/admin/analytics')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            document.getElementById('stat-cases').textContent = data.total_cases || 0;
+            document.getElementById('stat-alerts').textContent = data.active_alerts || 0;
+            document.getElementById('stat-sos').textContent = data.active_sos || 0;
+            
+            const disbursedLakhs = ((data.financials ? data.financials.disbursed : 0) / 100000).toFixed(2);
+            document.getElementById('stat-disbursed').textContent = `₹${disbursedLakhs}L`;
+
+            // Populate State Matrix
+            const tbody = document.getElementById('state-matrix-body');
+            tbody.innerHTML = '';
+            if (data.regional_distribution && data.regional_distribution.length > 0) {
+              data.regional_distribution.forEach(reg => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td style="font-weight:700; color:white">${reg.state}</td>
+                  <td style="color:var(--muted)">${reg.district}</td>
+                  <td style="font-weight:700">${reg.active_cases}</td>
+                  <td><span class="badge ${reg.active_alerts > 0 ? 'badge-rose' : 'badge-emerald'}">${reg.active_alerts} Active Alerts</span></td>
+                  <td style="color:var(--accent-emerald); font-weight:700">₹${(reg.payouts_completed/100000).toFixed(2)}L</td>
+                  <td><button class="btn-action" onclick="alert('Viewing State Telemetry for ${reg.state}')">Inspect</button></td>
+                `;
+                tbody.appendChild(tr);
+              });
+            }
+          }
+        });
+
+      // Load Silent Period Non-Response Queue
+      fetch('/api/victim/non-response-check?hours=24')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('silent-period-list');
+          container.innerHTML = '';
+          if (data.ok && data.victims && data.victims.length > 0) {
+            data.victims.forEach(v => {
+              const div = document.createElement('div');
+              div.className = 'silent-item';
+              div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-weight:700; font-size:.82rem; color:var(--accent-gold)">${v.victim_name}</span>
+                  <span class="badge badge-gold">Silent Period</span>
+                </div>
+                <div style="font-size:.72rem; color:var(--muted)">Case: ${v.case_number || 'N/A'} (${v.category || 'Atrocity Relief'})</div>
+                <div style="font-size:.7rem; color:var(--hint)">Last Activity: ${v.last_checkin}</div>
+              `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = '<div style="font-size:.8rem; color:var(--hint); text-align:center; padding:10px">All victims active. Zero silent period dropouts.</div>';
+          }
+        });
+
+      // Load Active SOS Signals
+      fetch('/api/victim/sos')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('sos-alerts-list');
+          container.innerHTML = '';
+          if (data.ok && data.alerts && data.alerts.length > 0) {
+            data.alerts.forEach(s => {
+              const div = document.createElement('div');
+              div.className = 'silent-item';
+              div.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+              div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-weight:700; font-size:.82rem; color:var(--accent-rose)">🚨 ${s.victim_name}</span>
+                  <span class="badge badge-rose">GPS Locked</span>
+                </div>
+                <div style="font-size:.72rem; color:var(--muted)">Coordinates: ${s.latitude}, ${s.longitude}</div>
+                <button class="btn-action" style="background:var(--accent-rose); margin-top:4px" onclick="dispatchOfficer(${s.id})">Dispatch Police Guard</button>
+              `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = '<div style="font-size:.8rem; color:var(--hint); text-align:center; padding:10px">No active emergency SOS signals.</div>';
+          }
+        });
+    }
+
+    function dispatchOfficer(sosId) {
+      fetch(`/api/victim/sos/${sosId}/dispatch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ officer_name: 'Special Atrocity Protection Nodal Officer' })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok) {
+            alert('Police Nodal Guard Dispatched!');
+            loadAdminDashboard();
+          }
+        });
+    }
+
+    window.onload = loadAdminDashboard;
+  </script>
+</body>
+</html>

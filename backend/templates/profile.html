@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — My Profile</title>
+  <title>ManoRakshak.AI — My Profile</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -138,6 +138,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -146,7 +158,7 @@
 
 <div class="page">
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoKart</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <nav class="nav-pill">
       <a href="/diary"   class="nav-btn">Diary</a>
       <a href="/chatbot" class="nav-btn">Chat</a>
@@ -165,10 +177,10 @@
     <div class="profile-sidebar">
       <div class="card">
         <div class="avatar-wrapper">
-          <div class="avatar-big" id="sidebar-avatar">🌿</div>
+          <div class="avatar-big" id="sidebar-avatar"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div>
           <h2 class="profile-title" id="sidebar-name">Loading...</h2>
           <p class="profile-subtitle" id="sidebar-username">@loading</p>
-          <div class="streak-badge-profile" id="sidebar-streak">🌱 Loading streak...</div>
+          <div class="streak-badge-profile" id="sidebar-streak"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 22V10"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/></svg> Loading streak...</div>
         </div>
         
         <div class="divider"></div>
@@ -327,8 +339,50 @@
             <textarea id="p-bio" class="form-control" rows="4" placeholder="Describe your philosophy, clinical approach, and background..."></textarea>
           </div>
         </div>
+
+        <!-- Victim Case Profile Fields (Shown if role is user) -->
+        <div id="victim-fields" style="display:none; margin-top:20px; border-top:1.5px solid rgba(0,0,0,.05); padding-top:20px">
+          <h4 style="font-size:.9rem; color:var(--sage); margin-bottom:12px; font-weight:600"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Atrocity Case Profile (Version 2)</h4>
+          <p class="section-desc" style="margin-bottom:14px">Register or update your case file details to enable the Dynamic distress monitoring trackers.</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="p-case-number">Legal Case Number</label>
+              <input type="text" id="p-case-number" class="form-control" placeholder="e.g. CASE-SCST-2026-9912"/>
+            </div>
+            <div class="form-group">
+              <label for="p-category">Atrocity Category</label>
+              <select id="p-category" class="form-control" style="height:44px">
+                <option value="">-- Select Category --</option>
+                <option value="Caste-based Atrocity and Grievous Hurt">Caste-based Atrocity and Grievous Hurt</option>
+                <option value="Rape / Gang Rape of Dalit/Tribal Woman">Rape / Gang Rape of Dalit/Tribal Woman</option>
+                <option value="Arson and Land Dispossession">Arson and Land Dispossession</option>
+                <option value="Social Boycott and Exclusion">Social Boycott and Exclusion</option>
+                <option value="Witness Intimidation and Harassment">Witness Intimidation and Harassment</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label for="p-judicial-stage">Current Judicial Stage</label>
+              <select id="p-judicial-stage" class="form-control" style="height:44px">
+                <option value="Investigation">Investigation (FIR Stage)</option>
+                <option value="Charge Sheet">Charge Sheet Filed</option>
+                <option value="Trial">Trial / Court Hearings</option>
+                <option value="Rehabilitation">Rehabilitation & Compensation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="p-counselor-select">Assigned Counselor</label>
+              <select id="p-counselor-select" class="form-control" style="height:44px">
+                <option value="">-- No Counselor --</option>
+              </select>
+            </div>
+          </div>
+        </div>
         
-        <button class="btn-submit" id="btn-save-profile" onclick="saveProfile()">Save Changes</button>
+        <button class="btn-submit" id="btn-save-profile" onclick="saveProfile()" style="margin-top:20px">Save Changes</button>
       </div>
 
       <!-- Change Password -->
@@ -363,7 +417,7 @@
     </div>
   </div>
 
-  <footer>ManoKart &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <div class="toast" id="toast">Profile updated successfully!</div>
@@ -371,14 +425,14 @@
 <script src="/games/gameEngine.js"></script>
 <script>
   let currentUser = {};
-  let selectedEmoji = '🌿';
-  const EMOJIS = ['🌿', '🌸', '🧘', '🌊', '🌻', '☀️', '🍃', '🦋', '🌈', '🕯️', '🥑', '🐾'];
+  let selectedEmoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
+  const EMOJIS = ['<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 11 6-2 6 2"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>️', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M8 8a4 4 0 1 0 0 8M16 8a4 4 0 1 1 0 8"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17a10 10 0 0 0-20 0"/><path d="M6 17a6 6 0 0 1 12 0"/><path d="M10 17a2 2 0 0 1 4 0"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 12v10M9 22h6"/></svg>️', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>', '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="6" cy="9" r="2"/><path d="M12 13a4 4 0 0 0-4 4v3h8v-3a4 4 0 0 0-4-4z"/></svg>'];
   const MOOD_META = [
-    { label: "Joyful", emoji: "☀️", value: 5, color: "#EF9F27" },
-    { label: "Happy", emoji: "🌸", value: 4, color: "#D4537E" },
-    { label: "Calm", emoji: "🌿", value: 3, color: "#1D9E75" },
-    { label: "Sad", emoji: "🌧️", value: 2, color: "#378ADD" },
-    { label: "Anxious", emoji: "🌪️", value: 1, color: "#993556" }
+    { label: "Joyful", emoji: '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>️', value: 5, color: "#EF9F27" },
+    { label: "Happy", emoji: '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg>', value: 4, color: "#D4537E" },
+    { label: "Calm", emoji: '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', value: 3, color: "#1D9E75" },
+    { label: "Sad", emoji: '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>️', value: 2, color: "#378ADD" },
+    { label: "Anxious", emoji: '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 4H3M20 8H6M18 12H9M15 16h-4M13 20h-1"/></svg>️', value: 1, color: "#993556" }
   ];
 
   // ── Show Toast ──
@@ -420,7 +474,7 @@
           currentUser = d.user;
           document.getElementById('sidebar-name').textContent = currentUser.name;
           document.getElementById('sidebar-username').textContent = '@' + (currentUser.username || currentUser.email.split('@')[0]);
-          document.getElementById('sidebar-avatar').textContent = currentUser.avatar || '🌿';
+          document.getElementById('sidebar-avatar').textContent = currentUser.avatar || '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
           
           document.getElementById('meta-email').textContent = currentUser.email;
           if (currentUser.created) {
@@ -432,10 +486,10 @@
 
           document.getElementById('p-name').value = currentUser.name || '';
           document.getElementById('p-username').value = currentUser.username || '';
-          selectAvatar(currentUser.avatar || '🌿');
+          selectAvatar(currentUser.avatar || '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
 
           if (currentUser.role === 'therapist') {
-            document.getElementById('sidebar-streak').textContent = '🤝 Professional Therapist';
+            document.getElementById('sidebar-streak').textContent = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Professional Therapist';
             document.getElementById('therapist-fields').style.display = 'block';
             document.getElementById('p-title').value = currentUser.title || '';
             document.getElementById('p-specialization').value = currentUser.specialization || '';
@@ -449,8 +503,38 @@
             document.getElementById('wellness-history-card').style.display = 'none';
             document.getElementById('game-progress-card').style.display = 'none';
           } else {
-            document.getElementById('sidebar-streak').textContent = currentUser.streak > 0 ? '🔥 ' + currentUser.streak + '-day streak' : '🌱 Wellness companion';
+            document.getElementById('sidebar-streak').textContent = currentUser.streak > 0 ? '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg> ' + currentUser.streak + '-day streak' : '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 22V10"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/></svg> Wellness companion';
             document.getElementById('therapist-fields').style.display = 'none';
+            document.getElementById('victim-fields').style.display = 'block';
+            
+            // Load counselors dropdown list
+            fetch('/api/therapists')
+              .then(r => r.json())
+              .then(data => {
+                const select = document.getElementById('p-counselor-select');
+                select.innerHTML = '<option value="">-- No Counselor --</option>';
+                if (data.ok && data.therapists) {
+                  data.therapists.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = `${t.name} (${t.title || 'Counselor'})`;
+                    select.appendChild(opt);
+                  });
+                }
+                
+                // Refetch active case profile details if present
+                fetch('/api/victim/profile')
+                  .then(rv => rv.json())
+                  .then(vdata => {
+                    if (vdata.ok && vdata.profile) {
+                      document.getElementById('p-case-number').value = vdata.profile.case_number || '';
+                      document.getElementById('p-category').value = vdata.profile.category || '';
+                      document.getElementById('p-judicial-stage').value = vdata.profile.judicial_stage || 'Investigation';
+                      document.getElementById('p-counselor-select').value = vdata.profile.counselor_id || '';
+                    }
+                  });
+              });
+
             loadAnalytics();
             loadGameProgress();
           }
@@ -586,8 +670,8 @@
                 <span style="padding:2px 8px; border-radius:12px; font-size:.7rem; font-weight:600; color:${statusColor}; background:${statusBg}; border:1px solid ${statusColor}20">${app.status}</span>
               </div>
               <div style="display:flex; justify-content:space-between; color:var(--muted); font-size:.78rem; margin-top:2px">
-                <span>📅 ${dateFriendly}</span>
-                <span>🕒 ${app.appointment_time}</span>
+                <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${dateFriendly}</span>
+                <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${app.appointment_time}</span>
               </div>
               ${app.notes ? `<div style="font-size:.75rem; color:var(--hint); border-top:1.5px dashed rgba(209,208,199,.4); padding-top:6px; margin-top:2px; font-style:italic">"${app.notes}"</div>` : ''}
             `;
@@ -621,7 +705,7 @@
     .then(r => r.json().then(data => ({ ok: r.ok, data })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast(`Appointment ${newStatus.toLowerCase()} successfully! 🌿`);
+        showToast(`Appointment ${newStatus.toLowerCase()} successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`);
         loadAppointments();
       } else {
         showToast(data.error || 'Failed to update status.');
@@ -668,7 +752,51 @@
     .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast('Profile updated successfully! 🌿');
+        if (currentUser.role === 'user') {
+          const caseNumber = document.getElementById('p-case-number').value.trim();
+          const category = document.getElementById('p-category').value;
+          const judicialStage = document.getElementById('p-judicial-stage').value;
+          const counselorId = document.getElementById('p-counselor-select').value;
+          
+          if (caseNumber || category) {
+            if (!caseNumber || !category) {
+              showToast('Case number and Atrocity category are required to link a victim profile.');
+              btn.textContent = 'Save Changes';
+              btn.disabled = false;
+              return;
+            }
+            
+            const victimPayload = {
+              case_number: caseNumber,
+              category: category,
+              judicial_stage: judicialStage,
+              counselor_id: counselorId ? parseInt(counselorId) : null
+            };
+            
+            fetch('/api/victim/profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(victimPayload)
+            })
+            .then(rv => rv.json())
+            .then(vdata => {
+              if (vdata.ok) {
+                showToast('Case profile updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
+                loadProfile();
+              } else {
+                showToast('Failed to save case profile: ' + (vdata.error || ''));
+              }
+            })
+            .catch(() => showToast('Network error updating case profile.'))
+            .finally(() => {
+              btn.textContent = 'Save Changes';
+              btn.disabled = false;
+            });
+            return;
+          }
+        }
+        
+        showToast('Profile updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
         loadProfile();
       } else {
         showToast(data.error || 'Failed to update profile');
@@ -743,7 +871,7 @@
     .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast('Password updated successfully! 🔐');
+        showToast('Password updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>');
         document.getElementById('p-current-pass').value = '';
         document.getElementById('p-new-pass').value = '';
         document.getElementById('p-confirm-pass').value = '';

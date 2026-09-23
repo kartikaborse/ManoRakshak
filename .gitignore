@@ -26,10 +26,12 @@ voices/
 *.wav
 *.mp3
 
-# IDE, OS, and scratch files
+# IDE, OS, lock files, and scratch files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 backend/scratch/
+~$*.pptx
+~$*.docx
 

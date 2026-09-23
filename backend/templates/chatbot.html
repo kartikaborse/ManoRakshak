@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoKart — Chat</title>
+  <title>ManoRakshak.AI — Chat</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#f7fdf9,#fdf4f8);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
@@ -58,19 +58,31 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
   <a href="/" class="back">← Back to hub</a>
   <div class="chat-wrap">
     <div class="chat-header">
-      <div style="font-size:2rem">💬</div>
+      <div style="font-size:2rem"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
       <div>
-        <h1>ManoKart Companion</h1>
-        <p>I'm here to listen, always 🌿</p>
+        <h1>ManoRakshak.AI Companion</h1>
+        <p>I'm here to listen, always <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></p>
       </div>
     </div>
     <div class="messages" id="messages">
-      <div class="msg bot">Hello 🌸 I'm your ManoKart companion. How are you feeling today?</div>
+      <div class="msg bot">Hello <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg> I'm your ManoRakshak.AI companion. How are you feeling today?</div>
     </div>
     <div class="input-row">
       <input id="inp" type="text" placeholder="Share what's on your mind..." onkeydown="if(event.key==='Enter')send()"/>
@@ -107,13 +119,13 @@
         if (data.reply) {
           thinking.textContent = data.reply;
         } else if (data.error) {
-          thinking.textContent = data.error + ' 🌧️';
+          thinking.textContent = data.error + ' <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>️';
         } else {
-          thinking.textContent = 'Something went wrong — please try again 🌧️';
+          thinking.textContent = 'Something went wrong — please try again <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>️';
         }
         thinking.classList.remove('typing');
       } catch(e) {
-        thinking.textContent = 'Could not reach the server. Is it running? 🌿';
+        thinking.textContent = 'Could not reach the server. Is it running? <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
         thinking.classList.remove('typing');
       }
     }

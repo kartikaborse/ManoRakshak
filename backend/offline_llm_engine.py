@@ -1,20 +1,22 @@
 """
-ManoKart — Offline LLM Engine (Ollama / Llama-3.2-1B)
+ManoRakshak.AI — Offline LLM Engine (Ollama / Llama-3.2-1B)
 =====================================================
 Communicates with local Ollama service running on port 11434.
 Generates empathetic, CBT-guided responses enriched with RAG context.
 """
 
+import os
 import requests
 import logging
 from backend.rag_engine import query_rag
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.2:1b"
+OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
+OLLAMA_URL = f"{OLLAMA_HOST}/api/generate"
+MODEL_NAME = os.environ.get("OLLAMA_LLM_MODEL", "llama3.2:1b")
 
-SYSTEM_PROMPT = """You are ManoKart AI Counselor, an empathetic, supportive, and active-listening CBT mental health assistant.
+SYSTEM_PROMPT = """You are ManoRakshak.AI AI Counselor, an empathetic, supportive, and active-listening CBT mental health assistant.
 Your goal is to offer compassionate support, psychological coping strategies, and thoughtful reflections.
 
 RULES:
@@ -26,7 +28,7 @@ RULES:
 def is_ollama_running() -> bool:
     """Check if Ollama service is responsive."""
     try:
-        r = requests.get("http://localhost:11434/api/tags", timeout=2)
+        r = requests.get(f"{OLLAMA_HOST}/api/tags", timeout=2)
         return r.status_code == 200
     except Exception:
         return False
@@ -49,7 +51,7 @@ def generate_offline_counselor_response(user_query: str) -> dict:
 [USER QUESTION / MESSAGE]
 {user_query}
 
-ManoKart Counselor Response:"""
+ManoRakshak.AI Counselor Response:"""
 
     # 3. Request Ollama local service
     try:

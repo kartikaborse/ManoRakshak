@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ManoRakshak.AI — Victim Case Hub & Well-being Monitor</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --sage: #0F6E56;
+      --sage-mid: #1D9E75;
+      --sage-light: #5DCAA5;
+      --sage-pale: #9FE1CB;
+      --sage-ghost: #E1F5EE;
+      --warm-white: #f9f8f4;
+      --ink: #2C2C2A;
+      --muted: #5F5E5A;
+      --hint: #B4B2A9;
+      --card-border: rgba(93, 202, 165, .18);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--warm-white);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse 70% 60% at 10% 0%, rgba(93, 202, 165, .13) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 90% 20%, rgba(253, 244, 248, .9) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255, 251, 242, .8) 0%, transparent 60%);
+      pointer-events: none
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: .35;
+      z-index: 0;
+      animation: drift 12s ease-in-out infinite alternate
+    }
+
+    .orb1 {
+      width: 320px;
+      height: 320px;
+      background: #9FE1CB;
+      top: -80px;
+      left: -80px;
+      animation-delay: 0s
+    }
+
+    .orb2 {
+      width: 240px;
+      height: 240px;
+      background: #f4c0d1;
+      top: 30%;
+      right: -60px;
+      animation-delay: -4s
+    }
+
+    .orb3 {
+      width: 200px;
+      height: 200px;
+      background: #fac775;
+      bottom: 10%;
+      left: 20%;
+      animation-delay: -8s
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      100% {
+        transform: translate(30px, 20px) scale(1.08)
+      }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px 80px
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 0
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--sage);
+      letter-spacing: -.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none
+    }
+
+    .nav-pill {
+      display: flex;
+      gap: 8px
+    }
+
+    .nav-btn {
+      padding: 8px 18px;
+      border-radius: 99px;
+      border: 1.5px solid var(--card-border);
+      background: rgba(255, 255, 255, .7);
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+      backdrop-filter: blur(8px);
+      text-decoration: none;
+      display: inline-block
+    }
+
+    .nav-btn:hover {
+      background: var(--sage);
+      color: white;
+      border-color: var(--sage)
+    }
+
+    .welcome-card {
+      background: rgba(255, 255, 255, .85);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 32px;
+      margin-top: 36px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(93, 202, 165, .04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px
+    }
+
+    .welcome-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--ink);
+      letter-spacing: -0.5px
+    }
+
+    .welcome-text h1 em {
+      color: var(--sage);
+      font-style: italic
+    }
+
+    .welcome-text p {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-top: 6px;
+      font-weight: 300
+    }
+
+    .badge-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 110, 86, .12);
+      border: 1px solid rgba(93, 202, 165, .3);
+      border-radius: 99px;
+      padding: 8px 18px;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--sage)
+    }
+
+    .case-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 159, 39, .12);
+      border: 1px solid rgba(239, 159, 39, .3);
+      border-radius: 99px;
+      padding: 8px 18px;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #B45309
+    }
+
+    /* Stepper Progress bar */
+    .progress-stepper-card {
+      background: rgba(255, 255, 255, .65);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 24px;
+      backdrop-filter: blur(8px)
+    }
+
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-top: 10px
+    }
+
+    .stepper::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 4%;
+      right: 4%;
+      height: 4px;
+      background: #E1DED8;
+      z-index: 0
+    }
+
+    .stepper-progress {
+      position: absolute;
+      top: 15px;
+      left: 4%;
+      height: 4px;
+      background: var(--sage-light);
+      z-index: 0;
+      transition: width 0.4s ease
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1;
+      width: 20%;
+      position: relative;
+      text-align: center
+    }
+
+    .step-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #E1DED8;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .85rem;
+      border: 3px solid var(--warm-white);
+      transition: all .25s
+    }
+
+    .step.active .step-circle {
+      background: var(--sage-light);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(93, 202, 165, .25)
+    }
+
+    .step.completed .step-circle {
+      background: var(--sage);
+      color: white
+    }
+
+    .step-lbl {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--hint);
+      margin-top: 8px;
+      transition: color .25s
+    }
+
+    .step.active .step-lbl {
+      color: var(--sage);
+      font-weight: 700
+    }
+
+    .step.completed .step-lbl {
+      color: var(--ink)
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 32px;
+      margin-top: 32px
+    }
+
+    @media(max-width:900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .75);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 40px rgba(93, 202, 165, .05);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: fit-content
+    }
+
+    .section-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(93, 202, 165, .15);
+      padding-bottom: 14px;
+      margin-bottom: 6px
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--sage)
+    }
+
+    /* Checkin form styles */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .form-group label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .form-control {
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1.5px solid rgba(209, 208, 199, .6);
+      background: white;
+      font-family: inherit;
+      font-size: .95rem;
+      color: var(--ink);
+      outline: none;
+      transition: all .2s;
+      resize: none
+    }
+
+    .form-control:focus {
+      border-color: var(--sage-light);
+      box-shadow: 0 0 0 3px var(--sage-ghost)
+    }
+
+    /* Mic button visual styling */
+    .voice-control-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 4px
+    }
+
+    .btn-mic {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: var(--sage-ghost);
+      color: var(--sage);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      box-shadow: 0 2px 10px rgba(15, 110, 86, .08)
+    }
+
+    .btn-mic:hover {
+      transform: scale(1.05);
+      background: rgba(93, 202, 165, .25)
+    }
+
+    .btn-mic.recording {
+      background: #fee2e2;
+      color: #b91c1c;
+      animation: pulseMic 1.5s infinite
+    }
+
+    @keyframes pulseMic {
+
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.4)
+      }
+
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 0 10px rgba(185, 28, 28, 0)
+      }
+    }
+
+    .mic-status {
+      font-size: .85rem;
+      color: var(--muted);
+      font-weight: 500
+    }
+
+    .btn-submit {
+      padding: 14px 32px;
+      border-radius: 99px;
+      border: none;
+      background: var(--sage);
+      color: white;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 4px 16px rgba(15, 110, 86, .15);
+      align-self: flex-start
+    }
+
+    .btn-submit:hover {
+      background: var(--sage-mid);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 110, 86, .22)
+    }
+
+    .v2-toggle-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid var(--card-border);
+      padding-bottom: 12px;
+    }
+
+    .v2-toggle-btn {
+      padding: 10px 20px;
+      border-radius: 99px;
+      border: 1.5px solid var(--card-border);
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      outline: none;
+    }
+
+    .v2-toggle-btn:hover {
+      background: var(--sage-ghost);
+      color: var(--sage-mid);
+    }
+
+    .v2-toggle-btn.active {
+      background: var(--sage-mid);
+      border-color: var(--sage-mid);
+      color: white;
+    }
+
+    /* Emergency protection button */
+    .danger-alert-card {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border: 1px solid rgba(185, 28, 28, .15);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px
+    }
+
+    .danger-title {
+      font-weight: 700;
+      color: #991b1b;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .danger-desc {
+      font-size: .85rem;
+      color: #7f1d1d;
+      line-height: 1.45
+    }
+
+    .btn-danger {
+      padding: 12px 24px;
+      border-radius: 99px;
+      border: none;
+      background: #b91c1c;
+      color: white;
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 4px 12px rgba(185, 28, 28, .2);
+      width: fit-content
+    }
+
+    .btn-danger:hover {
+      background: #991b1b;
+      transform: translateY(-1px)
+    }
+
+    /* Trajectory chart canvas */
+    .chart-container {
+      width: 100%;
+      height: 220px;
+      position: relative;
+      margin-top: 10px
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible
+    }
+
+    .chart-tooltip {
+      position: absolute;
+      background: var(--ink);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: .78rem;
+      font-weight: 500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      z-index: 10
+    }
+
+    /* Recommendation Card Grid */
+    .recs-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 10px
+    }
+
+    .rec-card {
+      background: white;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      transition: all .2s;
+      cursor: pointer
+    }
+
+    .rec-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(15, 110, 86, .04);
+      border-color: var(--sage-light)
+    }
+
+    .rec-title {
+      font-weight: 600;
+      font-size: .92rem;
+      color: var(--sage);
+      margin-bottom: 6px
+    }
+
+    .rec-desc {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.4
+    }
+
+    /* Score display bubble */
+    .score-bubble {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(93, 202, 165, .08);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-top: 4px
+    }
+
+    .score-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--sage);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.3rem;
+      font-family: 'DM Serif Display', serif;
+      flex-shrink: 0
+    }
+
+    .score-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px
+    }
+
+    .score-lbl {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--hint);
+      text-transform: uppercase;
+      letter-spacing: .04em
+    }
+
+    .score-val-desc {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.3
+    }
+
+    /* Toast alerts */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: #0F6E56;
+      color: white;
+      padding: .8rem 1.8rem;
+      border-radius: 100px;
+      font-size: .88rem;
+      z-index: 999;
+      box-shadow: 0 8px 30px rgba(15, 110, 86, .25);
+      transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .toast.danger {
+      background: #b91c1c
+    }
+
+    footer {
+      text-align: center;
+      padding: 50px 0 20px;
+      font-size: .8rem;
+      color: var(--hint);
+      margin-top: 40px
+    }
+
+    footer span {
+      color: var(--sage-light)
+    }
+  </style>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
+</head>
+
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <div class="page">
+    <div class="topbar">
+      <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
+      <nav class="nav-pill">
+        <a href="/"        class="nav-btn">Home</a>
+        <a href="/diary"   class="nav-btn">Diary</a>
+        <a href="/chatbot" class="nav-btn">Chat</a>
+        <a href="/music"   class="nav-btn">Music</a>
+        <a href="/games"   class="nav-btn">Games</a>
+        <a href="/profile" class="nav-btn">Profile</a>
+        <a href="/admin/dashboard" class="nav-btn" style="border-color:rgba(99,102,241,0.3);color:#6366f1">MoSJE Hub</a>
+        <a href="#" class="nav-btn"
+          onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')"
+          style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
+      </nav>
+    </div>
+
+    <!-- Welcome case identifier -->
+    <div class="welcome-card">
+      <div class="welcome-text">
+        <h1>Hello, <em id="welcome-name">Friend</em></h1>
+        <p>Dynamic Mental Health Monitoring & Case Rehabilitation Hub.</p>
+      </div>
+      <div class="badge-wrap">
+        <div class="profile-badge"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/></svg> Registered Complainant</div>
+        <div class="case-badge" id="case-number-badge" onclick="openProfileModal()" style="cursor:pointer" title="Click to Edit Case Details">Case: loading... ✏️</div>
+      </div>
+    </div>
+
+    <!-- Case judicial stages stepper -->
+    <div class="progress-stepper-card">
+      <h3
+        style="font-size: .95rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; letter-spacing: 0.05em">
+        Judicial Case Status <span style="font-size:.75rem; text-transform:none; font-weight:400; color:var(--sage-light); margin-left:8px">(Click any step to set active stage)</span></h3>
+      <div class="stepper">
+        <div class="stepper-progress" id="step-bar" style="width: 0%"></div>
+        <div class="step" id="step-1" onclick="setJudicialStage('Investigation')" style="cursor:pointer" title="Set stage to Investigation">
+          <div class="step-circle">1</div>
+          <div class="step-lbl">Investigation</div>
+        </div>
+        <div class="step" id="step-2" onclick="setJudicialStage('Charge Sheet')" style="cursor:pointer" title="Set stage to Charge Sheet">
+          <div class="step-circle">2</div>
+          <div class="step-lbl">Charge Sheet</div>
+        </div>
+        <div class="step" id="step-3" onclick="setJudicialStage('Trial')" style="cursor:pointer" title="Set stage to Trial in Court">
+          <div class="step-circle">3</div>
+          <div class="step-lbl">Trial in Court</div>
+        </div>
+        <div class="step" id="step-4" onclick="setJudicialStage('Rehabilitation')" style="cursor:pointer" title="Set stage to Rehabilitation">
+          <div class="step-circle">4</div>
+          <div class="step-lbl">Rehabilitation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation tabs inside Victim Case Hub -->
+    <div class="v2-toggle-bar" style="margin-top:24px; display:flex; flex-wrap:wrap; gap:8px">
+      <button class="v2-toggle-btn active" id="btn-tab-wellbeing" onclick="switchVictimTab('wellbeing')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Well-being Check-in</button>
+      <button class="v2-toggle-btn" id="btn-tab-witness-vault" onclick="switchVictimTab('witness-vault')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Witness Protection Vault</button>
+      <button class="v2-toggle-btn" id="btn-tab-legal-aid" onclick="switchVictimTab('legal-aid')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>️ AI Legal & Court Assistant</button>
+      <button class="v2-toggle-btn" id="btn-tab-schemes" onclick="switchVictimTab('schemes')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Livelihood & Scheme Finder</button>
+    </div>
+
+    <!-- Tab View Container: Wellbeing Check-in -->
+    <div class="dashboard-grid" id="view-wellbeing">
+      <!-- Left Column: Checkin portal & threat alarms -->
+      <div style="display:flex; flex-direction:column; gap:32px">
+        <div class="card">
+          <div class="section-title-row">
+            <h2 class="section-title">Continuous Well-being Check-in</h2>
+          </div>
+
+          <form id="checkin-form" onsubmit="submitCheckin(event)" style="display:flex; flex-direction:column; gap:20px">
+            <div class="form-group">
+              <label for="checkin-text">Describe how you are feeling (Any threat, strain, or distress?)</label>
+              <textarea id="checkin-text" class="form-control" rows="4"
+                placeholder="How has trial preparation been? Have you faced any pressure, social isolation, or stress today? Type here..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Or Check-in via Voice (Analyze stress tremors)</label>
+              <div class="voice-control-row">
+                <button type="button" class="btn-mic" id="record-btn" onclick="toggleMic()"
+                  title="Record checking audio"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>️</button>
+                <span id="record-status" class="mic-status">Click mic to start recording check-in...</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btn-save-checkin">Submit Check-in</button>
+          </form>
+
+          <div id="latest-score-result" style="display:none">
+            <div class="score-bubble">
+              <div class="score-circle" id="result-score-val">0</div>
+              <div class="score-meta">
+                <span class="score-lbl">Latest Distress Level</span>
+                <span class="score-val-desc" id="result-score-desc">Score calculated.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NHAA 14566 IVRS Hotline Call Simulator -->
+        <div class="card" style="border-color: rgba(245, 158, 11, 0.25); background: rgba(245, 158, 11, 0.04)">
+          <div class="section-title-row">
+            <h2 class="section-title" style="color: #fbbf24"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> NHAA 14566 Helpline & IVRS Check-in</h2>
+          </div>
+          <p style="font-size: .8rem; color: var(--muted); margin-top: -10px; margin-bottom: 12px">Simulate a voice phone call intake via the National Helpline Against Atrocities (14566) in regional Indic dialects.</p>
+          
+          <form onsubmit="submitIvrsSimulate(event)" style="display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; gap:10px">
+              <select id="ivrs-dialect" class="form-control" style="height:44px; padding:6px 12px; font-size:.85rem; line-height:1.4; flex:1">
+                <option value="Hindi / Bundelkhandi">Hindi / Bundelkhandi Dialect</option>
+                <option value="Marathi / Vidarbha">Marathi / Vidarbha Regional</option>
+                <option value="Bhojpuri / Purvanchal">Bhojpuri / Purvanchal</option>
+                <option value="Tamil / Rural Kongu">Tamil / Rural Kongu</option>
+              </select>
+              <button type="submit" class="btn-submit" style="background:#f59e0b; padding:6px 18px; font-size:.85rem; height:44px">Simulate 14566 Call</button>
+            </div>
+            <textarea id="ivrs-transcript" class="form-control" rows="2" style="font-size:.85rem" placeholder="Type helpline phone speech transcript (e.g. 'Main court hearing se darr raha hoon, gaon mein threat hai...')"></textarea>
+          </form>
+        </div>
+
+        <!-- Explainable AI (XAI / SHAP Visual Breakdown) -->
+        <div class="card" id="xai-card" style="display:none; border-color: rgba(99, 102, 241, 0.3)">
+          <div class="section-title-row">
+            <h2 class="section-title" style="color: #818cf8"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Explainable AI (XAI / SHAP) Score Breakdown</h2>
+          </div>
+          <p style="font-size: .78rem; color: var(--muted); margin-top: -10px">Visual feature importance breakdown explaining why your Dynamic Distress Score (DDS) was calculated.</p>
+          <div id="xai-bars-container" style="display:flex; flex-direction:column; gap:10px; margin-top:10px"></div>
+        </div>
+
+        <!-- Urgent assistance requests -->
+        <div class="danger-alert-card">
+          <div class="danger-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Urgent Protection Request</div>
+          <div class="danger-desc">Facing active witness intimidation, threats, or danger in your locality? Push the
+            button below to submit a priority security protection audit request to your assigned Nodal Officer and local
+            police department.</div>
+          <button class="btn-danger" onclick="triggerUrgentProtectionAlert()">File Immediate Security Alert</button>
+        </div>
+      </div>
+
+      <!-- Right Column: Charts & custom recommendations -->
+      <div style="display:flex; flex-direction:column; gap:32px">
+        <!-- Distress history chart -->
+        <div class="card">
+          <div class="section-title-row" style="margin-bottom:0">
+            <h2 class="section-title">Longitudinal Well-being Trend</h2>
+          </div>
+          <p style="font-size: .82rem; color: var(--hint); margin-top: -10px">Continuous monitoring logs of your Dynamic
+            Distress Scores (DDS).</p>
+          <div class="chart-container" id="chart-wrap">
+            <svg class="chart-svg" id="trend-chart-svg"></svg>
+            <div class="chart-tooltip" id="chart-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Custom recommendation feeds -->
+        <div class="card">
+          <div class="section-title-row">
+            <h2 class="section-title">Legal & Rehabilitation Recommendations</h2>
+          </div>
+          <div class="recs-grid" id="recs-container">
+            <div style="text-align:center; padding: 20px; color: var(--hint)">No case updates available yet. Complete a
+              check-in.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- Close view-wellbeing -->
+
+  <!-- Tab View Container: Witness Protection Vault -->
+  <div class="dashboard-grid" id="view-witness-vault" style="display:none">
+    <!-- Left Column: Log a threat -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Log a Threat Incident</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Document any threats, coercion to turn hostile, or village boycotts. Upload voice threat files, call recordings, or screenshots of text threats.</p>
+      
+      <form id="vault-form" onsubmit="submitVaultIncident(event)" style="display:flex; flex-direction:column; gap:20px">
+        <div class="form-group">
+          <label for="vault-incident-type">Incident Category</label>
+          <select id="vault-incident-type" class="form-control" style="height:44px">
+            <option value="verbal_threat">Verbal Threat / In-Person Intimidation</option>
+            <option value="text_threat">Text Message / Digital Coercion</option>
+            <option value="physical_harassment">Physical Harassment or Followed</option>
+            <option value="social_boycott">Social Boycott / Lockout from Village</option>
+            <option value="bribe_attempt">Financial Bribe to Withdraw Complaint</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="vault-description">Describe the Incident (Who, When, Where, What?)</label>
+          <textarea id="vault-description" class="form-control" rows="4" placeholder="Detail the incident... E.g. two associates of the accused approached me at the market and warned me against testifying next Tuesday."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="vault-evidence">Attach Evidence (Screenshots / Call Recording / Voice Memos)</label>
+          <input type="file" id="vault-evidence" class="form-control" style="height:auto; padding:10px" accept="image/*,audio/*"/>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="btn-submit-vault">Encrypt & Upload to Witness Vault</button>
+      </form>
+    </div>
+
+    <!-- Right Column: Vault Incident Logs History -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Logged Vault Evidence History</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Securely stored and encrypted logs with digital timestamps. These logs are accessible to your Nodal Officer and DLSA attorneys.</p>
+      <div id="vault-logs-history" style="display:flex; flex-direction:column; gap:14px; max-height: 400px; overflow-y:auto; padding-right:6px">
+        <div style="text-align:center; padding:30px; color:var(--hint)">No incidents logged yet. Your vault is clear.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab View Container: AI Legal & Court Assistant -->
+  <div class="dashboard-grid" id="view-legal-aid" style="display:none">
+    <!-- Left Column: SC/ST Rights & Hearing Prep -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>️ Court Hearing Preparation Guide</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Step-by-step assistant guiding you through judicial procedures and protecting you from court strain.</p>
+      
+      <div style="display:flex; flex-direction:column; gap:16px">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid var(--card-border); border-radius:16px; padding:16px">
+          <h4 style="font-size:.9rem; color:var(--sage-light); margin-bottom:6px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/></svg> Witness Trial Checklist:</h4>
+          <ul style="margin-left:18px; font-size:.82rem; color:var(--muted); display:flex; flex-direction:column; gap:6px">
+            <li>Carry a valid government identity card (Aadhaar/Voter ID).</li>
+            <li>Carry a copy of the registered First Information Report (FIR).</li>
+            <li>You are entitled to travelling allowance and daily allowance from the court. Check in with the court clerk.</li>
+            <li>You can request an **in-camera hearing** (private court room) if you feel unsafe testifying in public.</li>
+          </ul>
+        </div>
+        
+        <div style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.2); border-radius:16px; padding:16px">
+          <h4 style="font-size:.9rem; color:#60a5fa; margin-bottom:6px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> Cross-Examination Survival Tips:</h4>
+          <p style="font-size:.8rem; color:var(--muted); line-height:1.4">Defense attorneys may try to confuse or intimidate you. Remember:<br/>1. Speak clearly, only answer the question asked.<br/>2. If you do not remember, say "I do not remember". Do not guess.<br/>3. You have the right to request a glass of water or ask the judge to repeat a question if it is unclear.</p>
+        </div>
+        
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:16px; padding:16px">
+          <h4 style="font-size:.9rem; color:#fbbf24; margin-bottom:6px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Free Legal representation (DLSA):</h4>
+          <p style="font-size:.8rem; color:var(--muted); line-height:1.4">Under Section 15A of the SC/ST Act, you are entitled to free legal counsel. To request a court-appointed DLSA lawyer, contact the DLSA desk at the District Court or dial <strong>15100</strong>.</p>
+        </div>
+      </div>
+      <button onclick="generateAIHearingPrep()" class="btn-submit" style="width:100%; margin-top:14px; background:#4f46e5; box-shadow:0 4px 16px rgba(79,70,229,.15)" id="btn-ai-prep"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h0M16 16h0"/></svg> Generate AI Case-Specific Prep Guide</button>
+      <div id="ai-prep-container" style="margin-top:14px; display:none; background:rgba(79,70,229,0.06); border:1.5px solid rgba(79,70,229,0.2); border-radius:18px; padding:18px">
+        <h4 style="font-size:.9rem; color:#818cf8; margin-bottom:10px; font-weight:700"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg> Personalized AI Guidance (Llama 3.2)</h4>
+        <div id="ai-prep-text" style="font-size:.82rem; color:var(--muted); line-height:1.6; white-space:pre-wrap">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Statutory Relief milestones and Delay Assistant -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Relief Disbursement & Milestone Tracker</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Statutory compensation follows a structured administrative pipeline. Track milestones and generate delay redressal letters.</p>
+      
+      <!-- Milestones Pipeline -->
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:6px" id="relief-milestones-pipeline">
+        <!-- FIR Stage -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:14px; padding:12px; display:flex; align-items:center; gap:12px">
+          <div style="width:24px; height:24px; border-radius:50%; background:#10b981; color:white; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700">1</div>
+          <div style="flex:1">
+            <div style="font-weight:700; font-size:.82rem">FIR Tranche (25% - 50%)</div>
+            <div style="font-size:.7rem; color:var(--hint)">Triggered by: Police Annexure-I submission to Welfare Department.</div>
+          </div>
+          <span style="font-size:.7rem; color:#10b981; font-weight:700" id="status-milestone-fir">Completed</span>
+        </div>
+        
+        <!-- Charge Sheet Stage -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:14px; padding:12px; display:flex; align-items:center; gap:12px">
+          <div style="width:24px; height:24px; border-radius:50%; background:#eab308; color:white; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700">2</div>
+          <div style="flex:1">
+            <div style="font-weight:700; font-size:.82rem">Charge Sheet Tranche (25%)</div>
+            <div style="font-size:.7rem; color:var(--hint)">Triggered by: Filing of Form II in Special Court.</div>
+          </div>
+          <span style="font-size:.7rem; color:#eab308; font-weight:700" id="status-milestone-cs">In Progress</span>
+        </div>
+        
+        <!-- Court Judgment Stage -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:14px; padding:12px; display:flex; align-items:center; gap:12px">
+          <div style="width:24px; height:24px; border-radius:50%; background:#6b7280; color:white; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700">3</div>
+          <div style="flex:1">
+            <div style="font-weight:700; font-size:.82rem">Special Court Verdict Tranche (25%)</div>
+            <div style="font-size:.7rem; color:var(--hint)">Triggered by: Final judgment or conviction order.</div>
+          </div>
+          <span style="font-size:.7rem; color:var(--hint); font-weight:700" id="status-milestone-verdict">Locked</span>
+        </div>
+      </div>
+      
+      <!-- Bank DBT verification portal -->
+      <div style="margin-top:14px; background:rgba(16,185,129,0.04); border:1.5px dashed var(--card-border); border-radius:18px; padding:16px">
+        <h4 style="font-size:.85rem; color:var(--sage-light); font-weight:700; margin-bottom:8px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Direct Benefit Transfer (DBT) Seeding</h4>
+        <p style="font-size:.72rem; color:var(--muted); line-height:1.4; margin-bottom:10px">Statutory relief funds are deposited via direct bank transfer. Submit details to sync with Public Financial Management System (PFMS).</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <input type="text" id="dbt-bank" class="form-control" style="flex:1; min-width:110px; height:36px; padding:6px 12px; font-size:.78rem" placeholder="Bank Name" value="State Bank of India"/>
+          <input type="text" id="dbt-ifsc" class="form-control" style="flex:1; min-width:110px; height:36px; padding:6px 12px; font-size:.78rem" placeholder="IFSC Code" value="SBIN0001040"/>
+          <input type="text" id="dbt-account" class="form-control" style="flex:1.5; min-width:150px; height:36px; padding:6px 12px; font-size:.78rem" placeholder="Account Number" value="34019283748"/>
+        </div>
+      </div>
+      
+      <!-- Relief Delay Redressal Assistant -->
+      <div style="margin-top:14px">
+        <h4 style="font-size:.85rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:10px"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>️ Relief Delay Redressal Petitions</h4>
+        <p style="font-size:.72rem; color:var(--muted); line-height:1.4; margin-bottom:10px">If a statutory tranche has not been deposited in your account within the legal period, generate a formal Representation Letter to the District Magistrate.</p>
+        
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+          <select id="delay-stage-select" class="form-control" style="height:36px; font-size:.8rem; padding:6px 12px; flex:1">
+            <option value="FIR">FIR Tranche (Overdue > 15 days)</option>
+            <option value="Charge Sheet">Charge Sheet Tranche (Overdue > 60 days)</option>
+            <option value="Verdict">Final Verdict Tranche (Overdue > 30 days)</option>
+          </select>
+          <button onclick="submitCompensationClaimRequest(event)" class="btn-submit" style="padding:8px 18px; font-size:.8rem; align-self:stretch; display:flex; align-items:center">Generate Delay Petition</button>
+        </div>
+        
+        <div id="victim-claims-list" style="display:flex; flex-direction:column; gap:8px; max-height:140px; overflow-y:auto">
+          <div style="font-size:.78rem; color:var(--hint); text-align:center">No delay petitions logged.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab View Container: Livelihood & Scheme Finder -->
+  <div class="dashboard-grid" id="view-schemes" style="display:none">
+    <!-- Left Column: Matched Government Welfare Schemes -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Matched Rehabilitation Schemes</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Personalized government schemes matched to your profile to help you rebuild livelihood and counter ostracism.</p>
+      <div class="recs-grid" id="schemes-matched-list" style="display:flex; flex-direction:column; gap:12px">
+        <!-- Populated by JS -->
+        <div style="text-align:center; padding:20px; color:var(--hint)">Loading matched welfare programs...</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Micro-livelihoods & Local NGO Maps -->
+    <div class="card">
+      <div class="section-title-row">
+        <h2 class="section-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Rehabilitation Support Networks</h2>
+      </div>
+      <p class="section-desc" style="margin-top:-10px">Connect with support networks, shelters, and self-help skill courses in your district.</p>
+      
+      <div class="recs-grid" style="display:flex; flex-direction:column; gap:12px">
+        <div class="rec-card">
+          <div class="rec-title">PM-DAKSH Training Centers</div>
+          <div class="rec-desc">Free vocational courses (Computer Literacy, Sewing, Electronics repair) with a monthly stipend of ₹1,000 during training. Located at District Headquarter Skill Institute.</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-title">National Scheduled Castes Finance Dev Corp</div>
+          <div class="rec-desc">Applies micro-credit funding up to ₹50,000 for setting up small retail stalls or dairy farms. Interest rate subsidized to 4%.</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-title">District Legal Services desk (DLSA)</div>
+          <div class="rec-desc">Located inside District Court compound, Block B. Open Mon-Sat 10:00 AM - 5:00 PM. Offers free counselling and help with state scheme applications.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Edit Case Profile Modal -->
+  <div id="profile-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(6px)">
+    <div style="background:var(--card-bg, #1a2332); border:1px solid var(--card-border, rgba(255,255,255,0.12)); border-radius:24px; padding:28px; width:90%; max-width:480px; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:18px; color:var(--text, #f8fafc)">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h3 style="font-size:1.1rem; font-weight:700; color:var(--sage-light, #10b981); display:flex; align-items:center; gap:8px"><svg class="inline-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Case & Protection Profile Setup</h3>
+        <button onclick="closeProfileModal()" style="background:none; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label for="modal-case-number" style="font-size:.82rem; font-weight:600">Case / FIR Number</label>
+        <input type="text" id="modal-case-number" class="form-control" style="height:42px; font-size:.88rem" placeholder="e.g. FIR-2026/0482 or MK-2026-0042"/>
+      </div>
+      
+      <div class="form-group">
+        <label for="modal-category" style="font-size:.82rem; font-weight:600">Case / Offense Category</label>
+        <select id="modal-category" class="form-control" style="height:42px; font-size:.85rem">
+          <option value="General Protection & Atrocity Relief">General Protection & Atrocity Relief</option>
+          <option value="SC/ST Atrocity & Harassment">SC/ST Atrocity & Harassment</option>
+          <option value="Witness Intimidation & Threat">Witness Intimidation & Threat</option>
+          <option value="Social Boycott & Ostracism">Social Boycott & Ostracism</option>
+          <option value="Grievous Hurt (4.5 Lakhs Scale)">Grievous Hurt (4.5 Lakhs Scale)</option>
+          <option value="Loss of Life / Arson (8.25 Lakhs Scale)">Loss of Life / Arson (8.25 Lakhs Scale)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="modal-judicial-stage" style="font-size:.82rem; font-weight:600">Active Judicial Stage</label>
+        <select id="modal-judicial-stage" class="form-control" style="height:42px; font-size:.85rem">
+          <option value="Investigation">1. Investigation (FIR Stage)</option>
+          <option value="Charge Sheet">2. Charge Sheet Filed</option>
+          <option value="Trial">3. Trial in Special Court</option>
+          <option value="Rehabilitation">4. Rehabilitation & Verdict</option>
+        </select>
+      </div>
+      
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px">
+        <button onclick="closeProfileModal()" class="nav-btn" style="padding:8px 16px">Cancel</button>
+        <button onclick="saveProfileModal()" class="btn-submit" style="padding:8px 22px">Save Details</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>ManoRakshak.AI Wellness Hub <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> Continuous Protection & Mental Health Support System</p>
+  </footer>
+
+  <script>
+    let recordBlob = null;
+    let audioCtx = null;
+    let processor = null;
+    let audioStream = null;
+    let leftSamples = [];
+    let isRecording = false;
+
+    // Web Audio mono wav recorder
+    async function toggleMic() {
+      const btn = document.getElementById('record-btn');
+      const statusText = document.getElementById('record-status');
+
+      if (!isRecording) {
+        // Start recording
+        try {
+          leftSamples = [];
+          audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+          const source = audioCtx.createMediaStreamSource(audioStream);
+          processor = audioCtx.createScriptProcessor(4096, 1, 1);
+
+          processor.onaudioprocess = (e) => {
+            const input = e.inputBuffer.getChannelData(0);
+            leftSamples.push(new Float32Array(input));
+          };
+
+          source.connect(processor);
+          processor.connect(audioCtx.destination);
+
+          isRecording = true;
+          btn.classList.add('recording');
+          btn.innerHTML = '⏹️';
+          statusText.textContent = 'Recording check-in voice... Click square to stop.';
+        } catch (err) {
+          showToast('Microphone access denied or error occurred.', true);
+          console.error(err);
+        }
+      } else {
+        // Stop recording
+        if (processor) processor.disconnect();
+        if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+        if (audioCtx) audioCtx.close();
+
+        let totalLength = 0;
+        for (let i = 0; i < leftSamples.length; i++) {
+          totalLength += leftSamples[i].length;
+        }
+        let result = new Float32Array(totalLength);
+        let offset = 0;
+        for (let i = 0; i < leftSamples.length; i++) {
+          result.set(leftSamples[i], offset);
+          offset += leftSamples[i].length;
+        }
+
+        // WAVE headers
+        const buffer = new ArrayBuffer(44 + result.length * 2);
+        const view = new DataView(buffer);
+
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + result.length * 2, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, 16000, true);
+        view.setUint32(28, 16000 * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(view, 36, 'data');
+        view.setUint32(40, result.length * 2, true);
+
+        // Convert samples
+        for (let i = 0; i < result.length; i++, offset += 2) {
+          let s = Math.max(-1, Math.min(1, result[i]));
+          view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+
+        recordBlob = new Blob([view], { type: 'audio/wav' });
+        isRecording = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>️';
+        statusText.textContent = 'Voice check-in recorded successfully! Ready to submit.';
+      }
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+
+    function showToast(msg, isError = false) {
+      const el = document.getElementById('toast');
+      el.innerHTML = msg;
+      if (isError) el.classList.add('danger');
+      else el.classList.remove('danger');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    // Load profile on startup
+    let victimProfile = null;
+    function loadVictimData() {
+      fetch('/api/victim/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.profile) {
+            victimProfile = data.profile;
+            document.getElementById('case-number-badge').innerHTML = `Case: ${victimProfile.case_number} ✏️`;
+            updateStepper(victimProfile.judicial_stage);
+            loadRecommendations();
+            calculateRelief();
+          } else {
+            document.getElementById('case-number-badge').innerHTML = `Setup Case Profile ✏️`;
+          }
+        });
+
+      // Fetch profile name
+      fetch('/api/auth/me')
+        .then(res => res.json())
+        .then(data => {
+          if (data.username) {
+            document.getElementById('welcome-name').textContent = data.full_name || data.username;
+          }
+        });
+
+      loadDistressHistory();
+      loadVictimClaims();
+      loadMatchedSchemes();
+      loadVaultIncidents();
+    }
+
+    function openProfileModal() {
+      if (victimProfile) {
+        document.getElementById('modal-case-number').value = victimProfile.case_number || '';
+        document.getElementById('modal-category').value = victimProfile.category || 'General Protection & Atrocity Relief';
+        document.getElementById('modal-judicial-stage').value = victimProfile.judicial_stage || 'Investigation';
+      }
+      document.getElementById('profile-modal').style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').style.display = 'none';
+    }
+
+    function saveProfileModal() {
+      const caseNum = document.getElementById('modal-case-number').value.trim();
+      const category = document.getElementById('modal-category').value;
+      const stage = document.getElementById('modal-judicial-stage').value;
+
+      if (!caseNum) {
+        showToast('Case / FIR number is required.', true);
+        return;
+      }
+
+      fetch('/api/victim/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          case_number: caseNum,
+          category: category,
+          judicial_stage: stage
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.profile) {
+            victimProfile = data.profile;
+            document.getElementById('case-number-badge').innerHTML = `Case: ${victimProfile.case_number} ✏️`;
+            updateStepper(victimProfile.judicial_stage);
+            calculateRelief();
+            loadRecommendations();
+            closeProfileModal();
+            showToast('Case details updated successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>');
+          } else {
+            showToast(data.error || 'Failed to update case details.', true);
+          }
+        })
+        .catch(() => showToast('Network connection failed.', true));
+    }
+
+    function setJudicialStage(newStage) {
+      if (!victimProfile) return;
+      if (victimProfile.judicial_stage === newStage) return;
+
+      fetch('/api/victim/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          case_number: victimProfile.case_number,
+          category: victimProfile.category,
+          judicial_stage: newStage
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.profile) {
+            victimProfile = data.profile;
+            updateStepper(victimProfile.judicial_stage);
+            calculateRelief();
+            loadRecommendations();
+            showToast(`Active judicial stage updated to '${newStage}'!`);
+          }
+        });
+    }
+
+    function updateStepper(stage) {
+      const stages = ["Investigation", "Charge Sheet", "Trial", "Rehabilitation"];
+      let idx = stages.indexOf(stage);
+      if (idx === -1) idx = 0;
+
+      for (let i = 0; i < 4; i++) {
+        const stepEl = document.getElementById(`step-${i + 1}`);
+        if (i < idx) {
+          stepEl.classList.add('completed');
+          stepEl.classList.remove('active');
+        } else if (i === idx) {
+          stepEl.classList.add('active');
+          stepEl.classList.remove('completed');
+        } else {
+          stepEl.classList.remove('completed', 'active');
+        }
+      }
+
+      // Line progress fill calculation
+      const progressWidths = [0, 33, 66, 100];
+      document.getElementById('step-bar').style.width = `${progressWidths[idx]}%`;
+    }
+
+    function loadRecommendations() {
+      fetch('/api/victim/recommendations')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.recommendations && data.recommendations.length > 0) {
+            const container = document.getElementById('recs-container');
+            container.innerHTML = '';
+            data.recommendations.forEach(rec => {
+              const item = document.createElement('div');
+              item.className = 'rec-card';
+              item.innerHTML = `
+              <div class="rec-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7"/></svg> ${rec.title}</div>
+              <div class="rec-desc">${rec.desc}</div>
+            `;
+              container.appendChild(item);
+            });
+          }
+        });
+    }
+
+    // Load distress chart using inline SVG drawing
+    function loadDistressHistory() {
+      fetch('/api/victim/distress-history')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.history) {
+            drawHistoryChart(data.history);
+            if (data.history.length > 0) {
+              const latest = data.history[data.history.length - 1];
+              showDistressBubble(latest.score);
+              if (latest.id) loadXaiBreakdown(latest.id);
+            }
+          }
+        });
+    }
+
+    function submitIvrsSimulate(e) {
+      e.preventDefault();
+      const dialect = document.getElementById('ivrs-dialect').value;
+      const transcript = document.getElementById('ivrs-transcript').value.trim();
+      if (!transcript) {
+        showToast('Please type or paste an IVRS phone transcript.', true);
+        return;
+      }
+
+      fetch('/api/nhaa/ivrs-simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dialect, transcript })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok) {
+            showToast(`NHAA 14566 Call Ingested! (${dialect}) — Distress Score: ${data.distress_score}`);
+            document.getElementById('ivrs-transcript').value = '';
+            loadDistressHistory();
+            if (data.score_id) loadXaiBreakdown(data.score_id);
+          } else {
+            showToast(data.error || 'Failed to simulate IVRS call.', true);
+          }
+        });
+    }
+
+    function loadXaiBreakdown(scoreId) {
+      fetch(`/api/victim/xai-explain/${scoreId}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.explanation) {
+            const card = document.getElementById('xai-card');
+            const container = document.getElementById('xai-bars-container');
+            card.style.display = 'block';
+            container.innerHTML = '';
+
+            const contribs = data.explanation.feature_contributions || [];
+            contribs.forEach(c => {
+              const bar = document.createElement('div');
+              bar.style.cssText = 'background:rgba(99,102,241,0.04); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:12px; font-size:.82rem';
+              bar.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:700; color:var(--text, #1e293b); margin-bottom:6px">
+                  <span>${c.feature}</span>
+                  <span style="color:#6366f1; font-weight:800">${c.weight_pct}%</span>
+                </div>
+                <div style="background:rgba(0,0,0,0.08); height:7px; border-radius:4px; overflow:hidden; margin-bottom:6px">
+                  <div style="background:linear-gradient(90deg, #6366f1, #10b981); height:100%; width:${c.weight_pct}%"></div>
+                </div>
+                <div style="font-size:.74rem; color:var(--muted, #64748b); font-weight:500">${c.description}</div>
+              `;
+              container.appendChild(bar);
+            });
+          }
+        });
+    }
+
+    function showDistressBubble(score) {
+      const bubble = document.getElementById('latest-score-result');
+      const val = document.getElementById('result-score-val');
+      const desc = document.getElementById('result-score-desc');
+
+      bubble.style.display = 'block';
+      val.textContent = Math.round(score);
+
+      if (score < 40) {
+        desc.innerHTML = `Safe: Well-being indicators are currently stable. <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`;
+        document.querySelector('.score-circle').style.backgroundColor = 'var(--sage)';
+      } else if (score < 75) {
+        desc.innerHTML = `Moderate: Mild distress markers. Consider checking in with legal aids. <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+        document.querySelector('.score-circle').style.backgroundColor = '#d97706';
+      } else {
+        desc.innerHTML = `High Distress: Severe stress indicators registered. counselor and authorities have been paged. <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+        document.querySelector('.score-circle').style.backgroundColor = '#b91c1c';
+      }
+    }
+
+    function drawHistoryChart(history) {
+      const svg = document.getElementById('trend-chart-svg');
+      svg.innerHTML = '';
+
+      if (history.length === 0) {
+        svg.innerHTML = `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="var(--hint)">No check-in history logged.</text>`;
+        return;
+      }
+
+      const width = svg.clientWidth || 400;
+      const height = 180;
+
+      // Generate grid lines
+      for (let i = 0; i <= 4; i++) {
+        const yVal = 20 + i * (height - 40) / 4;
+        const scoreVal = 100 - i * 25;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', '35');
+        line.setAttribute('y1', yVal);
+        line.setAttribute('x2', width - 10);
+        line.setAttribute('y2', yVal);
+        line.setAttribute('stroke', '#E1DED8');
+        line.setAttribute('stroke-dasharray', '4,4');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', '10');
+        label.setAttribute('y', yVal + 4);
+        label.setAttribute('font-size', '10px');
+        label.setAttribute('fill', 'var(--hint)');
+        label.textContent = scoreVal + '%';
+        svg.appendChild(label);
+      }
+
+      // Scale points
+      const pointsCount = history.length;
+      const xStep = pointsCount > 1 ? (width - 60) / (pointsCount - 1) : width - 60;
+
+      let pathD = '';
+      let circles = [];
+
+      history.forEach((h, idx) => {
+        const x = 45 + idx * xStep;
+        // Invert score for canvas Y orientation (0 score is bottom, 100 is top)
+        const y = 20 + (1 - h.score / 100) * (height - 40);
+
+        if (idx === 0) {
+          pathD = `M ${x} ${y}`;
+        } else {
+          pathD += ` L ${x} ${y}`;
+        }
+
+        // Store circle nodes for rendering on top of the line
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', x);
+        c.setAttribute('cy', y);
+        c.setAttribute('r', '5');
+
+        let fillColor = 'var(--sage)';
+        if (h.score > 75) fillColor = '#b91c1c';
+        else if (h.score > 40) fillColor = '#d97706';
+
+        c.setAttribute('fill', fillColor);
+        c.setAttribute('stroke', 'white');
+        c.setAttribute('stroke-width', '2');
+        c.setAttribute('style', 'cursor: pointer');
+
+        c.onmouseover = (e) => {
+          const tooltip = document.getElementById('chart-tooltip');
+          tooltip.innerHTML = `
+          <strong>Score: ${Math.round(h.score)}%</strong><br/>
+          Date: ${new Date(h.created_at).toLocaleDateString()}<br/>
+          ${h.details_json ? JSON.parse(h.details_json).text_sentiment_tag : 'checkin'}
+        `;
+          tooltip.style.opacity = 1;
+          tooltip.style.left = `${e.offsetX + 15}px`;
+          tooltip.style.top = `${e.offsetY - 20}px`;
+        };
+
+        c.onmouseout = () => {
+          document.getElementById('chart-tooltip').style.opacity = 0;
+        };
+
+        circles.push(c);
+      });
+
+      // Render connection line
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'var(--sage-light)');
+      path.setAttribute('stroke-width', '3');
+      svg.appendChild(path);
+
+      // Render interactive circles
+      circles.forEach(c => svg.appendChild(c));
+    }
+
+    // Submit checkin form
+    function submitCheckin(e) {
+      e.preventDefault();
+      const textVal = document.getElementById('checkin-text').value.trim();
+
+      if (!textVal && !recordBlob) {
+        showToast('Please type a text journal entry or record voice audio check-in.', true);
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-checkin');
+      btn.textContent = 'Submitting Check-in...';
+      btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('text', textVal);
+      if (recordBlob) {
+        formData.append('audio', recordBlob, 'checkin.wav');
+      }
+
+      fetch('/api/victim/checkin', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json().then(d => ({ ok: res.ok, data: d })))
+        .then(({ ok, data }) => {
+          if (ok && data.ok) {
+            showToast('Check-in submitted successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
+            document.getElementById('checkin-text').value = '';
+            recordBlob = null;
+            document.getElementById('record-status').textContent = 'Click mic to start recording check-in...';
+
+            showDistressBubble(data.distress_score);
+            loadDistressHistory();
+            loadRecommendations();
+
+            if (data.alert_triggered) {
+              showToast('<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️ Severe Distress Flagged: Counselor and Nodal Authorities alert dispatched.', true);
+            }
+          } else {
+            showToast(data.error || 'Failed to submit check-in.', true);
+          }
+        })
+        .catch(() => showToast('Network connection failed.', true))
+        .finally(() => {
+          btn.textContent = 'Submit Check-in';
+          btn.disabled = false;
+        });
+    }
+
+    function switchVictimTab(tabName) {
+      const tabs = ['wellbeing', 'witness-vault', 'legal-aid', 'schemes'];
+      tabs.forEach(t => {
+        document.getElementById(`btn-tab-${t}`).classList.toggle('active', t === tabName);
+        document.getElementById(`view-${t}`).style.display = t === tabName ? 'grid' : 'none';
+      });
+      
+      if (tabName === 'witness-vault') {
+        loadVaultIncidents();
+      } else if (tabName === 'schemes') {
+        loadMatchedSchemes();
+      }
+    }
+
+    function loadVaultIncidents() {
+      const container = document.getElementById('vault-logs-history');
+      fetch('/api/victim/vault')
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.incidents && data.incidents.length > 0) {
+            container.innerHTML = '';
+            data.incidents.forEach(inc => {
+              const dateObj = new Date(inc.created_at);
+              const dateStr = dateObj.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+              
+              const item = document.createElement('div');
+              item.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid rgba(16,185,129,0.15); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:6px; font-size:.82rem';
+              
+              let severityColor = '#eab308';
+              if (inc.threat_severity === 'High') severityColor = '#ef4444';
+              else if (inc.threat_severity === 'Low') severityColor = '#10b981';
+              
+              item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-weight:700; color:var(--sage-light)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${inc.incident_type.replace('_', ' ').toUpperCase()}</span>
+                  <span style="padding:2px 8px; border-radius:10px; font-size:.7rem; font-weight:700; color:${severityColor}; border:1px solid ${severityColor}30; background:${severityColor}10">Threat: ${inc.threat_severity}</span>
+                </div>
+                <p style="color:var(--muted); line-height:1.4; margin-top:4px">"${inc.description}"</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:.75rem; color:var(--hint); border-top:1px dashed rgba(255,255,255,0.05); padding-top:6px; margin-top:4px">
+                  <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Logged: ${dateStr}</span>
+                  ${inc.evidence_file_path ? `<a href="/data/uploads/${inc.evidence_file_path.split('\\').pop().split('/').pop()}" target="_blank" style="color:var(--sage-light); text-decoration:none"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg> View Attached Evidence</a>` : '<span style="font-style:italic">No media attached</span>'}
+                </div>
+              `;
+              container.appendChild(item);
+            });
+          } else {
+            container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--hint)">No incidents logged yet. Your vault is clear.</div>';
+          }
+        });
+    }
+
+    function submitVaultIncident(e) {
+      e.preventDefault();
+      const desc = document.getElementById('vault-description').value.trim();
+      const type = document.getElementById('vault-incident-type').value;
+      const fileInput = document.getElementById('vault-evidence');
+      
+      if (!desc) {
+        showToast('Please describe the threat details to encrypt.', true);
+        return;
+      }
+      
+      const btn = document.getElementById('btn-submit-vault');
+      btn.textContent = 'Encrypting & Uploading...';
+      btn.disabled = true;
+      
+      const formData = new FormData();
+      formData.append('incident_type', type);
+      formData.append('description', desc);
+      if (fileInput.files.length > 0) {
+        formData.append('evidence', fileInput.files[0]);
+      }
+      
+      fetch('/api/victim/vault', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            showToast('Incident logged in Vault & dispatched to authorities! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️');
+            document.getElementById('vault-description').value = '';
+            fileInput.value = '';
+            loadVaultIncidents();
+            
+            if (data.severity === 'High') {
+              showToast('<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>️ Severe Threat Flagged: Local police alert triggered.', true);
+            }
+          } else {
+            showToast(data.error || 'Failed to submit incident.', true);
+          }
+        })
+        .catch(() => showToast('Network connection failed.', true))
+        .finally(() => {
+          btn.textContent = 'Encrypt & Upload to Witness Vault';
+          btn.disabled = false;
+        });
+    }
+
+    function loadMatchedSchemes() {
+      const container = document.getElementById('schemes-matched-list');
+      fetch('/api/victim/schemes')
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.schemes) {
+            container.innerHTML = '';
+            data.schemes.forEach(s => {
+              const card = document.createElement('div');
+              card.className = 'rec-card';
+              card.onclick = () => window.open(s.link, '_blank');
+              card.innerHTML = `
+                <div class="rec-title"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> ${s.title}</div>
+                <div class="rec-desc">${s.desc}</div>
+                <span style="font-size:.7rem; color:var(--sage-light); font-weight:600; text-transform:uppercase; display:block; margin-top:6px">Apply for Scheme &rarr;</span>
+              `;
+              container.appendChild(card);
+            });
+          } else {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--hint)">Failed to load matched schemes.</div>';
+          }
+        });
+    }
+
+    function triggerUrgentProtectionAlert() {
+      if (!confirm("Are you facing immediate threat? This will submit a critical witness protection safety audit request to local police and state administrators with your exact GPS location.")) {
+        return;
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const payload = {
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude
+            };
+            fetch('/api/victim/sos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })
+              .then(res => res.json())
+              .then(data => {
+                if (data.ok) {
+                  showToast('<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Critical SOS Dispatched with GPS Coordinates! Police Nodal Guard initialized.');
+                  loadDistressHistory();
+                } else {
+                  showToast('SOS logged, but coordinates rejected. Direct alert sent.', true);
+                }
+              })
+              .catch(() => showToast('Network failed. SOS alert queued.', true));
+          },
+          (err) => {
+            // Fallback coordinates (District Court Mumbai lock)
+            const payload = { latitude: "18.9281", longitude: "72.8331" };
+            fetch('/api/victim/sos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })
+              .then(res => res.json())
+              .then(data => {
+                showToast('<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> SOS Dispatched! (GPS denied: using fallback Court Precinct lock)');
+                loadDistressHistory();
+              });
+          }
+        );
+      } else {
+        showToast('Geolocation not supported. Sending direct alert...', true);
+      }
+    }
+
+    function calculateRelief() {
+      if (!victimProfile) return;
+      const stage = victimProfile.judicial_stage; // 'Investigation', 'Charge Sheet', 'Trial', 'Rehabilitation'
+      
+      const firEl = document.getElementById('status-milestone-fir');
+      const csEl = document.getElementById('status-milestone-cs');
+      const verdictEl = document.getElementById('status-milestone-verdict');
+      
+      if (!firEl || !csEl || !verdictEl) return;
+      
+      if (stage === 'Investigation') {
+        firEl.textContent = 'Active / Processing';
+        firEl.style.color = '#eab308';
+        csEl.textContent = 'Locked';
+        csEl.style.color = 'var(--hint)';
+        verdictEl.textContent = 'Locked';
+        verdictEl.style.color = 'var(--hint)';
+      } else if (stage === 'Charge Sheet') {
+        firEl.textContent = 'Disbursed (100% Verified)';
+        firEl.style.color = '#10b981';
+        csEl.textContent = 'Active / Pending Police Submission';
+        csEl.style.color = '#eab308';
+        verdictEl.textContent = 'Locked';
+        verdictEl.style.color = 'var(--hint)';
+      } else if (stage === 'Trial') {
+        firEl.textContent = 'Disbursed';
+        firEl.style.color = '#10b981';
+        csEl.textContent = 'Disbursed';
+        csEl.style.color = '#10b981';
+        verdictEl.textContent = 'Active / Awaiting Court Judgment';
+        verdictEl.style.color = '#eab308';
+      } else { // Rehabilitation or other
+        firEl.textContent = 'Disbursed';
+        firEl.style.color = '#10b981';
+        csEl.textContent = 'Disbursed';
+        csEl.style.color = '#10b981';
+        verdictEl.textContent = 'Disbursed';
+        verdictEl.style.color = '#10b981';
+      }
+    }
+
+    function submitCompensationClaimRequest(e) {
+      const stageSelect = document.getElementById('delay-stage-select');
+      const stage = stageSelect ? stageSelect.value : 'FIR';
+      
+      const bank = document.getElementById('dbt-bank').value.trim();
+      const ifsc = document.getElementById('dbt-ifsc').value.trim();
+      const account = document.getElementById('dbt-account').value.trim();
+      
+      if (!bank || !ifsc || !account) {
+        showToast('Please fill in your complete Bank DBT details first.', true);
+        return;
+      }
+      
+      const btn = e ? (e.target || e.currentTarget) : null;
+      if (btn) {
+        btn.textContent = 'Filing...';
+        btn.disabled = true;
+      }
+      
+      fetch('/api/victim/claims', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stage: stage,
+          bank_name: bank,
+          bank_ifsc: ifsc,
+          bank_account: account
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            showToast('Delay Redressal Petition filed with District Magistrate! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>');
+            loadVictimClaims();
+          } else {
+            showToast(data.error || 'Failed to file petition.', true);
+          }
+        })
+        .catch(() => showToast('Network connection failed.', true))
+        .finally(() => {
+          if (btn) {
+            btn.textContent = 'Generate Delay Petition';
+            btn.disabled = false;
+          }
+        });
+    }
+
+    function loadVictimClaims() {
+      const container = document.getElementById('victim-claims-list');
+      if (!container) return;
+      fetch('/api/victim/claims')
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.claims && data.claims.length > 0) {
+            container.innerHTML = '';
+            data.claims.forEach(c => {
+              const dateStr = new Date(c.created_at).toLocaleDateString();
+              const div = document.createElement('div');
+              div.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:10px; font-size:.8rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px';
+              
+              let statusColor = '#eab308'; // Pending
+              if (c.status === 'Disbursed' || c.status === 'Approved') statusColor = '#10b981';
+              else if (c.status === 'Rejected') statusColor = '#ef4444';
+              
+              div.innerHTML = `
+                <div>
+                  <div style="font-weight:700; color:var(--sage-light)">${c.stage} Stage Claim - ₹${(c.amount_entitled/100000).toFixed(2)}L</div>
+                  <div style="font-size:.7rem; color:var(--hint)">Filed: ${dateStr}</div>
+                </div>
+                <span style="padding:2px 8px; border-radius:8px; font-size:.65rem; font-weight:700; color:${statusColor}; border:1px solid ${statusColor}30; background:${statusColor}10">${c.status}</span>
+              `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = '<div style="font-size:.8rem; color:var(--hint); text-align:center; padding:10px">No claims filed yet.</div>';
+          }
+        });
+    }
+
+    function generateAIHearingPrep() {
+      const btn = document.getElementById('btn-ai-prep');
+      const box = document.getElementById('ai-prep-container');
+      const text = document.getElementById('ai-prep-text');
+      
+      btn.innerHTML = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h0M16 16h0"/></svg> Consulting AI Counselor...';
+      btn.disabled = true;
+      box.style.display = 'block';
+      text.textContent = 'Contacting offline Llama 3.2 engine and analyzing case parameters... Please wait.';
+      
+      fetch('/api/victim/hearing-prep', {
+        method: 'POST'
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok && data.guidelines) {
+            text.textContent = data.guidelines;
+          } else {
+            text.textContent = 'Could not generate guidelines. Re-verify active network session.';
+          }
+        })
+        .catch(() => {
+          text.textContent = 'Checklist generated offline:\n1. Bring certified FIR and copy of summon.\n2. Claim travel expenses from Special Court clerk.\n3. Request in-camera hearing options if perimeter threat is flagged.\n4. Utilize breathing Grounding panel if cross-examination triggers panic.';
+        })
+        .finally(() => {
+          btn.innerHTML = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h0M16 16h0"/></svg> Generate AI Case-Specific Prep Guide';
+          btn.disabled = false;
+        });
+    }
+
+    window.onload = loadVictimData;
+  </script>
+</body>
+
+</html>

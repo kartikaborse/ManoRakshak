@@ -1,5 +1,5 @@
 """
-ManoKart Counsellor Chatbot  —  with Active Learning
+ManoRakshak.AI Counsellor Chatbot  —  with Active Learning
 ======================================================
 FIXES in this version:
   - CONFIDENCE_THRESHOLD lowered from 0.70 → 0.45
@@ -293,7 +293,7 @@ def log_uncertain(text, tag, conf):
 def banner(meta):
     sep = "  " + "─" * 57
     print(f"\n{teal(sep)}")
-    print(teal("  ") + bold("  ManoKart Counsellor  [Active Learning Mode]"))
+    print(teal("  ") + bold("  ManoRakshak.AI Counsellor  [Active Learning Mode]"))
     print(teal("  ") + dim(f"  Model         : {meta.get('model_type','ML')}"))
     print(teal("  ") + dim(f"  Test accuracy : {meta.get('test_accuracy',0)*100:.2f}%"))
     print(teal("  ") + dim(f"  Conf threshold: {int(CONFIDENCE_THRESHOLD*100)}%"))
@@ -304,7 +304,7 @@ def banner(meta):
     print(f"\n{dim('  Commands:  quit · info · debug')}\n{teal(sep)}\n")
 
 def bot_say(text, uncertain=False):
-    label = yellow("  ManoKart › ") if uncertain else teal("  ManoKart › ")
+    label = yellow("  ManoRakshak.AI › ") if uncertain else teal("  ManoRakshak.AI › ")
     print(f"\n{label}{wrap(text).strip()}\n")
 
 def show_info(meta, debug=False):
