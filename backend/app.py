@@ -369,7 +369,7 @@ def user_only(f):
 def auth_page():
     if "user_id" in session:
         return redirect("/")
-    return send_from_directory(ROOT, "manokart-auth.html")
+    return send_from_directory(ROOT, "auth.html")
 
 
 @app.route("/api/auth/signup", methods=["POST"])
@@ -855,7 +855,7 @@ def clinical_page():
 
 @app.route("/auth/reset-password")
 def reset_password_page():
-    return send_from_directory(ROOT, "manokart-auth.html")
+    return send_from_directory(ROOT, "auth.html")
 
 
 
