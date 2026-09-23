@@ -58,8 +58,12 @@ def _get_whisper():
 def _get_tts():
     global _tts_model
     if _tts_model is None:
-        from TTS.api import TTS
-        _tts_model = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+        try:
+            from TTS.api import TTS
+            _tts_model = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+        except Exception as e:
+            print(f"[VoiceEngine] Coqui TTS not installed or not supported on this Python version: {e}")
+            return None
     return _tts_model
 
 
@@ -140,6 +144,8 @@ def synthesize(text: str, out_path: str, user_id: str, voice_id: str | None,
     the caller passed in.
     """
     tts = _get_tts()
+    if tts is None:
+        raise RuntimeError("Coqui TTS engine is not available on this Python environment.")
 
     use_neutral = (response_tag in CRISIS_TAGS) or (voice_id is None)
 

@@ -7,6 +7,6 @@ nltk>=3.8.0
 numpy>=1.24.0
 gunicorn>=20.1.0
 faster-whisper>=1.0.0
-TTS>=0.22.0
+# TTS>=0.22.0  # Optional for local Coqui TTS voice cloning (Requires Python >=3.9, <3.12)
 torch>=2.1.0
 torchaudio>=2.1.0
