@@ -1,5 +1,5 @@
 """
-ManoKart Counsellor - Improved ML Training Pipeline
+ManoRakshat Counsellor - Improved ML Training Pipeline
 =====================================================
 FIXES in this version:
   - Removed multi_class='multinomial' (removed in sklearn 1.x — caused crash)
@@ -660,7 +660,7 @@ model_bundle = {
 
 import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
-save_path = os.path.join(script_dir, "manokart_model.pkl")
+save_path = os.path.join(script_dir, "manorakshat_model.pkl")
 
 with open(save_path, "wb") as f:
     pickle.dump(model_bundle, f)

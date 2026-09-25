@@ -1,7 +1,7 @@
 """
-ManoKart — MySQL Database Helpers
+ManoRakshat — MySQL Database Helpers
 ─────────────────────────────────
-Connects to XAMPP's MariaDB (manokart_db) and provides
+Connects to XAMPP's MariaDB (manorakshat_db) and provides
 clean helper functions for all CRUD operations.
 """
 
@@ -21,7 +21,7 @@ DB_CONFIG = {
     "host":     os.environ.get("DB_HOST", "localhost"),
     "user":     os.environ.get("DB_USER", "root"),
     "password": os.environ.get("DB_PASSWORD", ""),
-    "database": os.environ.get("DB_NAME", "manokart_db"),
+    "database": os.environ.get("DB_NAME", "manorakshat_db"),
     "port":     int(os.environ.get("DB_PORT", "3306")),
     "charset":  "utf8mb4",
     "collation": "utf8mb4_unicode_ci",
@@ -33,7 +33,7 @@ def get_pool():
     global _pool
     if _pool is None:
         _pool = pooling.MySQLConnectionPool(
-            pool_name="manokart_pool",
+            pool_name="manorakshat_pool",
             pool_size=5,
             pool_reset_session=True,
             **DB_CONFIG,

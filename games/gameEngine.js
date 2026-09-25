@@ -1,7 +1,7 @@
 /**
- * ManoKart GameEngine
+ * ManoRakshat GameEngine
  * ===================
- * Shared engine for all 7 ManoKart games.
+ * Shared engine for all 7 ManoRakshat games.
  * Handles: XP, levels, badges, score history, streaks, session tracking.
  *
  * USAGE IN ANY GAME FILE:
@@ -19,7 +19,7 @@
      CONSTANTS
   ───────────────────────────────────────────── */
 
-  var STORAGE_KEY   = 'manokart_engine_v1';
+  var STORAGE_KEY   = 'manorakshat_engine_v1';
   var XP_PER_LEVEL  = 500;          // level up every 500 XP
   var MAX_HISTORY   = 50;           // keep last 50 scores per game
   var STREAK_WINDOW = 36 * 60 * 60 * 1000; // 36-hour window for daily streak
@@ -156,8 +156,8 @@
   }
 
   function getStorageKey() {
-    var userId = getCookie('manokart_user_id');
-    return userId ? 'manokart_engine_v1_' + userId : 'manokart_engine_v1_guest';
+    var userId = getCookie('manorakshat_user_id');
+    return userId ? 'manorakshat_engine_v1_' + userId : 'manorakshat_engine_v1_guest';
   }
 
   var _storage = {

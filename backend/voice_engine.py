@@ -1,5 +1,5 @@
 """
-ManoKart Voice Engine
+ManoRakshat Voice Engine
 ======================
 Fully offline speech-to-text and voice-cloned text-to-speech.
 

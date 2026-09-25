@@ -104,13 +104,13 @@ def train_lstm():
 # ══════════════════════════════════════════════════════════════
 
 GAMES = [
-    "manokart_body_breath_quest",
-    "manokart_calm_grid_sudoku",
-    "manokart_cozy_island_garden",
-    "manokart_mood_blocks_tetris",
-    "manokart_color_your_world",
-    "manokart_spirit_journey",
-    "manokart_stress_relief_ocean"
+    "manorakshat_body_breath_quest",
+    "manorakshat_calm_grid_sudoku",
+    "manorakshat_cozy_island_garden",
+    "manorakshat_mood_blocks_tetris",
+    "manorakshat_color_your_world",
+    "manorakshat_spirit_journey",
+    "manorakshat_stress_relief_ocean"
 ]
 
 def generate_rf_data(n_samples=4000):
@@ -141,15 +141,15 @@ def generate_rf_data(n_samples=4000):
         
         # Clinical and mood logical rules to assign recommendation targets
         if any("anxiety" in t or "panic" in t for t in tags_list) or gad7_score >= 12:
-            target_game = "manokart_body_breath_quest" if random.random() < 0.6 else "manokart_stress_relief_ocean"
+            target_game = "manorakshat_body_breath_quest" if random.random() < 0.6 else "manorakshat_stress_relief_ocean"
         elif any("sad" in t or "grief" in t for t in tags_list) or phq9_score >= 12:
-            target_game = "manokart_cozy_island_garden"
+            target_game = "manorakshat_cozy_island_garden"
         elif any("stress" in t or "work" in t for t in tags_list) or current_mood == 5:
-            target_game = "manokart_mood_blocks_tetris" if random.random() < 0.7 else "manokart_stress_relief_ocean"
+            target_game = "manorakshat_mood_blocks_tetris" if random.random() < 0.7 else "manorakshat_stress_relief_ocean"
         elif current_mood in (1, 2): # Joyful/Happy
-            target_game = "manokart_color_your_world"
+            target_game = "manorakshat_color_your_world"
         else: # Calm/Neutral (3)
-            target_game = "manokart_calm_grid_sudoku" if random.random() < 0.6 else "manokart_spirit_journey"
+            target_game = "manorakshat_calm_grid_sudoku" if random.random() < 0.6 else "manorakshat_spirit_journey"
             
         X.append(feats)
         y.append(target_game)

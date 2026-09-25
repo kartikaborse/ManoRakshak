@@ -4,7 +4,7 @@ DB_CONFIG = {
     "host":     "localhost",
     "user":     "root",
     "password": "",
-    "database": "manokart_db",
+    "database": "manorakshat_db",
 }
 
 def setup():
@@ -64,7 +64,7 @@ def setup():
                 1500,
                 "Mumbai (Online / In-Person)",
                 "Mon-Wed, 10:00 AM - 4:00 PM",
-                "aarav.mehta@manokart.com",
+                "aarav.mehta@manorakshat.com",
                 "+91 98765 43210",
                 "/static/avatars/therapist_aarav.png",
                 "Dr. Aarav Mehta is a highly experienced psychiatrist specializing in mood disorders and medication-assisted therapy, focusing on a holistic recovery path."
@@ -78,7 +78,7 @@ def setup():
                 1200,
                 "Delhi (Online)",
                 "Tue-Fri, 9:00 AM - 5:00 PM",
-                "ananya.sen@manokart.com",
+                "ananya.sen@manorakshat.com",
                 "+91 98765 43211",
                 "/static/avatars/therapist_ananya.png",
                 "Ananya Sen specializes in CBT and mindfulness-based therapies to help clients navigate anxiety, panic attacks, and daily stress management."
@@ -92,7 +92,7 @@ def setup():
                 1800,
                 "Pune (Online / In-Person)",
                 "Mon-Thu, 2:00 PM - 7:00 PM",
-                "rohan.deshmukh@manokart.com",
+                "rohan.deshmukh@manorakshat.com",
                 "+91 98765 43212",
                 "/static/avatars/therapist_rohan.png",
                 "Dr. Rohan has extensive experience working with children, teenagers, and families to address developmental, behavioral, and academic challenges."
@@ -106,7 +106,7 @@ def setup():
                 1000,
                 "Bengaluru (Online)",
                 "Wed-Sat, 11:00 AM - 6:00 PM",
-                "meera.nair@manokart.com",
+                "meera.nair@manorakshat.com",
                 "+91 98765 43213",
                 "/static/avatars/therapist_meera.png",
                 "Meera Nair is dedicated to providing a safe, non-judgmental space for clients recovering from trauma, grief, or navigating difficult relationship transitions."
@@ -120,7 +120,7 @@ def setup():
                 1600,
                 "Hyderabad (Online / In-Person)",
                 "Mon-Fri, 10:00 AM - 1:00 PM",
-                "shalini.kapoor@manokart.com",
+                "shalini.kapoor@manorakshat.com",
                 "+91 98765 43214",
                 "/static/avatars/therapist_shalini.png",
                 "Dr. Shalini Kapoor focuses on the intersection of neurological health and psychiatric well-being, helping clients with sleep, attention, and chronic stress issues."

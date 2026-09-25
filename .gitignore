@@ -33,3 +33,13 @@ voices/
 Thumbs.db
 backend/scratch/
 
+# Interview preparation, presentations, and extraneous document files
+*.pdf
+*.pdf.txt
+*.pptx
+*.ppt
+*.docx
+*.doc
+~$*
+interview*/
+prep*/

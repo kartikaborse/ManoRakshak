@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>ManoKart — Cozy Island Garden</title>
+  <title>ManoRakshat — Cozy Island Garden</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lora:ital,wght@0,500;1,400&display=swap"
     rel="stylesheet">
@@ -523,7 +523,7 @@
 
 <body>
   <div class="gbar">
-    <a href="manokart_games_hub.html">← Hub</a>
+    <a href="manorakshat_games_hub.html">← Hub</a>
     <div class="t">🌴 Cozy Island Garden</div>
     <div class="xb" id="lxp">0 XP</div>
   </div>
@@ -889,7 +889,7 @@
         const r = GameEngine.saveScore('cozy_island_garden', score);
         document.getElementById('lxp').textContent = r.totalXP + ' XP';
         toast('Saved! +' + r.xpEarned + ' XP earned 🌟');
-        setTimeout(() => { try { window.location.href = 'manokart_games_hub.html'; } catch (e) { } }, 1800);
+        setTimeout(() => { try { window.location.href = 'manorakshat_games_hub.html'; } catch (e) { } }, 1800);
       } catch (e) { toast('Score: ' + score + ' pts 🌟'); }
     }
 

@@ -1,5 +1,5 @@
 """
-ManoKart — Offline LLM Engine (Ollama / Llama-3.2-1B)
+ManoRakshat — Offline LLM Engine (Ollama / Llama-3.2-1B)
 =====================================================
 Communicates with local Ollama service running on port 11434.
 Generates empathetic, CBT-guided responses enriched with RAG context.
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.2:1b"
 
-SYSTEM_PROMPT = """You are ManoKart AI Counselor, an empathetic, supportive, and active-listening CBT mental health assistant.
+SYSTEM_PROMPT = """You are ManoRakshat AI Counselor, an empathetic, supportive, and active-listening CBT mental health assistant.
 Your goal is to offer compassionate support, psychological coping strategies, and thoughtful reflections.
 
 RULES:
@@ -49,7 +49,7 @@ def generate_offline_counselor_response(user_query: str) -> dict:
 [USER QUESTION / MESSAGE]
 {user_query}
 
-ManoKart Counselor Response:"""
+ManoRakshat Counselor Response:"""
 
     # 3. Request Ollama local service
     try:
