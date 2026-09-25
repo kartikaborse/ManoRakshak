@@ -46,6 +46,13 @@ A collection of 7 specially engineered web games built with custom physics and g
 - **AI Reflections:** Gentle automated insights identifying emotional patterns over time.
 - **Export Capabilities:** One-click PDF report generation containing diary entries, mood charts, and photos.
 
+### 🛡️ 7. ManoRakshak Mind Protection & Wellness Hub (`/hub`)
+- **Central Sanctuary Dashboard:** Integrated control center providing a tranquil, glassmorphic space aggregating all mental health tools, active progress stats, and personal well-being metrics.
+- **🔮 Predictive AI Mood Forecasting:** Intelligent predictive engine (`/api/mood/forecast`) analyzing past entries to forecast upcoming emotional trends and suggest proactive coping steps.
+- **🌱 Real-Time Mood Evaluator & Streaks:** Instant 1-click emotional check-ins (Struggling 😔, Low 😐, Okay 🙂, Good 😊, Great 🌟), tracking total entries, average mood scores, and streak milestones (e.g. 🔥 7-day streak).
+- **🏆 Gamified XP & Level System:** Built-in gamification engine tracking XP and Level progression across sessions to encourage consistent self-care habits.
+- **💡 Daily Wisdom & Grounding:** Curated daily reflections and quotes promoting mindfulness, stress reduction, and positive cognitive reframing.
+
 ---
 
 ## 🏗️ System Architecture
