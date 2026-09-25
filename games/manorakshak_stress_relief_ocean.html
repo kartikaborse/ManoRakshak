@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>ManoRakshat — Stress Relief Ocean</title>
+  <title>ManoRakshak — Stress Relief Ocean</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
@@ -264,13 +264,13 @@
 </head>
 
 <body>
-  <div class="gbar"><a href="manorakshat_games_hub.html">← Hub</a>
+  <div class="gbar"><a href="manorakshak_games_hub.html">← Hub</a>
     <div class="t">🌊 Stress Relief Ocean</div>
     <div class="xb" id="lxp">0 XP</div>
   </div>
   <div id="scene">
     <canvas id="canvas"></canvas>
-    <div class="tl">ManoRakshat Ocean</div>
+    <div class="tl">ManoRakshak Ocean</div>
 
     <!-- Music control -->
     <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
@@ -342,7 +342,7 @@
       var r = GameEngine.saveScore('stress_relief_ocean', score);
       document.getElementById('lxp').textContent = r.totalXP + ' XP';
       alert('Session saved! +' + r.xpEarned + ' XP earned.');
-      window.location.href = 'manorakshat_games_hub.html';
+      window.location.href = 'manorakshak_games_hub.html';
     }
     function draw() { ctx.clearRect(0, 0, W, H); const m = MD[cm2]; t += .016; dsky(m); daur(m); dstars(); dmoon(m); dwat(m); dwav(m); requestAnimationFrame(draw); }
     try { document.getElementById('lxp').textContent = GameEngine.getLevelInfo().totalXP + ' XP'; } catch (e) { }

@@ -4,7 +4,7 @@ DB_CONFIG = {
     "host":     "localhost",
     "user":     "root",
     "password": "",
-    "database": "manorakshat_db",
+    "database": "manorakshak_db",
 }
 
 def migrate():

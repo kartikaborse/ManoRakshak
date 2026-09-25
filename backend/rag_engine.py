@@ -1,5 +1,5 @@
 """
-ManoRakshat — Offline RAG Engine via Ollama Embeddings
+ManoRakshak — Offline RAG Engine via Ollama Embeddings
 ===================================================
 Uses ChromaDB and Ollama's local embedding endpoint (nomic-embed-text)
 to store and retrieve clinical knowledge, CBT guides, and assessment info

@@ -1,6 +1,6 @@
 """
 ╔══════════════════════════════════════════════════════╗
-║           ManoRakshat — Unified Flask Server            ║
+║           ManoRakshak — Unified Flask Server            ║
 ║                                                      ║
 ║  Run:  python app.py                                 ║
 ║  URL:  http://localhost:5000                         ║
@@ -11,7 +11,7 @@
 ║    /diary              → DiaryApp.jsx (ROOT folder)  ║
 ║    /music              → Mood Music page             ║
 ║    /voice              → Voice Journal page           ║
-║    /games              → games/manorakshat_games_hub    ║
+║    /games              → games/manorakshak_games_hub    ║
 ║    /games/<name>       → Individual game pages       ║
 ║    /api/chat           → Chatbot ML endpoint         ║
 ║    /api/entries/...    → Diary CRUD                  ║
@@ -80,7 +80,7 @@ for d in [DATA_DIR, UPLOADS_DIR, GAMES_DIR, ML_DIR]:
 # ──────────────────────────────────────────────────────────────
 app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
-app.secret_key = os.environ.get("FLASK_SECRET", "manorakshat-dev-secret-change-in-prod")
+app.secret_key = os.environ.get("FLASK_SECRET", "manorakshak-dev-secret-change-in-prod")
 
 ALLOWED_IMG       = {"png", "jpg", "jpeg", "gif", "webp"}
 
@@ -177,8 +177,8 @@ def load_ml_model():
         return _ml_bundle
 
     search_paths = [
-        CHATBOT_DIR / "manorakshat_model.pkl",
-        ML_DIR      / "manorakshat_model.pkl",
+        CHATBOT_DIR / "manorakshak_model.pkl",
+        ML_DIR      / "manorakshak_model.pkl",
     ]
 
     for model_path in search_paths:
@@ -269,13 +269,13 @@ def allowed_file(filename: str) -> bool:
 #  GAME LIST
 # ──────────────────────────────────────────────────────────────
 GAME_META = {
-    "manorakshat_body_breath_quest":   {"title": "Body & Breath Quest",  "emoji": "🧘", "desc": "Calm your nervous system with guided breathing"},
-    "manorakshat_calm_grid_sudoku":    {"title": "Calm Grid Sudoku",     "emoji": "🔢", "desc": "A soothing number puzzle for a focused mind"},
-    "manorakshat_color_your_world":    {"title": "Color Your World",     "emoji": "🎨", "desc": "Express your mood through colour"},
-    "manorakshat_cozy_island_garden":  {"title": "Cozy Island Garden",   "emoji": "🌴", "desc": "Escape to a gentle island adventure"},
-    "manorakshat_mood_blocks_tetris":  {"title": "Mood Blocks Tetris",   "emoji": "🟦", "desc": "Stack blocks and release tension"},
-    "manorakshat_spirit_journey":      {"title": "Spirit Journey",       "emoji": "✨", "desc": "A mindful journey through nature"},
-    "manorakshat_stress_relief_ocean": {"title": "Stress Relief Ocean",  "emoji": "🌊", "desc": "Breathe with the waves"},
+    "manorakshak_body_breath_quest":   {"title": "Body & Breath Quest",  "emoji": "🧘", "desc": "Calm your nervous system with guided breathing"},
+    "manorakshak_calm_grid_sudoku":    {"title": "Calm Grid Sudoku",     "emoji": "🔢", "desc": "A soothing number puzzle for a focused mind"},
+    "manorakshak_color_your_world":    {"title": "Color Your World",     "emoji": "🎨", "desc": "Express your mood through colour"},
+    "manorakshak_cozy_island_garden":  {"title": "Cozy Island Garden",   "emoji": "🌴", "desc": "Escape to a gentle island adventure"},
+    "manorakshak_mood_blocks_tetris":  {"title": "Mood Blocks Tetris",   "emoji": "🟦", "desc": "Stack blocks and release tension"},
+    "manorakshak_spirit_journey":      {"title": "Spirit Journey",       "emoji": "✨", "desc": "A mindful journey through nature"},
+    "manorakshak_stress_relief_ocean": {"title": "Stress Relief Ocean",  "emoji": "🌊", "desc": "Breathe with the waves"},
 }
 
 def get_available_games() -> list:
@@ -284,14 +284,14 @@ def get_available_games() -> list:
         path = GAMES_DIR / f"{stem}.html"
         if path.exists():
             games.append({"slug": stem, "path": str(path), **meta})
-    for path in sorted(GAMES_DIR.glob("manorakshat_*.html")):
+    for path in sorted(GAMES_DIR.glob("manorakshak_*.html")):
         stem = path.stem
-        if stem not in GAME_META and stem not in ("manorakshat_hub_home_screen", "manorakshat_games_hub"):
+        if stem not in GAME_META and stem not in ("manorakshak_hub_home_screen", "manorakshak_games_hub"):
             games.append({
                 "slug":  stem,
-                "title": stem.replace("manorakshat_", "").replace("_", " ").title(),
+                "title": stem.replace("manorakshak_", "").replace("_", " ").title(),
                 "emoji": "🎮",
-                "desc":  "A ManoRakshat activity",
+                "desc":  "A ManoRakshak activity",
                 "path":  str(path),
             })
     return games
@@ -369,7 +369,7 @@ def user_only(f):
 def auth_page():
     if "user_id" in session:
         return redirect("/")
-    return send_from_directory(ROOT, "manorakshat-auth.html")
+    return send_from_directory(ROOT, "manorakshak-auth.html")
 
 
 @app.route("/api/auth/signup", methods=["POST"])
@@ -398,7 +398,7 @@ def signup():
         session["user_name"] = user["full_name"] or user["username"]
         session["role"]      = user.get("role", "user")
         response = jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
-        response.set_cookie("manorakshat_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+        response.set_cookie("manorakshak_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
         return response
     except Exception as e:
         app.logger.error(f"Signup error: {e}")
@@ -423,7 +423,7 @@ def login():
     session["user_name"] = user["full_name"] or user["username"]
     session["role"]      = user.get("role", "user")
     response = jsonify({"ok": True, "user": {"id": user["id"], "name": session["user_name"], "role": user.get("role", "user")}})
-    response.set_cookie("manorakshat_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+    response.set_cookie("manorakshak_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
     return response
 
 
@@ -431,7 +431,7 @@ def login():
 def logout():
     session.clear()
     response = jsonify({"ok": True})
-    response.delete_cookie("manorakshat_user_id")
+    response.delete_cookie("manorakshak_user_id")
     return response
 
 
@@ -474,7 +474,7 @@ def auth_me():
             **therapist_data
         }
     })
-    response.set_cookie("manorakshat_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
+    response.set_cookie("manorakshak_user_id", str(user["id"]), max_age=30*24*60*60, httponly=False, samesite="Lax")
     return response
 
 
@@ -757,9 +757,9 @@ def list_games_redirect():
 @app.route("/games/")
 @user_only
 def list_games():
-    hub = GAMES_DIR / "manorakshat_games_hub.html"
+    hub = GAMES_DIR / "manorakshak_games_hub.html"
     if hub.exists():
-        return send_from_directory(GAMES_DIR, "manorakshat_games_hub.html")
+        return send_from_directory(GAMES_DIR, "manorakshak_games_hub.html")
     return render_template_string(HUB_TEMPLATE, games=get_available_games())
 
 
@@ -783,7 +783,7 @@ def serve_game(game_slug):
 @app.route("/chatbot")
 @user_only
 def chatbot_page():
-    for name in ["chatbot.html", "index.html", "manorakshat_chatbot.html"]:
+    for name in ["chatbot.html", "index.html", "manorakshak_chatbot.html"]:
         f = CHATBOT_DIR / name
         if f.exists():
             return send_from_directory(CHATBOT_DIR, name)
@@ -834,7 +834,7 @@ def clinical_page():
 
 @app.route("/auth/reset-password")
 def reset_password_page():
-    return send_from_directory(ROOT, "manorakshat-auth.html")
+    return send_from_directory(ROOT, "manorakshak-auth.html")
 
 
 
@@ -883,16 +883,16 @@ def _get_game_recommendation_by_mood(uid):
     from recommendation_models import format_recommendation_features
 
     # Default fallback game
-    default_game = {"slug": "manorakshat_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"}
+    default_game = {"slug": "manorakshak_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"}
 
     games_db = {
-        "manorakshat_body_breath_quest": {"slug": "manorakshat_body_breath_quest", "title": "Body & Breath Quest", "emoji": "🧘", "desc": "Calm your racing thoughts with guided breathing patterns"},
-        "manorakshat_cozy_island_garden": {"slug": "manorakshat_cozy_island_garden", "title": "Cozy Island Garden", "emoji": "🌴", "desc": "Take a gentle escape to grow flowers and nurture a virtual island"},
-        "manorakshat_stress_relief_ocean": {"slug": "manorakshat_stress_relief_ocean", "title": "Stress Relief Ocean", "emoji": "🌊", "desc": "Synchronize your breathing with peaceful ocean waves"},
-        "manorakshat_mood_blocks_tetris": {"slug": "manorakshat_mood_blocks_tetris", "title": "Mood Blocks Tetris", "emoji": "🟦", "desc": "Focus your mind and stack shapes to release built-up frustration"},
-        "manorakshat_calm_grid_sudoku": {"slug": "manorakshat_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"},
-        "manorakshat_color_your_world": {"slug": "manorakshat_color_your_world", "title": "Color Your World", "emoji": "🎨", "desc": "Paint beautiful canvases to express and celebrate your positive mood"},
-        "manorakshat_spirit_journey": {"slug": "manorakshat_spirit_journey", "title": "Spirit Journey", "emoji": "✨", "desc": "Embark on a peaceful journey to ground yourself in natural settings"}
+        "manorakshak_body_breath_quest": {"slug": "manorakshak_body_breath_quest", "title": "Body & Breath Quest", "emoji": "🧘", "desc": "Calm your racing thoughts with guided breathing patterns"},
+        "manorakshak_cozy_island_garden": {"slug": "manorakshak_cozy_island_garden", "title": "Cozy Island Garden", "emoji": "🌴", "desc": "Take a gentle escape to grow flowers and nurture a virtual island"},
+        "manorakshak_stress_relief_ocean": {"slug": "manorakshak_stress_relief_ocean", "title": "Stress Relief Ocean", "emoji": "🌊", "desc": "Synchronize your breathing with peaceful ocean waves"},
+        "manorakshak_mood_blocks_tetris": {"slug": "manorakshak_mood_blocks_tetris", "title": "Mood Blocks Tetris", "emoji": "🟦", "desc": "Focus your mind and stack shapes to release built-up frustration"},
+        "manorakshak_calm_grid_sudoku": {"slug": "manorakshak_calm_grid_sudoku", "title": "Calm Grid Sudoku", "emoji": "🔢", "desc": "A soothing number puzzle designed to cultivate focus and clarity"},
+        "manorakshak_color_your_world": {"slug": "manorakshak_color_your_world", "title": "Color Your World", "emoji": "🎨", "desc": "Paint beautiful canvases to express and celebrate your positive mood"},
+        "manorakshak_spirit_journey": {"slug": "manorakshak_spirit_journey", "title": "Spirit Journey", "emoji": "✨", "desc": "Embark on a peaceful journey to ground yourself in natural settings"}
     }
 
     try:
@@ -1779,7 +1779,7 @@ def export_pdf():
                     textColor=colors.HexColor("#888780"), spaceAfter=12)
 
     story = [
-        Paragraph("ManoRakshat — My Diary", title_s),
+        Paragraph("ManoRakshak — My Diary", title_s),
         Paragraph("A record of your inner journey", sub_s),
         HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#9FE1CB"), spaceAfter=20),
     ]
@@ -1840,7 +1840,7 @@ def export_pdf():
 
     doc.build(story)
     buf.seek(0)
-    filename = f"manorakshat_diary_{date.today().isoformat()}.pdf"
+    filename = f"manorakshak_diary_{date.today().isoformat()}.pdf"
     return send_file(buf, mimetype="application/pdf",
                      as_attachment=True, download_name=filename)
 
@@ -2201,7 +2201,7 @@ def health():
 # ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     print("\n" + "═" * 52)
-    print("  🌿 ManoRakshat Server")
+    print("  🌿 ManoRakshak Server")
     print("═" * 52)
     print(f"  Hub:      http://localhost:5000/")
     print(f"  Auth:     http://localhost:5000/auth")
@@ -2216,7 +2216,7 @@ if __name__ == "__main__":
     print(f"  Chatbot dir:  {CHATBOT_DIR}")
     print(f"  Data dir:     {DATA_DIR}")
     print(f"  DiaryApp.jsx: {'✅ found' if DIARY_JSX.exists() else '⚠️  not found at '+str(DIARY_JSX)}")
-    hub_screen = GAMES_DIR / 'manorakshat_games_hub.html'
+    hub_screen = GAMES_DIR / 'manorakshak_games_hub.html'
     print(f"  Games hub:    {'✅ found' if hub_screen.exists() else '⚠️  not found at '+str(hub_screen)}")
     games = get_available_games()
     print(f"\n  {len(games)} game(s) found: {[g['slug'] for g in games] or 'none yet'}")

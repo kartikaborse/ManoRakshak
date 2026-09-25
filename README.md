@@ -1,11 +1,11 @@
-# 🛡️ ManoRakshat (मनोरक्षत्) — AI-Powered Mental Health & Well-being Platform
+# 🛡️ ManoRakshak (मनोरक्षत्) — AI-Powered Mental Health & Well-being Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-brightgreen.svg)](https://python.org)
 [![Flask Framework](https://img.shields.io/badge/Framework-Flask-black.svg)](https://flask.palletsprojects.org)
 [![Status](https://img.shields.io/badge/Status-Active%20Development-success.svg)](#)
 
-> **ManoRakshat** (meaning *"Protection of the Mind"*) is an all-in-one digital mental health platform that bridges compassionate AI support, evidence-based clinical screening, interactive wellness games, voice therapy, and professional therapist connectivity into a unified, secure sanctuary.
+> **ManoRakshak** (meaning *"Protection of the Mind"*) is an all-in-one digital mental health platform that bridges compassionate AI support, evidence-based clinical screening, interactive wellness games, voice therapy, and professional therapist connectivity into a unified, secure sanctuary.
 
 ---
 
@@ -51,7 +51,7 @@ A collection of 7 specially engineered web games built with custom physics and g
 ## 🏗️ System Architecture
 
 ```
-ManoRakshat/
+ManoRakshak/
 ├── backend/                    # Flask Application & Core API Services
 │   ├── app.py                  # Primary HTTP router & session coordinator
 │   ├── db.py                   # MySQL / SQLite ORM database wrapper
@@ -66,11 +66,11 @@ ManoRakshat/
 │   └── train_recommendation_models.py # Collaborative filtering for therapy recommendations
 ├── games/                      # HTML5 Canvas / JS Wellness Mini-Games
 │   ├── gameEngine.js           # Shared game engine core, storage & frame manager
-│   ├── manorakshat_games_hub.html # Interactive Game Launcher
-│   └── manorakshat_*.html      # Standalone therapeutic game modules
+│   ├── manorakshak_games_hub.html # Interactive Game Launcher
+│   └── manorakshak_*.html      # Standalone therapeutic game modules
 ├── static/                     # Static Web Assets (CSS, JS, Avatars, Audio)
 ├── import_db.py                # Database Initialization & Schema Migrator
-├── manorakshat_db.sql          # Full Database Dump (Schema + Initial Seed Data)
+├── manorakshak_db.sql          # Full Database Dump (Schema + Initial Seed Data)
 ├── DiaryApp.jsx                # Modular React Frontend component for Diary App
 └── requirements.txt            # Python Dependencies
 ```
@@ -88,8 +88,8 @@ ManoRakshat/
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/kartikaborse/ManoRakshat.git
-   cd ManoRakshat
+   git clone https://github.com/kartikaborse/ManoRakshak.git
+   cd ManoRakshak
    ```
 
 2. **Create and Activate a Virtual Environment:**
@@ -124,7 +124,7 @@ ManoRakshat/
 
 ## 📊 Database Schema Summary
 
-The database (`manorakshat_db`) stores user records, clinical assessments, therapist profiles, diary entries, and games metrics:
+The database (`manorakshak_db`) stores user records, clinical assessments, therapist profiles, diary entries, and games metrics:
 - **`users`**: Account credentials, preferences, role assignment (patient / therapist / admin).
 - **`therapists`**: Clinical credentials, contact details, consultation fees, and location info.
 - **`assessments`**: Historical scores for PHQ-9, GAD-7, and GHQ-12 screeners.
@@ -143,7 +143,7 @@ The database (`manorakshat_db`) stores user records, clinical assessments, thera
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you'd like to improve ManoRakshat, please follow these steps:
+Contributions are welcome! If you'd like to improve ManoRakshak, please follow these steps:
 1. Fork the project repository.
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).

@@ -1,5 +1,5 @@
 """
-ManoRakshat Counsellor Chatbot  —  with Active Learning
+ManoRakshak Counsellor Chatbot  —  with Active Learning
 ======================================================
 FIXES in this version:
   - CONFIDENCE_THRESHOLD lowered from 0.70 → 0.45
@@ -19,7 +19,7 @@ import pickle, random, os, sys, json, textwrap, datetime, re
 import numpy as np
 
 SCRIPT_DIR           = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH           = os.path.join(SCRIPT_DIR, "manorakshat_model.pkl")
+MODEL_PATH           = os.path.join(SCRIPT_DIR, "manorakshak_model.pkl")
 REVIEW_QUEUE_PATH    = os.path.join(SCRIPT_DIR, "review_queue.json")
 
 # ── FIX: Was 0.70 — this caused EVERY ambiguous input (including real questions
@@ -293,7 +293,7 @@ def log_uncertain(text, tag, conf):
 def banner(meta):
     sep = "  " + "─" * 57
     print(f"\n{teal(sep)}")
-    print(teal("  ") + bold("  ManoRakshat Counsellor  [Active Learning Mode]"))
+    print(teal("  ") + bold("  ManoRakshak Counsellor  [Active Learning Mode]"))
     print(teal("  ") + dim(f"  Model         : {meta.get('model_type','ML')}"))
     print(teal("  ") + dim(f"  Test accuracy : {meta.get('test_accuracy',0)*100:.2f}%"))
     print(teal("  ") + dim(f"  Conf threshold: {int(CONFIDENCE_THRESHOLD*100)}%"))
@@ -304,7 +304,7 @@ def banner(meta):
     print(f"\n{dim('  Commands:  quit · info · debug')}\n{teal(sep)}\n")
 
 def bot_say(text, uncertain=False):
-    label = yellow("  ManoRakshat › ") if uncertain else teal("  ManoRakshat › ")
+    label = yellow("  ManoRakshak › ") if uncertain else teal("  ManoRakshak › ")
     print(f"\n{label}{wrap(text).strip()}\n")
 
 def show_info(meta, debug=False):

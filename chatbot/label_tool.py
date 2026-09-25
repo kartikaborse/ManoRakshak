@@ -1,5 +1,5 @@
 """
-ManoRakshat  —  Active Learning Labelling Tool
+ManoRakshak  —  Active Learning Labelling Tool
 ============================================
 Web interface to review uncertain chatbot predictions,
 assign correct labels, and auto-retrain the model every 10 new labels.
@@ -13,7 +13,7 @@ from flask import Flask, render_template_string, request, redirect, url_for, jso
 
 REVIEW_QUEUE_PATH = "review_queue.json"
 DATASET_PATH      = "dataset.json"
-MODEL_PATH        = "manorakshat_model.pkl"
+MODEL_PATH        = "manorakshak_model.pkl"
 RETRAIN_EVERY     = 10
 
 app = Flask(__name__)
@@ -79,7 +79,7 @@ HTML = """
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ManoRakshat — Label Tool</title>
+<title>ManoRakshak — Label Tool</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -223,7 +223,7 @@ HTML = """
   <div class="logo">
     <div class="logo-dot">M</div>
     <div>
-      <span class="logo-name">ManoRakshat</span>
+      <span class="logo-name">ManoRakshak</span>
       <span class="logo-sub">Active Learning — Label Tool</span>
     </div>
   </div>
@@ -458,6 +458,6 @@ def _do_retrain():
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    print("\n  ManoRakshat Label Tool")
+    print("\n  ManoRakshak Label Tool")
     print("  Open in browser:  http://localhost:5000\n")
     app.run(debug=False, port=5000)

@@ -71,7 +71,7 @@ def main():
     DB_CONFIG["password"] = password
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    sql_file_path = os.path.join(script_dir, "manorakshat_db.sql")
+    sql_file_path = os.path.join(script_dir, "manorakshak_db.sql")
     if not os.path.exists(sql_file_path):
         print(f"Error: {sql_file_path} not found in the current directory.")
         return
@@ -95,8 +95,8 @@ def main():
             if not stmt:
                 continue
             # Aiven MySQL database is defaultdb. The SQL file might have:
-            # CREATE DATABASE IF NOT EXISTS `manorakshat_db`;
-            # USE `manorakshat_db`;
+            # CREATE DATABASE IF NOT EXISTS `manorakshak_db`;
+            # USE `manorakshak_db`;
             # Aiven free tier MySQL only allows us to write to `defaultdb`. We should bypass or rewrite database switching.
             if stmt.upper().startswith("CREATE DATABASE") or stmt.upper().startswith("USE "):
                 print(f"Skipping database creation/switch statement: {stmt[:50]}...")
