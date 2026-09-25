@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoRakshak — Your Wellness Hub</title>
+  <title>ManoRakshak.AI — Your Wellness Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -124,6 +124,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -132,7 +144,7 @@
 
 <div class="page">
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoRakshak</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <nav class="nav-pill">
       <div class="xp-nav" id="xp-nav" style="display:none">
         <span class="lv" id="nav-lv">Lv 1</span>
@@ -147,8 +159,18 @@
       <a href="/clinical" class="nav-btn">Check-in</a>
       <a href="/therapists" class="nav-btn">Therapists</a>
       <a href="/profile" class="nav-btn">Profile</a>
+      <a href="/admin/dashboard" class="nav-btn" style="border-color:rgba(99,102,241,0.3);color:#6366f1">MoSJE Hub</a>
       <a href="#" class="nav-btn" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>window.location.href='/auth')" style="border-color:rgba(212,83,126,.3);color:#993556">Logout</a>
     </nav>
+  </div>
+
+  <!-- Victim Case Hub Banner (Shown dynamically via JS if profile exists) -->
+  <div id="victim-case-banner" style="display:none; background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.05)); border:1.5px solid rgba(16,185,129,0.3); border-radius:24px; padding:24px; color:var(--ink); display:flex; justify-content:space-between; align-items:center; margin-top:20px; backdrop-filter:blur(8px); flex-wrap:wrap; gap:16px">
+    <div>
+      <h3 style="font-family:'DM Serif Display',serif; font-size:1.35rem; color:var(--sage-light)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Your Case Protection Hub</h3>
+      <p style="font-size:.88rem; color:var(--muted); margin-top:4px">Access your secure Witness Protection Vault, hearing prep tools, and dynamic distress monitoring console.</p>
+    </div>
+    <a href="/victim/dashboard" class="nav-btn" style="border-color:var(--sage-light); color:var(--sage-light); font-weight:700">Open Protection Hub</a>
   </div>
 
   <div class="hero">
@@ -158,18 +180,18 @@
       <p class="hero-sub">Track your mood, journal your thoughts, and chat whenever you need a kind listener.</p>
       <div class="hero-cta">
         <a href="/diary"   class="btn-primary">Open My Diary</a>
-        <a href="/chatbot" class="btn-ghost">Talk to ManoRakshak</a>
+        <a href="/chatbot" class="btn-ghost">Talk to ManoRakshak.AI</a>
       </div>
     </div>
 
     <div class="profile-card fade-up d2">
       <div class="profile-top" onclick="window.location.href='/profile'" style="cursor:pointer" title="View Profile & Stats">
-        <div class="avatar">🌿</div>
+        <div class="avatar"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div>
         <div>
-          <div class="profile-name" id="profile-name">Welcome back 🌸</div>
+          <div class="profile-name" id="profile-name">Welcome back <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg></div>
           <div class="profile-join">View Profile & Stats →</div>
-          <div class="streak-badge" id="streak-display">🌱 Loading...</div>
-          <div class="streak-badge" style="margin-top:4px;background:rgba(93,202,165,.12);border-color:rgba(93,202,165,.3);color:var(--sage)" id="forecast-display">🔮 Forecast: Loading...</div>
+          <div class="streak-badge" id="streak-display"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 22V10"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/></svg> Loading...</div>
+          <div class="streak-badge" style="margin-top:4px;background:rgba(93,202,165,.12);border-color:rgba(93,202,165,.3);color:var(--sage)" id="forecast-display"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg> Forecast: Loading...</div>
         </div>
       </div>
       <div class="stats-row">
@@ -188,11 +210,11 @@
       </div>
       <div class="mood-check">How are you feeling right now?</div>
       <div class="mood-row">
-        <div class="mood-chip" onclick="pickMood(this,1)" title="Struggling">😔</div>
-        <div class="mood-chip" onclick="pickMood(this,2)" title="Low">😐</div>
-        <div class="mood-chip" onclick="pickMood(this,3)" title="Okay">🙂</div>
-        <div class="mood-chip" onclick="pickMood(this,4)" title="Good">😊</div>
-        <div class="mood-chip" onclick="pickMood(this,5)" title="Great">🌟</div>
+        <div class="mood-chip" onclick="pickMood(this,1)" title="Struggling"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="mood-chip" onclick="pickMood(this,2)" title="Low"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="mood-chip" onclick="pickMood(this,3)" title="Okay"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="mood-chip" onclick="pickMood(this,4)" title="Good"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="mood-chip" onclick="pickMood(this,5)" title="Great"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       </div>
     </div>
   </div>
@@ -202,43 +224,43 @@
   </div>
   <div class="feature-grid fade-up d3">
     <a class="feat-card diary" href="/diary">
-      <div class="feat-tag new">✦ Featured</div>
-      <div class="feat-icon">📖</div>
+      <div class="feat-tag new"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Featured</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
       <h3>My Diary</h3>
       <p>Write freely, track your mood journey, and receive gentle AI reflections crafted just for you.</p>
       <div class="feat-arrow">→</div>
     </a>
     <a class="feat-card chat" href="/chatbot">
-      <div class="feat-tag ai">✦ AI Powered</div>
-      <div class="feat-icon">💬</div>
-      <h3>ManoRakshak Chat</h3>
+      <div class="feat-tag ai"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> AI Powered</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div>
+      <h3>ManoRakshak.AI Chat</h3>
       <p>Your always-available companion. Talk through anything — worries, wins, or just how your day went.</p>
       <div class="feat-arrow">→</div>
     </a>
     <a class="feat-card music" href="/music">
-      <div class="feat-tag music">✦ New</div>
-      <div class="feat-icon">🎵</div>
+      <div class="feat-tag music"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> New</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
       <h3>Mood Music</h3>
       <p>Curated Spotify & YouTube playlists that match your mood — let music be your medicine.</p>
       <div class="feat-arrow">→</div>
     </a>
     <a class="feat-card voice" href="/voice">
-      <div class="feat-tag voice">✦ New</div>
-      <div class="feat-icon">🎙️</div>
+      <div class="feat-tag voice"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> New</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>️</div>
       <h3>Voice Journal</h3>
       <p>Speak freely — we'll transcribe your words and gently detect your emotions from your voice.</p>
       <div class="feat-arrow">→</div>
     </a>
     <a class="feat-card clinical" href="/clinical" style="background:linear-gradient(135deg,#e1f5ee,#9fe1cb);border:1px solid rgba(93,202,165,.2)">
-      <div class="feat-tag new" style="background:rgba(15,110,86,.12);color:var(--sage)">✦ Screening</div>
-      <div class="feat-icon">📋</div>
+      <div class="feat-tag new" style="background:rgba(15,110,86,.12);color:var(--sage)"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Screening</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/></svg></div>
       <h3>Clinical Screening</h3>
       <p>Evaluate your depression (PHQ-9) and anxiety (GAD-7) levels using standard clinical questionnaires.</p>
       <div class="feat-arrow">→</div>
     </a>
     <a class="feat-card therapists" href="/therapists" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);border:1px solid rgba(14,165,233,.15)">
-      <div class="feat-tag new" style="background:rgba(14,165,233,.12);color:#0369a1">✦ Directory</div>
-      <div class="feat-icon">🤝</div>
+      <div class="feat-tag new" style="background:rgba(14,165,233,.12);color:#0369a1"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Directory</div>
+      <div class="feat-icon"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
       <h3>Therapists</h3>
       <p>Find professional support. Browse, filter by specialty, and schedule appointments with licensed therapists.</p>
       <div class="feat-arrow">→</div>
@@ -269,7 +291,7 @@
     </div>
   </div>
 
-  <footer>ManoRakshak &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <script src="/games/gameEngine.js"></script>
@@ -296,14 +318,14 @@ fetch('/api/analytics')
     document.getElementById('stat-entries').textContent = d.total_entries || 0;
     document.getElementById('stat-mood').textContent    = d.avg_mood ? d.avg_mood.toFixed(1) : '—';
     document.getElementById('stat-streak').textContent  = d.streak || 0;
-    document.getElementById('streak-display').textContent = d.streak > 0 ? '🔥 ' + d.streak + '-day streak' : '🌱 Start your streak!';
+    document.getElementById('streak-display').innerHTML = d.streak > 0 ? '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg> ' + d.streak + '-day streak' : '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 22V10"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/></svg> Start your streak!';
   })
-  .catch(() => { document.getElementById('streak-display').textContent = '🌱 Start journaling!'; });
+  .catch(() => { document.getElementById('streak-display').innerHTML = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 22V10"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/></svg> Start journaling!'; });
 
 fetch('/api/mood/forecast')
   .then(r => r.json())
   .then(d => {
-    document.getElementById('forecast-display').textContent = '🔮 Forecast tomorrow: ' + d.emoji + ' ' + d.mood_name;
+    document.getElementById('forecast-display').innerHTML = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg> Forecast tomorrow: ' + d.emoji + ' ' + d.mood_name;
   })
   .catch(() => {
     document.getElementById('forecast-display').style.display = 'none';
@@ -314,10 +336,20 @@ fetch('/api/auth/me')
   .then(d => {
     if (d.logged_in && d.user) {
       const first = (d.user.name || '').split(' ')[0];
-      document.getElementById('profile-name').textContent = 'Hey, ' + first + ' 🌸';
+      document.getElementById('profile-name').innerHTML = 'Hey, ' + first + ' <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg>';
       if (d.user.avatar) {
         document.querySelector('.profile-card .avatar').textContent = d.user.avatar;
       }
+    }
+  })
+  .catch(() => {});
+
+// Show V2 Case Hub Banner if user has a registered victim profile
+fetch('/api/victim/profile')
+  .then(r => r.json())
+  .then(d => {
+    if (d.ok && d.profile) {
+      document.getElementById('victim-case-banner').style.display = 'flex';
     }
   })
   .catch(() => {});
@@ -330,7 +362,7 @@ function getCookie(name) {
 }
 
 function getStorageKey() {
-  var userId = getCookie('manorakshak_user_id');
+  var userId = (getCookie('manorakshak_user_id') || getCookie('manorakshak_user_id'));
   return userId ? 'manorakshak_engine_v1_' + userId : 'manorakshak_engine_v1_guest';
 }
 

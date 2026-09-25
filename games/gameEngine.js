@@ -1,7 +1,7 @@
 /**
- * ManoRakshak GameEngine
+ * ManoRakshak.AI GameEngine
  * ===================
- * Shared engine for all 7 ManoRakshak games.
+ * Shared engine for all 7 ManoRakshak.AI games.
  * Handles: XP, levels, badges, score history, streaks, session tracking.
  *
  * USAGE IN ANY GAME FILE:
@@ -156,7 +156,7 @@
   }
 
   function getStorageKey() {
-    var userId = getCookie('manorakshak_user_id');
+    var userId = (getCookie('manorakshak_user_id') || getCookie('manorakshak_user_id'));
     return userId ? 'manorakshak_engine_v1_' + userId : 'manorakshak_engine_v1_guest';
   }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoRakshak — Mood Music</title>
+  <title>ManoRakshak.AI — Mood Music</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -93,6 +93,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -101,15 +113,15 @@
 
 <div class="page">
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoRakshak</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <div style="display:flex; gap:16px; align-items:center;">
-      <a href="/clinical" class="back" style="color:var(--sage); font-weight:500;">📋 Check-in</a>
-      <a href="/profile" class="back" style="color:var(--sage); font-weight:500;">👤 Profile</a>
+      <a href="/clinical" class="back" style="color:var(--sage); font-weight:500;"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/></svg> Check-in</a>
+      <a href="/profile" class="back" style="color:var(--sage); font-weight:500;"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</a>
       <a href="/" class="back">← Back to hub</a>
     </div>
   </div>
 
-  <h1 class="page-title fade-up">🎵 Mood <em>Music</em></h1>
+  <h1 class="page-title fade-up"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Mood <em>Music</em></h1>
   <p class="page-sub fade-up">Let music match your mood — curated playlists to help you feel, heal, and unwind.</p>
 
   <div id="auto-detect-banner"></div>
@@ -118,26 +130,26 @@
 
   <!-- Language Filter -->
   <div class="lang-grid fade-up" id="lang-grid">
-    <button class="lang-btn active" id="lang-all" onclick="selectLanguage('all')">🌐 All Languages</button>
-    <button class="lang-btn" id="lang-english" onclick="selectLanguage('english')">🇬🇧 English & Global</button>
-    <button class="lang-btn" id="lang-hindi" onclick="selectLanguage('hindi')">🇮🇳 Hindi & Bollywood</button>
+    <button class="lang-btn active" id="lang-all" onclick="selectLanguage('all')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> All Languages</button>
+    <button class="lang-btn" id="lang-english" onclick="selectLanguage('english')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> English & Global</button>
+    <button class="lang-btn" id="lang-hindi" onclick="selectLanguage('hindi')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg> Hindi & Bollywood</button>
   </div>
 
   <div id="playlist-content"></div>
 
-  <footer>ManoRakshak &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <script>
 const MOODS = [
-  { key:'anxious',  emoji:'😰', label:'Anxious',  color:'#7C3AED' },
-  { key:'sad',      emoji:'🌧️', label:'Sad',      color:'#378ADD' },
-  { key:'stressed', emoji:'😤', label:'Stressed', color:'#E74C3C' },
-  { key:'angry',    emoji:'🔥', label:'Angry',    color:'#D35400' },
-  { key:'calm',     emoji:'🌿', label:'Calm',     color:'#1D9E75' },
-  { key:'happy',    emoji:'☀️', label:'Happy',    color:'#EF9F27' },
-  { key:'neutral',  emoji:'🙂', label:'Neutral',  color:'#888780' },
-  { key:'lonely',   emoji:'🌙', label:'Lonely',   color:'#6C5CE7' },
+  { key:'anxious',  emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>', label:'Anxious',  color:'#7C3AED' },
+  { key:'sad',      emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>️', label:'Sad',      color:'#378ADD' },
+  { key:'stressed', emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>', label:'Stressed', color:'#E74C3C' },
+  { key:'angry',    emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>', label:'Angry',    color:'#D35400' },
+  { key:'calm',     emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', label:'Calm',     color:'#1D9E75' },
+  { key:'happy',    emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>️', label:'Happy',    color:'#EF9F27' },
+  { key:'neutral',  emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>', label:'Neutral',  color:'#888780' },
+  { key:'lonely',   emoji:'<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>', label:'Lonely',   color:'#6C5CE7' },
 ];
 
 const PLAYLISTS = {
@@ -305,7 +317,7 @@ function renderPlaylists(mood) {
   let html = '';
 
   if (filteredSpotify.length > 0) {
-    html += `<h2 class="section-label fade-up">🎧 ${data.title}</h2>`;
+    html += `<h2 class="section-label fade-up"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg> ${data.title}</h2>`;
     html += '<div class="playlist-grid fade-up">';
     filteredSpotify.forEach(pl => {
       html += `
@@ -340,7 +352,7 @@ function renderPlaylists(mood) {
   if (filteredSpotify.length === 0 && filteredYoutube.length === 0) {
     html += `
       <div class="fade-up" style="color:var(--muted); font-size:0.95rem; margin-top:20px; text-align:center; padding:40px; border-radius:20px; border:1px dashed var(--card-border); background:rgba(255,255,255,0.4);">
-        No playlists available in the selected language for this mood. Try switching the language filter! 🎵
+        No playlists available in the selected language for this mood. Try switching the language filter! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       </div>`;
   }
 

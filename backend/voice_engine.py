@@ -1,5 +1,5 @@
 """
-ManoRakshak Voice Engine
+ManoRakshak.AI Voice Engine
 ======================
 Fully offline speech-to-text and voice-cloned text-to-speech.
 
@@ -172,3 +172,137 @@ def synthesize(text: str, out_path: str, user_id: str, voice_id: str | None,
         tts.tts_to_file(text=text, language="en", file_path=out_path)
 
     return out_path
+
+
+# ══════════════════════════════════════════════════════════════
+#  VERSION 2 — ACOUSTIC VOICE STRESS ANALYTICS (VSA) ENGINE
+# ══════════════════════════════════════════════════════════════
+
+def analyze_voice_stress(audio_path: str) -> dict:
+    """
+    Pure-Python/Numpy Voice Stress Analyzer.
+    Analyzes jitter (pitch instability), silence ratio, and average amplitude/RMS.
+    """
+    import wave
+    import numpy as np
+
+    try:
+        with wave.open(audio_path, 'rb') as w:
+            params = w.getparams()
+            channels = params.nchannels
+            sampwidth = params.sampwidth
+            framerate = params.framerate
+            nframes = params.nframes
+            
+            if nframes == 0:
+                return {"vocal_jitter": 0.0, "vocal_shimmer": 0.0, "silence_ratio": 0.0, "stress_score": 0.0}
+            
+            raw_data = w.readframes(nframes)
+            
+        # Convert bytes to numpy array based on sample width
+        if sampwidth == 1:
+            data = np.frombuffer(raw_data, dtype=np.uint8).astype(np.float32) - 128
+        elif sampwidth == 2:
+            data = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
+        elif sampwidth == 4:
+            data = np.frombuffer(raw_data, dtype=np.int32).astype(np.float32)
+        else:
+            data = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
+
+        # Merge channels to mono if stereo
+        if channels > 1:
+            data = data.reshape(-1, channels).mean(axis=1)
+
+        # Normalize data
+        max_val = np.max(np.abs(data))
+        if max_val > 0:
+            data = data / max_val
+
+        # 1. Compute silent regions and silence ratio
+        # Let's divide into 30ms frames
+        frame_size = int(framerate * 0.03)  # 30ms
+        if frame_size <= 0:
+            frame_size = 1024
+        
+        frames = [data[i:i+frame_size] for i in range(0, len(data), frame_size) if len(data[i:i+frame_size]) == frame_size]
+        
+        if not frames:
+            return {"vocal_jitter": 0.0, "vocal_shimmer": 0.0, "silence_ratio": 0.0, "stress_score": 0.0}
+
+        rms_list = [np.sqrt(np.mean(f**2)) for f in frames]
+        # Silence threshold: 10% of max average RMS or absolute 0.015
+        max_rms = max(rms_list) if rms_list else 0.1
+        silence_thresh = max(0.015, 0.1 * max_rms)
+        
+        silent_frames = sum(1 for rms in rms_list if rms < silence_thresh)
+        silence_ratio = silent_frames / len(frames) if frames else 0.0
+
+        # 2. Extract pitch (F0) and calculate Jitter/Shimmer on voiced frames
+        # Human pitch range: 60Hz to 400Hz
+        # Sample rate / Pitch range: (framerate/400) to (framerate/60)
+        min_lag = int(framerate / 400)
+        max_lag = int(framerate / 60)
+        
+        pitch_periods = []
+        amplitudes = []
+        
+        for f, rms in zip(frames, rms_list):
+            if rms >= silence_thresh:  # Voiced frame
+                # Autocorrelation
+                corr = np.correlate(f, f, mode='full')
+                corr = corr[len(corr)//2:]  # Keep second half
+                
+                # Find peak in the human pitch range lag window
+                if len(corr) > max_lag:
+                    lag_section = corr[min_lag:max_lag]
+                    if len(lag_section) > 0:
+                        peak_lag = min_lag + np.argmax(lag_section)
+                        # Ensure the autocorrelation is reasonably high to confirm voice periodicity
+                        if corr[peak_lag] > 0.25 * corr[0]:
+                            pitch_periods.append(peak_lag)
+                            amplitudes.append(rms)
+
+        # 3. Calculate Jitter and Shimmer
+        vocal_jitter = 0.0
+        vocal_shimmer = 0.0
+        
+        if len(pitch_periods) >= 2:
+            # Jitter (local): average absolute difference between consecutive periods / average period
+            diffs = np.abs(np.diff(pitch_periods))
+            vocal_jitter = np.mean(diffs) / np.mean(pitch_periods) if np.mean(pitch_periods) > 0 else 0.0
+            
+            # Shimmer (local): average absolute difference between consecutive peak amplitudes / average amplitude
+            amp_diffs = np.abs(np.diff(amplitudes))
+            vocal_shimmer = np.mean(amp_diffs) / np.mean(amplitudes) if np.mean(amplitudes) > 0 else 0.0
+
+        # Bound the metrics to realistic percentages (e.g. 0 to 1)
+        vocal_jitter = float(min(1.0, max(0.0, vocal_jitter)))
+        vocal_shimmer = float(min(1.0, max(0.0, vocal_shimmer)))
+        silence_ratio = float(min(1.0, max(0.0, silence_ratio)))
+
+        # 4. Generate a combined vocal stress score (0.0 to 1.0)
+        # Jitter contributes 50%, silence ratio contributes 30%, shimmer contributes 20%
+        # High jitter (irregular voice tremors) is a very strong marker for physical stress/fear.
+        # High silence ratio (long pauses/hesitations) indicates depression or cognitive overload.
+        # Normalize jitter/shimmer relative to typical stress benchmarks
+        scaled_jitter = min(1.0, vocal_jitter / 0.10)
+        scaled_shimmer = min(1.0, vocal_shimmer / 0.15)
+        stress_score = (scaled_jitter * 0.5) + (silence_ratio * 0.3) + (scaled_shimmer * 0.2)
+        
+        return {
+            "vocal_jitter": round(vocal_jitter, 4),
+            "vocal_shimmer": round(vocal_shimmer, 4),
+            "silence_ratio": round(silence_ratio, 4),
+            "stress_score": round(float(stress_score), 4)
+        }
+
+    except Exception as e:
+        print(f"Error in VSA calculation: {e}")
+        return {
+            "vocal_jitter": 0.0,
+            "vocal_shimmer": 0.0,
+            "silence_ratio": 0.0,
+            "stress_score": 0.0,
+            "error": str(e)
+        }
+

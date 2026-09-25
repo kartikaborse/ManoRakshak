@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ManoRakshak GameEngine — Test Dashboard</title>
+<title>ManoRakshak.AI GameEngine — Test Dashboard</title>
 <style>
   :root {
     --bg:        #0f1410;
@@ -235,7 +235,7 @@
   <!-- Header -->
   <div class="header">
     <div class="header-left">
-      <h1>🌿 ManoRakshak GameEngine</h1>
+      <h1>🌿 ManoRakshak.AI GameEngine</h1>
       <p>Test dashboard — play simulated games and watch XP, badges & history update live</p>
     </div>
     <button class="reset-btn" onclick="doReset()">⚠ Reset All Progress</button>
@@ -250,7 +250,7 @@
         <div class="ltxt">LEVEL</div>
       </div>
       <div class="player-meta">
-        <div class="name">ManoRakshak Player</div>
+        <div class="name">ManoRakshak.AI Player</div>
         <div class="xp-line" id="pc-xp-line">0 XP total</div>
         <div class="xp-bar-wrap">
           <div class="xp-bar-track"><div class="xp-bar-fill" id="pc-xp-bar" style="width:0%"></div></div>
@@ -378,7 +378,7 @@
   }
 
   function getStorageKey() {
-    var userId = getCookie('manorakshak_user_id');
+    var userId = (getCookie('manorakshak_user_id') || getCookie('manorakshak_user_id'));
     return userId ? 'manorakshak_engine_v1_' + userId : 'manorakshak_engine_v1_guest';
   }
 

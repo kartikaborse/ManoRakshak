@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ManoRakshak — Therapist Directory</title>
+  <title>ManoRakshak.AI — Therapist Directory</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -143,6 +143,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 <div class="orb orb1"></div>
@@ -151,7 +163,7 @@
 
 <div class="page">
   <div class="topbar">
-    <a href="/" class="logo">🌿 ManoRakshak</a>
+    <a href="/" class="logo"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> ManoRakshak.AI</a>
     <nav class="nav-pill">
       <a href="/diary"   class="nav-btn">Diary</a>
       <a href="/chatbot" class="nav-btn">Chat</a>
@@ -193,7 +205,7 @@
     <div style="text-align:center; padding: 40px; grid-column: 1/-1; color: var(--hint)">Loading professional directory...</div>
   </section>
 
-  <footer>ManoRakshak &mdash; made with <span>🌿</span> for your wellbeing</footer>
+  <footer>ManoRakshak.AI &mdash; made with <span><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span> for your wellbeing</footer>
 </div>
 
 <!-- Appointment Modal -->
@@ -303,11 +315,11 @@
       const specTags = t.specialization.split(',').map(s => `<span class="tag">${s.trim()}</span>`).join('');
       
       // Determine profile emoji based on name or style
-      let emoji = '🧘';
-      if (t.name.includes('Sen') || t.name.includes('Kapoor')) emoji = '🌸';
-      else if (t.name.includes('Nair')) emoji = '🌻';
-      else if (t.name.includes('Mehta')) emoji = '🌿';
-      else if (t.name.includes('Deshmukh')) emoji = '🕯️';
+      let emoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 11 6-2 6 2"/></svg>';
+      if (t.name.includes('Sen') || t.name.includes('Kapoor')) emoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg>';
+      else if (t.name.includes('Nair')) emoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>';
+      else if (t.name.includes('Mehta')) emoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
+      else if (t.name.includes('Deshmukh')) emoji = '<svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 12v10M9 22h6"/></svg>️';
 
       card.innerHTML = `
         <div class="card-top">
@@ -316,7 +328,7 @@
             <h3 class="t-name">${t.name}</h3>
             <div class="t-title">${t.title}</div>
             <div class="t-meta">
-              <span class="rating-star">★ ${t.rating.toFixed(1)}</span>
+              <span class="rating-star"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${t.rating.toFixed(1)}</span>
               <span>•</span>
               <span>${t.experience} yrs exp</span>
             </div>
@@ -408,7 +420,7 @@
     .then(r => r.json().then(data => ({ ok: r.ok, data })))
     .then(({ ok, data }) => {
       if (ok && data.ok) {
-        showToast('Appointment request sent successfully! 🌿');
+        showToast('Appointment request sent successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>');
         closeModal();
       } else {
         showToast(data.error || 'Failed to send request');

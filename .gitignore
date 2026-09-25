@@ -26,12 +26,14 @@ voices/
 *.wav
 *.mp3
 
-# IDE, OS, and scratch files
+# IDE, OS, lock files, and scratch files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 backend/scratch/
+~$*.pptx
+~$*.docx
 
 # Interview preparation, presentations, and extraneous document files
 *.pdf
@@ -43,3 +45,5 @@ backend/scratch/
 ~$*
 interview*/
 prep*/
+extracted_images/
+generated_diagrams/

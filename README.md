@@ -53,6 +53,13 @@ A collection of 7 specially engineered web games built with custom physics and g
 - **🏆 Gamified XP & Level System:** Built-in gamification engine tracking XP and Level progression across sessions to encourage consistent self-care habits.
 - **💡 Daily Wisdom & Grounding:** Curated daily reflections and quotes promoting mindfulness, stress reduction, and positive cognitive reframing.
 
+### 🏛️ 8. Atrocity Protection Hub & MoSJE Command Center (`/victim_dashboard` & `/admin_dashboard`)
+- **⚖️ Atrocity & Discrimination Incident Reporting:** Secure multi-channel reporting portal allowing victims of caste-based atrocities, discrimination, or hate crimes to log incidents confidentially.
+- **🧠 XAI (Explainable AI) Distress & Vulnerability Scoring:** Automated distress evaluation engine assigning real-time risk scores, vulnerability tiering, and actionable protective recommendations based on reported events.
+- **🛡️ Victim Case Monitor & Legal Aid Tracker:** End-to-end portal for victims to track legal aid applications, status of FIRs, protection order requests, police protection status, and clinical/psychosocial support.
+- **💵 Financial Relief & Rehabilitation Tracking:** Dedicated monitoring for state and central government compensation disbursements, legal defense funding, and emergency rehabilitation assistance under the PoA (Prevention of Atrocities) Act.
+- **🏢 MoSJE Command Center (`/admin_dashboard`):** Specialized administrative dashboard for Ministry of Social Justice & Empowerment officers to monitor national/regional atrocity heatmaps, coordinate inter-agency responses, and trigger early warning interventions.
+
 ---
 
 ## 🏗️ System Architecture
@@ -62,11 +69,12 @@ ManoRakshak/
 ├── backend/                    # Flask Application & Core API Services
 │   ├── app.py                  # Primary HTTP router & session coordinator
 │   ├── db.py                   # MySQL / SQLite ORM database wrapper
+│   ├── migrate_v2.py           # Database schema migration for Atrocity & Distress tracking
 │   ├── offline_llm_engine.py   # Offline inference engine for conversational AI
 │   ├── rag_engine.py           # Retrieval-Augmented Generation vector pipeline
 │   ├── voice_engine.py         # Voice synthesis & audio signal processing
 │   ├── setup_therapists.py     # Initial seed script for verified clinical practitioners
-│   └── templates/              # Jinja2 Web UI Templates (Hub, Clinical, Voice, Profile, etc.)
+│   └── templates/              # Jinja2 Web UI Templates (Protection Hub, Admin Command Center, etc.)
 ├── chatbot/                    # ML / NLP Chatbot Subsystem
 │   ├── chatbot.py              # Natural language classifier & intent router
 │   ├── train_model.py          # Intent model training pipeline

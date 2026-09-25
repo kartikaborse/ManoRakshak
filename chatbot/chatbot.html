@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ManoRakshak — Mindful Companion Chat</title>
+  <title>ManoRakshak.AI — Mindful Companion Chat</title>
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Talk to ManoRakshak, your supportive mental health companion. Share your feelings, explore your mood trends, and get personalized wellness recommendations."/>
+  <meta name="description" content="Talk to ManoRakshak.AI, your supportive mental health companion. Share your feelings, explore your mood trends, and get personalized wellness recommendations."/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   
   <style>
@@ -449,6 +449,18 @@
       });
     })();
   </script>
+
+<style>
+.inline-icon {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+  fill: none;
+}
+</style>
+
 </head>
 <body>
 
@@ -462,9 +474,9 @@
 
   <main class="chat-container">
     <header class="chat-header">
-      <div class="header-emoji">🌿</div>
+      <div class="header-emoji"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div>
       <div class="chat-header-text">
-        <h1>ManoRakshak Companion</h1>
+        <h1>ManoRakshak.AI Companion</h1>
         <p>A safe, local space to reflect, pause, and talk.</p>
       </div>
       
@@ -494,14 +506,14 @@
     </header>
 
     <div class="messages-area" id="msg-area">
-      <div class="msg-bubble bot">Hello! 🌸 I'm your wellness companion. How are you doing today? If you want to check your progress or play an activity, feel free to ask or click one of the tags below!</div>
+      <div class="msg-bubble bot">Hello! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 0-4 4c0 1.5.8 2.8 2 3.5-1.2.7-2 2-2 3.5a4 4 0 0 0 8 0c0-1.5-.8-2.8-2-3.5 1.2-.7 2-2 2-3.5a4 4 0 0 0-4-4z"/></svg> I'm your wellness companion. How are you doing today? If you want to check your progress or play an activity, feel free to ask or click one of the tags below!</div>
     </div>
 
     <div class="suggestions-row" id="suggestions">
-      <button class="suggestion-chip" onclick="clickSuggestion('Suggest a game')">🧘 Suggest a game</button>
-      <button class="suggestion-chip" onclick="clickSuggestion('How is my mood lately?')">📊 How is my mood?</button>
-      <button class="suggestion-chip" onclick="clickSuggestion('Summarize my last diary entry')">📖 Summarize my diary</button>
-      <button class="suggestion-chip" onclick="clickSuggestion('Give me some tips to feel better')">🌿 Quick coping tips</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('Suggest a game')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 11 6-2 6 2"/></svg> Suggest a game</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('How is my mood lately?')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> How is my mood?</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('Summarize my last diary entry')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Summarize my diary</button>
+      <button class="suggestion-chip" onclick="clickSuggestion('Give me some tips to feel better')"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Quick coping tips</button>
     </div>
 
     <footer class="input-area">
@@ -527,7 +539,7 @@
   <div id="voice-settings-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 110, 86, 0.25); backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-content" style="background: white; border: 1.5px solid var(--glass-border); max-width: 480px; width: 100%; border-radius: 28px; box-shadow: 0 16px 48px rgba(15, 110, 86, 0.15); overflow: hidden; display: flex; flex-direction: column;">
       <header style="padding: 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: var(--ghost-green);">
-        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;">🎙️ Voice Settings</h2>
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>️ Voice Settings</h2>
         <button onclick="closeVoiceSettings()" style="background: transparent; border: none; cursor: pointer; color: var(--muted); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">&times;</button>
       </header>
       
@@ -723,7 +735,7 @@
         indicator.remove();
 
         if (response.status === 401) {
-          createBubble('Session expired — redirecting to login... 🌿', 'bot');
+          createBubble('Session expired — redirecting to login... <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', 'bot');
           setTimeout(() => window.location.href = '/auth', 1500);
           return;
         }
@@ -740,13 +752,13 @@
             createGameCard(data.recommendation);
           }
         } else if (data.error) {
-          createBubble(data.error + ' 🌧️', 'bot');
+          createBubble(data.error + ' <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>️', 'bot');
         } else {
-          createBubble('Something went wrong — please try again. 🌿', 'bot');
+          createBubble('Something went wrong — please try again. <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', 'bot');
         }
       } catch (e) {
         if (indicator) indicator.remove();
-        createBubble('Could not reach the server. Is it running? 🌿', 'bot');
+        createBubble('Could not reach the server. Is it running? <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', 'bot');
       }
     }
 
@@ -797,7 +809,7 @@
         if (data.ok) {
           closeVoiceSettings();
           // Visual notification
-          const bubble = createBubble('Voice settings saved successfully! 🌿', 'bot');
+          const bubble = createBubble('Voice settings saved successfully! <svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>', 'bot');
           setTimeout(() => bubble.remove(), 3000);
         }
       } catch (e) {
@@ -1122,10 +1134,34 @@
       }
       window.speechSynthesis.cancel();
 
-      let cleanText = text.replace(/<[^>]*>/g, '');
+      let cleanText = text.replace(/<svg[\s\S]*?<\/svg>/g, '');
+      cleanText = cleanText.replace(/<[^>]*>/g, '');
       cleanText = cleanText.replace(/\*\*([^*]+)\*\*/g, '$1');
       cleanText = cleanText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
-      cleanText = cleanText.replace(/[⚠️🌟😊🙂😔😐🌧️😰🔥😤🌿🌸🌙🌑🙏🌈🚨💔😞]/g, '');
+
+      // Check if a premium cloned loved-one voice is selected from the header dropdown
+      const voiceId = document.getElementById('voiceSelect').value;
+      if (voiceId) {
+        fetch('/api/voice/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: cleanText, voice_id: voiceId })
+        })
+        .then(res => {
+          if (res.ok) return res.blob();
+          throw new Error('Premium XTTS synthesis failed');
+        })
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          currentAudio = new Audio(url);
+          currentAudio.play();
+        })
+        .catch(err => {
+          console.warn('Backend premium TTS error, using browser fallback:', err);
+          speakSystemVoice(cleanText);
+        });
+        return;
+      }
 
       const type = document.getElementById('voice-type-select').value;
 
@@ -1135,7 +1171,7 @@
           return;
         }
         
-        // Play backend cloned voice SAPI5 stream
+        // Play backend SAPI5/DSP cloned voice fallback stream
         fetch('/api/voice/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1366,7 +1402,7 @@
   <div id="enroll-voice-modal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 110, 86, 0.25); backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-content" style="background: white; border: 1.5px solid var(--glass-border); max-width: 480px; width: 100%; border-radius: 28px; box-shadow: 0 16px 48px rgba(15, 110, 86, 0.15); overflow: hidden; display: flex; flex-direction: column;">
       <header style="padding: 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between; background: var(--ghost-green);">
-        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;">🎙️ Add Cloned Voice</h2>
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-green); display: flex; align-items: center; gap: 8px;"><svg class="inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>️ Add Cloned Voice</h2>
         <button onclick="closeEnroll()" style="background: transparent; border: none; cursor: pointer; color: var(--muted); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">&times;</button>
       </header>
       

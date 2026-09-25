@@ -522,7 +522,100 @@ CREATE TABLE `wellness_scores` (
   CONSTRAINT `fk_wellness_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table `wellness_scores`
--- No data to seed for `wellness_scores`
+-- ------------------------------------------------------
+-- Table structure for table `victim_profiles`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_profiles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL UNIQUE,
+  `case_number` varchar(100) NOT NULL UNIQUE,
+  `category` varchar(150) NOT NULL,
+  `judicial_stage` varchar(100) DEFAULT 'Investigation',
+  `counselor_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`counselor_id`) REFERENCES `therapists` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+-- Table structure for table `victim_distress_scores`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_distress_scores` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `score` float NOT NULL,
+  `sentiment_score` float DEFAULT NULL,
+  `vocal_stress` float DEFAULT NULL,
+  `assessment_score` int(11) DEFAULT NULL,
+  `details_json` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+-- Table structure for table `victim_alerts`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_alerts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `score` float NOT NULL,
+  `reason` text NOT NULL,
+  `status` varchar(50) DEFAULT 'Active',
+  `resolution_notes` text DEFAULT NULL,
+  `resolved_by` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `resolved_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+-- Table structure for table `victim_vault_incidents`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_vault_incidents` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `incident_type` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `evidence_file_path` varchar(255) DEFAULT NULL,
+  `threat_severity` varchar(20) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+-- Table structure for table `victim_sos_alerts`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_sos_alerts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `latitude` varchar(50) NOT NULL,
+  `longitude` varchar(50) NOT NULL,
+  `status` varchar(50) DEFAULT 'Active',
+  `dispatched_officer` varchar(150) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ------------------------------------------------------
+-- Table structure for table `victim_compensation_claims`
+-- ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `victim_compensation_claims` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `case_number` varchar(100) NOT NULL,
+  `amount_entitled` float NOT NULL,
+  `stage` varchar(100) NOT NULL,
+  `status` varchar(50) DEFAULT 'Pending Officer Review',
+  `petition_text` text NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

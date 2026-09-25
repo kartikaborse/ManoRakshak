@@ -369,7 +369,7 @@ def user_only(f):
 def auth_page():
     if "user_id" in session:
         return redirect("/")
-    return send_from_directory(ROOT, "manorakshak-auth.html")
+    return send_from_directory(ROOT, "auth.html")
 
 
 @app.route("/api/auth/signup", methods=["POST"])
@@ -415,7 +415,12 @@ def login():
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
-    user = check_login(email, password)
+    try:
+        user = check_login(email, password)
+    except Exception as db_err:
+        print(f"[DB Error] Login failed due to database connection issue: {db_err}")
+        return jsonify({"error": "Database error. Please make sure MySQL is running in XAMPP Control Panel."}), 500
+
     if not user:
         return jsonify({"error": "Invalid email or password"}), 401
 
@@ -743,9 +748,25 @@ def get_assessments_history():
 @app.route("/")
 @login_required
 def hub_home():
-    if get_user_role() == "therapist":
+    role = get_user_role()
+    if role == "therapist":
         return send_from_directory(TEMPLATES_DIR, "therapist_dashboard.html")
     return render_template_string(HUB_TEMPLATE, games=get_available_games())
+
+
+@app.route("/victim/dashboard")
+@login_required
+def victim_dashboard_page():
+    from db import get_victim_profile, create_victim_profile
+    role = get_user_role()
+    uid = get_current_user_id()
+    if role != "user":
+        return redirect("/")
+    profile = get_victim_profile(uid)
+    if not profile:
+        auto_case_num = f"MK-2026-{uid:04d}"
+        profile = create_victim_profile(uid, auto_case_num, "General Protection & Atrocity Relief", "Investigation")
+    return send_from_directory(TEMPLATES_DIR, "victim_dashboard.html")
 
 
 @app.route("/games")
@@ -834,7 +855,7 @@ def clinical_page():
 
 @app.route("/auth/reset-password")
 def reset_password_page():
-    return send_from_directory(ROOT, "manorakshak-auth.html")
+    return send_from_directory(ROOT, "auth.html")
 
 
 
@@ -1384,6 +1405,11 @@ def voice_chat():
 @app.route("/static/audio_out/<path:filename>")
 def serve_audio(filename):
     return send_from_directory(AUDIO_OUT_DIR, filename)
+
+
+@app.route("/api/uploads/<path:filename>")
+def serve_uploads(filename):
+    return send_from_directory(UPLOADS_DIR, filename)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -2090,12 +2116,42 @@ def voice_tts():
     uid = get_current_user_id()
     body = request.get_json(force=True)
     text = body.get("text", "").strip()
+    voice_id = body.get("voice_id")
+    tag = body.get("tag")
     
     if not text:
         return jsonify({"error": "No text provided"}), 400
         
     config = load_voice_config(uid)
     
+    # ── Step 0: Try XTTS v2 Cloned voice if voice_id is specified ──
+    if voice_id:
+        try:
+            import voice_engine
+            out_name = f"tts_{uid}_{uuid.uuid4().hex}.wav"
+            out_path = AUDIO_OUT_DIR / out_name
+            
+            voice_engine.synthesize(
+                text=text,
+                out_path=str(out_path),
+                user_id=str(uid),
+                voice_id=voice_id,
+                response_tag=tag,
+            )
+            
+            with open(out_path, "rb") as f:
+                audio_bytes = f.read()
+            try:
+                os.remove(out_path)
+            except Exception:
+                pass
+                
+            buf = io.BytesIO(audio_bytes)
+            buf.seek(0)
+            return send_file(buf, mimetype="audio/wav")
+        except Exception as xtts_err:
+            app.logger.error(f"XTTS synthesis failed: {xtts_err}. Falling back to SAPI5/DSP.")
+            
     # ── Step 1: Synthesize base TTS WAV with SAPI5 ──
     temp_dir = tempfile.gettempdir()
     base_wav_path = os.path.join(temp_dir, f"sapi_{uid}_{uuid.uuid4().hex}.wav")
@@ -2199,7 +2255,936 @@ def health():
 # ══════════════════════════════════════════════════════════════
 #  ENTRY POINT
 # ══════════════════════════════════════════════════════════════
+def validate_and_setup_ollama():
+    """Verify Ollama service and models are available, and perform auto-indexing if database is missing."""
+    import os
+    from backend.offline_llm_engine import is_ollama_running
+    from backend.rag_engine import check_ollama_model, index_knowledge_base, DB_PATH
+    
+    print("\n" + "─" * 52)
+    print("  Ollama & RAG Offline Assistant Diagnostics")
+    print("─" * 52)
+    
+    ollama_ok = is_ollama_running()
+    llm_model = os.environ.get("OLLAMA_LLM_MODEL", "llama3.2:1b")
+    embed_model = os.environ.get("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+    
+    if not ollama_ok:
+        print("  Status: ⚠️  Ollama service is NOT running/responsive.")
+        print("          Offline RAG + LLM features will fall back to local ML models.")
+        print("          To enable: Install and start Ollama (http://ollama.ai).")
+    else:
+        print("  Status: ✅ Ollama service is running.")
+        
+        # Verify LLM Model
+        if check_ollama_model(llm_model):
+            print(f"  LLM Model:   ✅ '{llm_model}' is available.")
+        else:
+            print(f"  LLM Model:   ⚠️  '{llm_model}' is NOT downloaded.")
+            print(f"               To download, run: ollama pull {llm_model}")
+            
+        # Verify Embedding Model
+        if check_ollama_model(embed_model):
+            print(f"  Embed Model: ✅ '{embed_model}' is available.")
+        else:
+            print(f"  Embed Model: ⚠️  '{embed_model}' is NOT downloaded.")
+            print(f"               To download, run: ollama pull {embed_model}")
+            
+    # Auto-indexing check
+    force_reindex = os.environ.get("FORCE_RAG_REINDEX", "false").lower() == "true"
+    db_exists = os.path.exists(DB_PATH) and len(os.listdir(DB_PATH)) > 0 if os.path.exists(DB_PATH) else False
+    
+    if force_reindex or not db_exists:
+        if force_reindex:
+            print("\n  RAG Database: Forced re-indexing requested via FORCE_RAG_REINDEX.")
+        else:
+            print("\n  RAG Database: ⚠️  Vector database folder is missing or empty.")
+            
+        if ollama_ok and check_ollama_model(embed_model):
+            print("                Indexing knowledge base now...")
+            try:
+                index_knowledge_base()
+                print("                ✅ RAG Indexing complete!")
+            except Exception as e:
+                print(f"                ❌ RAG Indexing failed: {e}")
+        else:
+            print("                Cannot perform indexing. Ollama or Embedding model is unavailable.")
+            print("                Run 'python index_rag.py' manually once they are online.")
+    else:
+        print("  RAG Database: ✅ Persistent database files found.")
+        
+    print("─" * 52 + "\n")
+
+# ══════════════════════════════════════════════════════════════
+#  VERSION 2 — ATROCITY VICTIM MONITORING & DISTRESS PREDICTION APIs
+# ══════════════════════════════════════════════════════════════
+
+@app.route("/api/victim/profile", methods=["GET", "POST"])
+@user_only
+def api_victim_profile():
+    from db import get_victim_profile, create_victim_profile
+    uid = get_current_user_id()
+    if request.method == "GET":
+        profile = get_victim_profile(uid)
+        if not profile:
+            return jsonify({"ok": True, "profile": None})
+        return jsonify({"ok": True, "profile": profile})
+    
+    # POST: Create or update profile
+    body = request.get_json(force=True)
+    case_num = body.get("case_number", "").strip()
+    category = body.get("category", "").strip()
+    stage = body.get("judicial_stage", "Investigation").strip()
+    counselor_id = body.get("counselor_id")
+    
+    if not case_num or not category:
+        return jsonify({"error": "Case number and Atrocity Category are required"}), 400
+        
+    try:
+        profile = create_victim_profile(uid, case_num, category, stage, counselor_id)
+        return jsonify({"ok": True, "profile": profile})
+    except Exception as e:
+        app.logger.error(f"Error creating victim profile: {e}")
+        return jsonify({"error": "Failed to save victim profile"}), 500
+
+
+@app.route("/api/victim/distress-history", methods=["GET"])
+@login_required
+def api_victim_distress_history():
+    from db import get_victim_distress_history
+    role = get_user_role()
+    uid = get_current_user_id()
+    
+    target_uid = request.args.get("user_id", type=int)
+    if role == "therapist" and target_uid:
+        uid_to_query = target_uid
+    else:
+        uid_to_query = uid
+        
+    history = get_victim_distress_history(uid_to_query)
+    return jsonify({"ok": True, "history": history})
+
+
+@app.route("/api/victim/alerts", methods=["GET"])
+@login_required
+def api_victim_alerts():
+    if get_user_role() != "therapist":
+        return jsonify({"error": "Access denied"}), 403
+        
+    from db import get_active_alerts
+    alerts = get_active_alerts()
+    return jsonify({"ok": True, "alerts": alerts})
+
+
+@app.route("/api/victim/alerts/<int:alert_id>/resolve", methods=["POST"])
+@login_required
+def api_resolve_alert(alert_id):
+    if get_user_role() != "therapist":
+        return jsonify({"error": "Access denied"}), 403
+        
+    from db import resolve_alert
+    body = request.get_json(force=True)
+    notes = body.get("notes", "").strip()
+    uid = get_current_user_id()
+    
+    if not notes:
+        return jsonify({"error": "Resolution notes are required"}), 400
+        
+    success = resolve_alert(alert_id, uid, notes)
+    return jsonify({"ok": success})
+
+
+@app.route("/api/victim/checkin", methods=["POST"])
+@user_only
+def api_victim_checkin():
+    """
+    Continuous Check-in Endpoint.
+    Accepts text and optional audio file, runs sentiment analysis + voice stress metrics,
+    calculates Dynamic Distress Score (DDS), logs it, and triggers alerts if threshold is crossed.
+    """
+    import math
+    from db import get_victim_profile, save_victim_distress_score, trigger_victim_alert, get_user_assessments
+    
+    uid = get_current_user_id()
+    text = request.form.get("text", "").strip()
+    
+    vocal_stress = None
+    vsa_metrics = {}
+    transcribed_text = ""
+    
+    if "audio" in request.files:
+        audio_file = request.files["audio"]
+        temp_name = f"vsa_{uuid.uuid4().hex}.wav"
+        temp_path = UPLOAD_DIR / temp_name
+        audio_file.save(temp_path)
+        
+        try:
+            # 1. Transcribe text using Whisper
+            transcribed_text = voice_engine.transcribe(str(temp_path))
+            if transcribed_text and not text:
+                text = transcribed_text
+            
+            # 2. Extract acoustic stress metrics
+            vsa_metrics = voice_engine.analyze_voice_stress(str(temp_path))
+            vocal_stress = vsa_metrics.get("stress_score", 0.0)
+        except Exception as e:
+            app.logger.error(f"VSA Analysis failed: {e}")
+        finally:
+            if temp_path.exists():
+                temp_path.unlink()
+
+    if not text and vocal_stress is None:
+        return jsonify({"error": "Please provide either text or a voice recording check-in."}), 400
+
+    # 1. Calculate Text Sentiment Distress Score
+    text_distress_score = 0.5
+    sentiment_tag = "neutral"
+    
+    if text:
+        import numpy as np
+        bundle = load_ml_model()
+        if bundle and isinstance(bundle, dict):
+            try:
+                model = bundle.get("ensemble") or bundle.get("pipeline")
+                if model is not None:
+                    le = bundle["label_encoder"]
+                    processed = preprocess(text)
+                    proba = model.predict_proba([processed])[0]
+                    idx = int(np.argmax(proba))
+                    sentiment_tag = le.inverse_transform([idx])[0]
+                    
+                    tag_distress_weights = {
+                        "anxious": 0.85,
+                        "sad": 0.75,
+                        "angry": 0.70,
+                        "suicidal": 1.0,
+                        "self_harm": 1.0,
+                        "calm": 0.20,
+                        "happy": 0.10,
+                        "excited": 0.05
+                    }
+                    text_distress_score = tag_distress_weights.get(sentiment_tag, 0.40)
+            except Exception as e:
+                app.logger.warning(f"Error calculating text distress: {e}")
+
+    # 2. Fetch Latest Clinical Assessments
+    assessment_score_norm = None
+    last_assessment = None
+    try:
+        assessments = get_user_assessments(uid)
+        if assessments:
+            last_assessment = assessments[0]
+            score = last_assessment.get("score", 0)
+            a_type = last_assessment.get("type", "GAD-7").upper()
+            max_possible = 27 if "PHQ" in a_type else 21
+            assessment_score_norm = score / max_possible
+    except Exception as e:
+        app.logger.warning(f"Error reading user assessments: {e}")
+
+    # 3. Dynamic Distress Score (DDS) Weighted Aggregation
+    weights = {"text": 0.4, "vocal": 0.4, "clinical": 0.2}
+    total_weight = 0.0
+    weighted_sum = 0.0
+    
+    if text:
+        weighted_sum += text_distress_score * weights["text"]
+        total_weight += weights["text"]
+        
+    if vocal_stress is not None:
+        weighted_sum += vocal_stress * weights["vocal"]
+        total_weight += weights["vocal"]
+        
+    if assessment_score_norm is not None:
+        weighted_sum += assessment_score_norm * weights["clinical"]
+        total_weight += weights["clinical"]
+        
+    dds = (weighted_sum / total_weight) * 100 if total_weight > 0 else 50.0
+    dds = min(100.0, max(0.0, dds))
+    
+    # 4. Contextual Additive Adjustments (Case Stage)
+    profile = get_victim_profile(uid)
+    if profile:
+        stage = profile.get("judicial_stage", "Investigation")
+        if stage == "Investigation":
+            dds += 5.0
+        elif stage == "Trial":
+            dds += 10.0
+
+    dds = round(min(100.0, dds), 2)
+
+    # 5. Save score in DB
+    details = {
+        "text_sentiment_tag": sentiment_tag,
+        "text_sentiment_distress": round(text_distress_score, 4),
+        "vocal_stress_metrics": vsa_metrics,
+        "latest_clinical_assessment": last_assessment,
+        "transcribed_audio": transcribed_text
+    }
+    a_score_val = last_assessment.get("score") if last_assessment else None
+    
+    save_victim_distress_score(
+        user_id=uid,
+        score=dds,
+        sentiment_score=text_distress_score if text else None,
+        vocal_stress=vocal_stress,
+        assessment_score=a_score_val,
+        details_json=json.dumps(details)
+    )
+
+    # 6. Check Risk Threshold (Alert Trigger)
+    alert_triggered = False
+    alert_id = None
+    if dds > 75.0:
+        alert_triggered = True
+        reason = f"DDS exceeded risk threshold at {dds}%. "
+        reasons = []
+        if text_distress_score > 0.7:
+            reasons.append(f"high textual distress (sentiment: {sentiment_tag})")
+        if vocal_stress and vocal_stress > 0.6:
+            reasons.append(f"high vocal tension (VSA stress: {round(vocal_stress*100)}%)")
+        if last_assessment and score > 15:
+            reasons.append(f"severe clinical check-in score ({score} on {last_assessment.get('type')})")
+            
+        reason += "Indicators: " + ", ".join(reasons) if reasons else "Triggered by overall weighted metrics."
+        alert_id = trigger_victim_alert(uid, dds, reason)
+
+    # 7. Generate Rehabilitation Suggestions
+    recommendations = []
+    if dds > 75.0:
+        recommendations.append({
+            "type": "witness_protection",
+            "title": "Witness Protection Referral",
+            "desc": "Due to high distress/threat levels, you can request an immediate security audit and witness protection allocation via local police nodal officers."
+        })
+    if last_assessment and last_assessment.get("severity", "").lower() in ("moderate", "severe"):
+        recommendations.append({
+            "type": "clinical",
+            "title": "Emergency Counselling Session",
+            "desc": "Your indicators show severe anxiety or depression. We recommend scheduling an immediate session with your assigned counselor."
+        })
+    
+    if profile:
+        category = profile.get("category", "")
+        recommendations.append({
+            "type": "legal_aid",
+            "title": "Legal Services Association (DLSA)",
+            "desc": f"Under the SC/ST Act provisions for {category}, you are entitled to free legal aid representation. We can auto-route your files to the nearest District Legal Services Authority."
+        })
+        recommendations.append({
+            "type": "compensation",
+            "title": "Victim Relief Compensation Claim",
+            "desc": "Check your compensation disbursement status. Victims of atrocity are entitled to financial relief schemes (up to 8.25 Lakhs depending on the offense category)."
+        })
+    else:
+        recommendations.append({
+            "type": "legal_aid",
+            "title": "District Legal Aid",
+            "desc": "Access free legal consultation and witness advocacy resources."
+        })
+
+    return jsonify({
+        "ok": True,
+        "distress_score": dds,
+        "sentiment_tag": sentiment_tag,
+        "vsa_metrics": vsa_metrics,
+        "transcribed_text": transcribed_text,
+        "alert_triggered": alert_triggered,
+        "alert_id": alert_id,
+        "recommendations": recommendations
+    })
+
+
+@app.route("/api/victim/recommendations", methods=["GET"])
+@user_only
+def api_victim_recommendations():
+    from db import get_victim_profile
+    uid = get_current_user_id()
+    profile = get_victim_profile(uid)
+    
+    recs = []
+    if profile:
+        stage = profile.get("judicial_stage", "Investigation")
+        category = profile.get("category", "")
+        
+        if stage == "Investigation":
+            recs.append({
+                "title": "Charge Sheet Filing Tracker",
+                "desc": "Under the SC/ST Act, the police must submit the charge sheet within 60 days. Click here to trace status updates from the Deputy Superintendent of Police (DySP)."
+            })
+        elif stage == "Trial":
+            recs.append({
+                "title": "Special Court Court-Appearance Assistance",
+                "desc": "You are eligible for travel allowance (TA/DA) and daily allowance for attending court hearings. Submit your receipts here."
+            })
+            recs.append({
+                "title": "Witness Protection & Security",
+                "desc": "If you or your family are facing intimidation, you can file a petition under Section 15A of the SC/ST Act for safety arrangements."
+            })
+            
+        recs.append({
+            "title": "Mandatory Relief Compensation Scheme",
+            "desc": f"Get assistance claiming the statutory relief funds allocated for victims of '{category}' offenses."
+        })
+        recs.append({
+            "title": "Relocation & Rehabilitation Support",
+            "desc": "Government programs offer land allotment, house construction support, and employment slots for severely affected families."
+        })
+    else:
+        recs.append({
+            "title": "General Victim Compensation Fund",
+            "desc": "Learn about the Central Victim Compensation Fund (CVCF) and state assistance schemes."
+        })
+        
+    return jsonify({"ok": True, "recommendations": recs})
+
+
+@app.route("/api/victim/supervised-list", methods=["GET"])
+@login_required
+def api_supervised_list():
+    if get_user_role() != "therapist":
+        return jsonify({"error": "Access denied"}), 403
+        
+    from db import get_supervised_victims, get_all_victims_for_admin
+    uid = get_current_user_id()
+    
+    scope = request.args.get("scope", "my")
+    if scope == "all":
+        victims = get_all_victims_for_admin()
+    else:
+        victims = get_supervised_victims(uid)
+        
+    from db import get_victim_distress_history
+    enriched = []
+    for v in victims:
+        history = get_victim_distress_history(v["user_id"])
+        latest_score = history[-1]["score"] if history else 30.0
+        v["latest_distress_score"] = latest_score
+        enriched.append(v)
+        
+    enriched.sort(key=lambda x: x["latest_distress_score"], reverse=True)
+    return jsonify({"ok": True, "victims": enriched})
+
+
+@app.route("/api/victim/vault", methods=["POST"])
+@user_only
+def create_vault_incident_api():
+    from db import log_vault_incident, trigger_victim_alert
+    from werkzeug.utils import secure_filename
+    
+    uid = get_current_user_id()
+    incident_type = request.form.get("incident_type", "verbal_threat").strip()
+    description = request.form.get("description", "").strip()
+    
+    if not description:
+        return jsonify({"error": "Incident description is required."}), 400
+        
+    evidence_file = request.files.get("evidence")
+    file_path = None
+    if evidence_file and evidence_file.filename:
+        fname = secure_filename(evidence_file.filename)
+        # prefix user_id and timestamp
+        fname = f"vault_{uid}_{int(datetime.now().timestamp())}_{fname}"
+        file_path = str(UPLOADS_DIR / fname)
+        evidence_file.save(file_path)
+        
+    # Auto severity mapping
+    severity = "Medium"
+    critical_keywords = ["kill", "murder", "weapon", "shoot", "attack", "death", "beat", "burn", "destroy", "gun", "knife"]
+    desc_lower = description.lower()
+    if any(kw in desc_lower for kw in critical_keywords):
+        severity = "High"
+        
+    try:
+        log_vault_incident(uid, incident_type, description, file_path, severity)
+        if severity == "High":
+            # Auto-trigger priority alert on counselor dashboard
+            trigger_victim_alert(
+                user_id=uid,
+                score=100.0,
+                reason=f"URGENT WITNESS VAULT THREAT INCIDENT LOGGED (Type: {incident_type}): {description[:200]}..."
+            )
+        return jsonify({"ok": True, "severity": severity})
+    except Exception as e:
+        app.logger.error(f"Error logging vault incident: {e}")
+        return jsonify({"error": "Failed to store threat evidence."}), 500
+
+
+@app.route("/api/victim/vault", methods=["GET"])
+@login_required
+def get_vault_incidents_api():
+    from db import get_vault_incidents
+    role = get_user_role()
+    uid = get_current_user_id()
+    
+    if role == "therapist":
+        target_uid = request.args.get("user_id")
+        if not target_uid:
+            return jsonify({"error": "user_id parameter is required for counselors."}), 400
+        uid = int(target_uid)
+        
+    try:
+        incidents = get_vault_incidents(uid)
+        return jsonify({"ok": True, "incidents": incidents})
+    except Exception as e:
+        app.logger.error(f"Error fetching vault incidents: {e}")
+        return jsonify({"error": "Failed to load logged incidents."}), 500
+
+
+@app.route("/api/victim/schemes", methods=["GET"])
+@user_only
+def get_rehab_schemes_api():
+    from db import get_victim_profile
+    uid = get_current_user_id()
+    profile = get_victim_profile(uid)
+    
+    schemes = [
+        {
+            "title": "National Safai Karamcharis Finance and Development Corporation (NSKFDC)",
+            "desc": "Offers rehabilitation schemes and low-interest self-employment loans up to ₹5.0 Lakhs to targeted caste beneficiaries and manual scavengers.",
+            "link": "https://nskfdc.nic.in"
+        },
+        {
+            "title": "PM-DAKSH (Pradhan Mantri Dakshta Aur Kushalta Sampann Hitgrahi)",
+            "desc": "Providing free skill development training programs (short-term & long-term) with monthly stipends for youths of SC/ST and marginalized groups.",
+            "link": "https://pmdaksh.dosje.gov.in"
+        },
+        {
+            "title": "One Stop Center Scheme (Sakhi)",
+            "desc": "Subsidized shelter, medical support, legal aid, and counseling center for female atrocity survivors. Auto-integrated with closest nodal office.",
+            "link": "https://wcd.nic.in"
+        },
+        {
+            "title": "Dr. Ambedkar Scheme for Social Integration",
+            "desc": "Relief schemes and incentives for inter-caste marriages under the protection of district courts to promote integration and combat boycott threat.",
+            "link": "https://ambedkarfoundation.nic.in"
+        }
+    ]
+    return jsonify({"ok": True, "schemes": schemes})
+
+
+@app.route("/api/victim/sos", methods=["POST"])
+@user_only
+def trigger_sos_api():
+    from db import log_sos_alert, trigger_victim_alert
+    uid = get_current_user_id()
+    lat = request.json.get("latitude") if request.is_json else request.form.get("latitude")
+    lng = request.json.get("longitude") if request.is_json else request.form.get("longitude")
+    
+    if not lat or not lng:
+        return jsonify({"error": "Latitude and Longitude coordinates are required."}), 400
+        
+    try:
+        log_sos_alert(uid, str(lat), str(lng))
+        trigger_victim_alert(
+            user_id=uid,
+            score=100.0,
+            reason=f"🚨 CRITICAL SOS TRIGGERED: Victim locked GPS position at lat: {lat}, lng: {lng}."
+        )
+        return jsonify({"ok": True, "msg": "SOS dispatched successfully."})
+    except Exception as e:
+        app.logger.error(f"Error handling SOS route: {e}")
+        return jsonify({"error": "Failed to log SOS emergency alert."}), 500
+
+
+@app.route("/api/victim/sos", methods=["GET"])
+@login_required
+def get_sos_api():
+    from db import get_active_sos_alerts
+    role = get_user_role()
+    if role != "therapist":
+        return jsonify({"error": "Unauthorized."}), 403
+    try:
+        alerts = get_active_sos_alerts()
+        return jsonify({"ok": True, "alerts": alerts})
+    except Exception as e:
+        app.logger.error(f"Error fetching SOS alerts: {e}")
+        return jsonify({"error": "Failed to load active SOS signals."}), 500
+
+
+@app.route("/api/victim/sos/<int:sos_id>/dispatch", methods=["POST"])
+@login_required
+def dispatch_sos_api(sos_id):
+    from db import dispatch_officer_to_sos
+    role = get_user_role()
+    if role != "therapist":
+        return jsonify({"error": "Unauthorized."}), 403
+    
+    officer = request.json.get("officer_name") if request.is_json else request.form.get("officer_name")
+    if not officer:
+        officer = "Nodal Protection Guard"
+        
+    try:
+        dispatch_officer_to_sos(sos_id, officer)
+        return jsonify({"ok": True})
+    except Exception as e:
+        app.logger.error(f"Error updating dispatch status: {e}")
+        return jsonify({"error": "Failed to dispatch guard."}), 500
+
+
+@app.route("/api/victim/claims", methods=["POST"])
+@user_only
+def create_claim_api():
+    from db import submit_compensation_claim, get_victim_profile
+    uid = get_current_user_id()
+    profile = get_victim_profile(uid)
+    
+    if not profile:
+        return jsonify({"error": "No registered victim case file found."}), 400
+        
+    stage = request.json.get("stage") if request.is_json else request.form.get("stage")
+    bank_name = request.json.get("bank_name", "State Bank of India") if request.is_json else request.form.get("bank_name", "State Bank of India")
+    bank_ifsc = request.json.get("bank_ifsc", "") if request.is_json else request.form.get("bank_ifsc", "")
+    bank_account = request.json.get("bank_account", "") if request.is_json else request.form.get("bank_account", "")
+    
+    if not stage:
+        return jsonify({"error": "Stage parameter is required."}), 400
+        
+    # Map statutory amounts
+    # SC/ST Act Rule 12(4) Relief Scales:
+    # Category Caste Violence / Grievous Hurt is 4.5 Lakhs (450,000).
+    # Stage FIR gets 50% (225,000). Stage Charge Sheet gets 25% (112,500). Stage Verdict gets 25% (112,500).
+    category = profile["category"] or ""
+    amount = 450000.0 # base default
+    if "8.25" in category or "Arson" in category or "Loss of Life" in category:
+        amount = 825000.0
+    elif "1.0" in category or "Social Boycott" in category or "100000" in category:
+        amount = 100000.0
+        
+    tranche_pct = 0.50 if stage == "FIR" else 0.25
+    tranche_amount = amount * tranche_pct
+    
+    try:
+        from datetime import datetime
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        petition_text = f"""
+============================================================
+REPRESENTATION FOR RELEASE OF DELAYED STATUTORY RELIEF
+Under SC/ST (Prevention of Atrocities) Rules, Rule 12(4)
+============================================================
+Date of Filing: {date_str}
+To,
+The District Magistrate / Chairperson,
+District Level Vigilance and Monitoring Committee (DLVMC)
+District Collectorate Office.
+
+SUBJECT: Demand for release of overdue '{stage}' tranche of INR {tranche_amount:,.2f}
+
+Respected Chairperson,
+I, the undersigned, am a registered victim in Case Number: {profile['case_number']} (Offense category: {profile['category']}). 
+Under Rule 12(4) of the SC/ST (Prevention of Atrocities) Rules, the administration is obligated to disburse the statutory relief amount immediately upon the completion of the procedural milestone. 
+
+The milestone for '{stage}' has been completed, but the tranche payment of INR {tranche_amount:,.2f} is currently overdue.
+The petitioner requests immediate Direct Benefit Transfer (DBT) to the following verified account:
+
+BANK NAME: {bank_name}
+IFSC CODE: {bank_ifsc}
+ACCOUNT NO: {bank_account}
+
+We pray for early relief release to avoid financial distress.
+
+Signed,
+Complainant ID: {uid}
+(Through ManoRakshak Victim Portal Auto-Signature)
+============================================================
+"""
+        submit_compensation_claim(uid, profile["case_number"], tranche_amount, stage, petition_text)
+        return jsonify({"ok": True, "petition": petition_text})
+    except Exception as e:
+        app.logger.error(f"Error submitting claim: {e}")
+        return jsonify({"error": "Failed to submit compensation claim."}), 500
+
+
+@app.route("/api/victim/claims", methods=["GET"])
+@login_required
+def get_claims_api():
+    from db import get_victim_claims, get_all_pending_claims
+    role = get_user_role()
+    uid = get_current_user_id()
+    
+    try:
+        if role == "therapist":
+            claims = get_all_pending_claims()
+        else:
+            claims = get_victim_claims(uid)
+        return jsonify({"ok": True, "claims": claims})
+    except Exception as e:
+        app.logger.error(f"Error fetching claims: {e}")
+        return jsonify({"error": "Failed to load claims list."}), 500
+
+
+@app.route("/api/victim/claims/<int:claim_id>/status", methods=["POST"])
+@login_required
+def update_claim_status_api(claim_id):
+    from db import update_claim_status
+    role = get_user_role()
+    if role != "therapist":
+        return jsonify({"error": "Unauthorized."}), 403
+        
+    status = request.json.get("status") if request.is_json else request.form.get("status")
+    if not status:
+        return jsonify({"error": "Status is required."}), 400
+        
+    try:
+        update_claim_status(claim_id, status)
+        return jsonify({"ok": True})
+    except Exception as e:
+        app.logger.error(f"Error updating claim status: {e}")
+        return jsonify({"error": "Failed to update claim status."}), 500
+
+
+@app.route("/api/victim/hearing-prep", methods=["POST"])
+@user_only
+def generate_hearing_prep_api():
+    from db import get_victim_profile
+    uid = get_current_user_id()
+    profile = get_victim_profile(uid)
+    
+    category = profile["category"] if profile else "SC/ST Atrocity"
+    stage = profile["judicial_stage"] if profile else "Trial"
+    
+    # Formulate prompt for Llama 3.2
+    prompt = f"""
+[System Instruction]
+Provide a clear, comforting, and bulleted 4-point court trial preparation guide for a victim of atrocity registered under the offense category: '{category}' currently at the judicial stage: '{stage}'.
+Respond ONLY with the 4 bulleted preparation guidelines. Maintain a comforting, reassuring, and legally informative tone. Do not add conversational headers or footers.
+
+4-Point Preparation Checklist:
+"""
+    try:
+        # Request Llama 3.2 from the local Ollama API
+        import requests as r_lib
+        res = r_lib.post(
+            "http://127.0.0.1:11434/api/generate",
+            json={"model": "llama3.2:1b", "prompt": prompt, "stream": False},
+            timeout=15
+        )
+        if res.status_code == 200:
+            result_text = res.json().get("response", "").strip()
+        else:
+            result_text = "Failed to communicate with LLM server. Contact DLSA representative."
+        return jsonify({"ok": True, "guidelines": result_text})
+    except Exception as e:
+        app.logger.error(f"Ollama hearing prep generation error: {e}")
+        # Fallback rule-based guide if Ollama times out
+        fallback_guide = f"1. Prepare all copies of the FIR and witness summons.\n2. You are entitled to travel and daily allowances for attending the Court. Check in with the court clerk.\n3. Request in-camera Special Court hearings if you feel threatened or anxious.\n4. You have the right to request water or ask the judge to repeat the question."
+        return jsonify({"ok": True, "guidelines": fallback_guide})
+
+
+@app.route("/api/admin/analytics", methods=["GET"])
+@login_required
+def admin_analytics_api():
+    import mysql.connector
+    from db import get_pool
+    uid = get_current_user_id()
+    
+    try:
+        pool = get_pool()
+        conn = pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Total cases count
+        cursor.execute("SELECT COUNT(*) as cnt FROM victim_profiles")
+        total_cases = cursor.fetchone()["cnt"]
+        
+        # Active alerts count
+        cursor.execute("SELECT COUNT(*) as cnt FROM victim_alerts WHERE status = 'Active'")
+        active_alerts = cursor.fetchone()["cnt"]
+        
+        # Active SOS counts
+        cursor.execute("SELECT COUNT(*) as cnt FROM victim_sos_alerts WHERE status = 'Active'")
+        active_sos = cursor.fetchone()["cnt"]
+        
+        # Claims disbursements stats
+        cursor.execute("SELECT SUM(amount_entitled) as tot, status FROM victim_compensation_claims GROUP BY status")
+        claims_rows = cursor.fetchall()
+        
+        allocated = 0.0
+        disbursed = 0.0
+        pending = 0.0
+        for row in claims_rows:
+            tot_val = float(row["tot"] or 0)
+            allocated += tot_val
+            if row["status"] == "Disbursed":
+                disbursed += tot_val
+            elif row["status"] in ["Pending", "Approved"]:
+                pending += tot_val
+                
+        # Query actual cases grouped dynamically by category & judicial stage
+        cursor.execute("""
+            SELECT vp.category, vp.judicial_stage, COUNT(vp.id) as case_count
+            FROM victim_profiles vp
+            GROUP BY vp.category, vp.judicial_stage
+        """)
+        category_rows = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT vp.category, COUNT(va.id) as alert_count
+            FROM victim_alerts va
+            JOIN victim_profiles vp ON va.user_id = vp.user_id
+            WHERE va.status = 'Active'
+            GROUP BY vp.category
+        """)
+        alert_dict = {row["category"]: row["alert_count"] for row in cursor.fetchall()}
+
+        cursor.execute("""
+            SELECT vp.category, SUM(cc.amount_entitled) as total_payout
+            FROM victim_compensation_claims cc
+            JOIN victim_profiles vp ON cc.user_id = vp.user_id
+            WHERE cc.status = 'Disbursed'
+            GROUP BY vp.category
+        """)
+        payout_dict = {row["category"]: float(row["total_payout"] or 0) for row in cursor.fetchall()}
+
+        regional_data = []
+        if category_rows:
+            for row in category_rows:
+                cat = row["category"]
+                regional_data.append({
+                    "state": cat,
+                    "district": f"Stage: {row['judicial_stage']}",
+                    "active_cases": row["case_count"],
+                    "active_alerts": alert_dict.get(cat, 0),
+                    "payouts_completed": payout_dict.get(cat, 0.0)
+                })
+        else:
+            regional_data = [
+                {"state": "SC/ST Atrocity & Harassment", "district": "Stage: Investigation", "active_cases": 1, "active_alerts": 1, "payouts_completed": 225000.0},
+                {"state": "Witness Intimidation & Threat", "district": "Stage: Trial", "active_cases": 1, "active_alerts": 0, "payouts_completed": 0.0}
+            ]
+            
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "ok": True,
+            "total_cases": total_cases,
+            "active_alerts": active_alerts,
+            "active_sos": active_sos,
+            "financials": {
+                "allocated": allocated,
+                "disbursed": disbursed,
+                "pending": pending
+            },
+            "regional_distribution": regional_data
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error compiling admin analytics: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/admin/dashboard")
+@login_required
+def admin_dashboard_page():
+    return send_from_directory(TEMPLATES_DIR, "admin_dashboard.html")
+
+
+@app.route("/api/victim/non-response-check", methods=["GET"])
+@login_required
+def api_non_response_check():
+    from db import get_silent_period_victims
+    hours = request.args.get("hours", 48, type=int)
+    silent_victims = get_silent_period_victims(hours)
+    return jsonify({"ok": True, "silent_count": len(silent_victims), "victims": silent_victims})
+
+
+@app.route("/api/victim/xai-explain/<int:score_id>", methods=["GET"])
+@login_required
+def api_xai_explain(score_id):
+    from db import get_xai_explanation
+    uid = get_current_user_id()
+    explanation = get_xai_explanation(score_id, user_id=uid)
+    if not explanation:
+        return jsonify({"error": "Distress score calculation record not found."}), 404
+    return jsonify({"ok": True, "explanation": explanation})
+
+
+@app.route("/api/nhaa/ivrs-simulate", methods=["POST"])
+@user_only
+def api_nhaa_ivrs_simulate():
+    """
+    Simulate NHAA 14566 National Helpline Against Atrocities IVRS Phone Call Check-in.
+    Processes transcribed phone call speech via scikit-learn VotingClassifier ML model,
+    calculates distress score, logs entry & flags alert if critical.
+    """
+    from db import get_victim_profile, save_victim_distress_score, trigger_victim_alert
+    import numpy as np
+    
+    uid = get_current_user_id()
+    body = request.get_json(force=True) if request.is_json else request.form
+    transcript = body.get("transcript", "").strip()
+    dialect = body.get("dialect", "Hindi / Indic").strip()
+    
+    if not transcript:
+        return jsonify({"error": "IVRS phone call transcript input is required."}), 400
+        
+    text_distress = 0.45
+    sentiment_tag = "neutral"
+    
+    # Run real ML model on IVRS call speech transcript
+    bundle = load_ml_model()
+    if bundle and isinstance(bundle, dict):
+        try:
+            model = bundle.get("ensemble") or bundle.get("pipeline")
+            if model is not None:
+                le = bundle["label_encoder"]
+                processed = preprocess(transcript)
+                proba = model.predict_proba([processed])[0]
+                idx = int(np.argmax(proba))
+                sentiment_tag = le.inverse_transform([idx])[0]
+                
+                tag_distress_weights = {
+                    "anxious": 0.85,
+                    "sad": 0.75,
+                    "angry": 0.70,
+                    "suicidal": 1.0,
+                    "self_harm": 1.0,
+                    "calm": 0.20,
+                    "happy": 0.10,
+                    "excited": 0.05
+                }
+                text_distress = tag_distress_weights.get(sentiment_tag, 0.45)
+        except Exception as e:
+            app.logger.warning(f"Error running ML model on IVRS transcript: {e}")
+            
+    vocal_stress = 0.70 if text_distress > 0.6 else 0.20
+    dds = round((text_distress * 60.0) + (vocal_stress * 40.0), 2)
+    
+    details = {
+        "channel": "NHAA 14566 IVRS Hotline",
+        "dialect": dialect,
+        "text_sentiment_tag": sentiment_tag,
+        "text_sentiment_distress": text_distress,
+        "vocal_stress": vocal_stress,
+        "raw_transcript": transcript
+    }
+    
+    score_id = save_victim_distress_score(
+        user_id=uid,
+        score=dds,
+        sentiment_score=text_distress,
+        vocal_stress=vocal_stress,
+        details_json=json.dumps(details)
+    )
+    
+    alert_triggered = False
+    if dds > 75.0:
+        alert_triggered = True
+        trigger_victim_alert(uid, dds, f"NHAA 14566 IVRS HIGH RISK DISTRESS (Dialect: {dialect}, Sentiment: {sentiment_tag}): {transcript[:150]}")
+        
+    return jsonify({
+        "ok": True,
+        "score_id": score_id,
+        "channel": "NHAA 14566 Hotline",
+        "distress_score": dds,
+        "sentiment_tag": sentiment_tag,
+        "alert_triggered": alert_triggered,
+        "transcript": transcript
+    })
+
+
 if __name__ == "__main__":
+    validate_and_setup_ollama()
     print("\n" + "═" * 52)
     print("  🌿 ManoRakshak Server")
     print("═" * 52)
